@@ -9,8 +9,14 @@
 
 rootProject.name = "poc_multi"
 include(":core")
+include(":persist-mongodb")
 include(":engine-bash")
 include(":engine-mongodb")
 include(":engine-kubernetes")
 include(":engine-httpclient")
+include(":samples:basic")
+include(":samples:basic-mongodbpersist")
 include(":samples:http")
+include(":samples:bash")
+include(":samples:mongodb")
+include(":samples:kubernetes")

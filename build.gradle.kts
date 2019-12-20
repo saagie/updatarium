@@ -27,7 +27,6 @@ val autoImportDependencies = mapOf(
 
 subprojects {
     apply(plugin = "java")
-    id("com.github.johnrengelman.shadow").version("2.0.2")
 
     group = "io.saagie"
     version = "1.0-SNAPSHOT"
