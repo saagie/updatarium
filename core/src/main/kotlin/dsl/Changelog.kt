@@ -6,6 +6,7 @@ import persist.engine.Engine
 
 @AutoDsl
 data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) {
+
     fun execute(engine: Engine = DefaultEngine()) {
         engine.checkConnection()
         changesets.forEach {
