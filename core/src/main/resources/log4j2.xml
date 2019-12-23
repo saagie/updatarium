@@ -2,7 +2,7 @@
 <Configuration name="LogConfig" status="error">
     <Appenders>
         <Console name="STDOUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n" />
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%-5p] %c{1}:%-3L - %m%n" />
         </Console>
     </Appenders>
     <Loggers>

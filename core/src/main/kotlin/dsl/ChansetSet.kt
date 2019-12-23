@@ -3,41 +3,33 @@ package dsl
 import com.autodsl.annotation.AutoDsl
 import dsl.action.Action
 import mu.KLoggable
-import kotlin.random.Random
+import persist.engine.Engine
 
 @AutoDsl
 data class ChangeSet(val id: String, val author: String, val actions: List<Action> = mutableListOf()) : KLoggable {
     override val logger = logger()
 
-    fun execute() {
-        if (notAlreadyExecuted()) {
+    fun execute(engine: Engine) {
+        if (engine.notAlreadyExecuted(id)) {
             logger.info { "$id will be executed" }
-            this.lock()
+            engine.lock(this)
             try {
                 this.actions.forEach {
                     it.execute()
                 }
+                engine.unlock(this,Status.OK)
                 logger.info { "$id marked as ${Status.OK}" }
             } catch (e: Exception) {
                 logger.error(e) { "Error during apply update" }
+                engine.unlock(this,Status.KO)
                 logger.info { "$id marked as ${Status.KO}" }
-            } finally {
-                this.unlock()
             }
-
         } else {
             logger.info { "$id already executed" }
         }
     }
 
-    private fun lock() {
-        logger.info { "LOCK" }
-        logger.info { "$id marked as ${Status.EXECUTE}" }
-    }
-
     private fun unlock() {
         logger.info { "UNLOCK" }
     }
-
-    private fun notAlreadyExecuted(): Boolean = true//Random.nextBoolean()
 }
