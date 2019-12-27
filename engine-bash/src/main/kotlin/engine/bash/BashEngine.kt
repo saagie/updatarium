@@ -8,7 +8,7 @@ class BashEngine {
         bashScriptAction: BashScriptAction
     ) {
         with(bashScriptAction) {
-            val proc = ProcessBuilder(script.split("\\s".toRegex()))
+            val proc = ProcessBuilder(listOf("bash","-c",script))
                 .directory(File(workingDir))
                 .redirectOutput(ProcessBuilder.Redirect.PIPE)
                 .redirectError(ProcessBuilder.Redirect.PIPE)
