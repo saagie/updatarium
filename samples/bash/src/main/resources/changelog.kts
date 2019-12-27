@@ -5,8 +5,8 @@ import dsl.changelog
 changelog {
     changesets {
         +changeSet {
-            id = "ChangeSet-Http-1"
-            author = "Postman"
+            id = "ChangeSet-bash-1"
+            author = "Bash"
             actions {
                 +BashScriptAction(
                     script = """

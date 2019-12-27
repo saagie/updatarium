@@ -7,7 +7,7 @@ import org.litote.kmongo.*
 import persist.model.MongoDbChangeset
 import persist.model.toMongoDbDocument
 
-const val MONGODB_CONNECTIONSTRING = "MONGODB_CONNECTIONSTRING"
+const val MONGODB_PERSIST_CONNECTIONSTRING = "MONGODB_PERSIST_CONNECTIONSTRING"
 const val DATABASE = "MagicalUpdater"
 const val COLLECTION = "changelog"
 
@@ -21,10 +21,10 @@ class MongodbPersistEngine : PersistEngine() {
     }
 
     private fun getConnectionString(): String {
-        if (System.getenv().containsKey(MONGODB_CONNECTIONSTRING)) {
-            return System.getenv(MONGODB_CONNECTIONSTRING)
+        if (System.getenv().containsKey(MONGODB_PERSIST_CONNECTIONSTRING)) {
+            return System.getenv(MONGODB_PERSIST_CONNECTIONSTRING)
         }
-        throw IllegalArgumentException("$MONGODB_CONNECTIONSTRING is missing (environment variable)")
+        throw IllegalArgumentException("$MONGODB_PERSIST_CONNECTIONSTRING is missing (environment variable)")
     }
 
     override fun checkConnection() {
