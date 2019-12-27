@@ -1,12 +1,12 @@
 import de.swirtz.ktsrunner.objectloader.KtsObjectLoader
 import dsl.Changelog
-import persist.engine.DefaultEngine
-import persist.engine.Engine
+import persist.DefaultPersistEngine
+import persist.PersistEngine
 import java.io.Reader
 import java.nio.file.Files
 import java.nio.file.Path
 
-class MagicalUpdater(val engine: Engine = DefaultEngine()) {
+class MagicalUpdater(val engine: PersistEngine = DefaultPersistEngine()) {
     val ktsLoader = KtsObjectLoader()
 
     fun executeChangelog(path: Path) {

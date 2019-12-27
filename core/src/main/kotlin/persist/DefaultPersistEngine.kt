@@ -1,9 +1,10 @@
-package persist.engine
+package persist
 
 import dsl.ChangeSet
 import dsl.Status
+import persist.PersistEngine
 
-class DefaultEngine : Engine() {
+class DefaultPersistEngine : PersistEngine() {
     override fun checkConnection() {
         logger.warn { "***********************" }
         logger.warn { "*NO PERSIST ENGINE !!!*" }

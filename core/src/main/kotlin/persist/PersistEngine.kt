@@ -1,10 +1,10 @@
-package persist.engine
+package persist
 
 import dsl.ChangeSet
 import dsl.Status
 import mu.KLoggable
 
-abstract class Engine : KLoggable {
+abstract class PersistEngine : KLoggable {
     override val logger = logger()
     abstract fun checkConnection()
     abstract fun notAlreadyExecuted(changeSetId: String): Boolean

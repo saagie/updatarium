@@ -1,7 +1,7 @@
-import persist.MongodbEngine
+import persist.MongodbPersistEngine
 
 fun main() {
-    MagicalUpdater(MongodbEngine()).executeChangelog("""
+    MagicalUpdater(MongodbPersistEngine()).executeChangelog("""
         import dsl.action.BasicAction
         import dsl.changeSet
         import dsl.changelog

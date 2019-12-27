@@ -3,14 +3,14 @@ package dsl
 import com.autodsl.annotation.AutoDsl
 import dsl.action.Action
 import mu.KLoggable
-import persist.engine.DefaultEngine
-import persist.engine.Engine
+import persist.DefaultPersistEngine
+import persist.PersistEngine
 
 @AutoDsl
 data class ChangeSet(val id: String, val author: String, val actions: List<Action> = mutableListOf()) : KLoggable {
     override val logger = logger()
 
-    fun execute(engine: Engine = DefaultEngine()) {
+    fun execute(engine: PersistEngine = DefaultPersistEngine()) {
         if (engine.notAlreadyExecuted(id)) {
             logger.info { "$id will be executed" }
             engine.lock(this)

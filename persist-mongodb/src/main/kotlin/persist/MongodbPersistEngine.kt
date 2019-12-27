@@ -4,7 +4,6 @@ import com.mongodb.ConnectionString
 import dsl.ChangeSet
 import dsl.Status
 import org.litote.kmongo.*
-import persist.engine.Engine
 import persist.model.MongoDbChangeset
 import persist.model.toMongoDbDocument
 
@@ -13,7 +12,7 @@ const val DATABASE = "MagicalUpdater"
 const val COLLECTION = "changelog"
 
 
-class MongodbEngine : Engine() {
+class MongodbPersistEngine : PersistEngine() {
 
     private val collection by lazy {
         with(KMongo.createClient(ConnectionString(getConnectionString()))) {
@@ -65,7 +64,7 @@ class MongodbEngine : Engine() {
     }
 
     override fun unlock(changeSet: ChangeSet, status: Status) {
-        collection.updateOne(MongoDbChangeset::changesetId eq changeSet.id, set(MongoDbChangeset::status, status.name))
+        collection.updateOne(MongoDbChangeset::changesetId eq changeSet.id, setValue(MongoDbChangeset::status, status.name))
         logger.info { "${changeSet.id} marked as ${status}" }
     }
 }
