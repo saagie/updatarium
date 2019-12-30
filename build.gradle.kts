@@ -99,7 +99,7 @@ subprojects {
     apply(plugin = "java")
 
     group = "io.saagie"
-    version = "1.0-SNAPSHOT"
+    version = "0.0.1"
 
     dependencies {
         autoImportDependencies.forEach {
