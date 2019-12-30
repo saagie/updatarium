@@ -37,13 +37,13 @@ config {
         vendor = "Saagie"
 
         scm {
-            url = "https://gitlab.saagie.tech/pierre/magicalupdatemultiproject"
+            url = "https://github.com/PierreLeresteux/magicalupdater"
         }
 
         links {
             website = "https://www.saagie.com"
-            scm = "https://gitlab.saagie.tech/pierre/magicalupdatemultiproject"
-            issueTracker = "https://gitlab.saagie.tech/pierre/magicalupdatemultiproject/issues"
+            scm = "https://github.com/PierreLeresteux/magicalupdater"
+            issueTracker = "https://github.com/PierreLeresteux/magicalupdater/issues"
         }
 
         licensing {
@@ -70,7 +70,7 @@ config {
             }
             userOrg = "pierresaagie"
             name = "magicalupdater"
-            githubRepo = "pierresaagie/magicalupdater"
+            githubRepo = "PierreLeresteux/magicalupdater"
         }
     }
 }
@@ -99,7 +99,7 @@ subprojects {
     apply(plugin = "java")
 
     group = "io.saagie"
-    version = "1.0-SNAPSHOT"
+    version = "0.0.1"
 
     dependencies {
         autoImportDependencies.forEach {
