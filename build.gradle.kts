@@ -100,7 +100,8 @@ allprojects {
 val autoImportDependencies = mapOf(
     "io.github.microutils:kotlin-logging" to "1.7.8",
     "org.slf4j:slf4j-api" to "1.7.29",
-    "org.apache.logging.log4j:log4j-slf4j-impl" to "2.13.0"
+    "org.apache.logging.log4j:log4j-slf4j-impl" to "2.13.0",
+    "org.apache.logging.log4j:log4j-core" to "2.13.0"
 )
 
 subprojects {
@@ -112,6 +113,7 @@ subprojects {
     dependencies {
         autoImportDependencies.forEach {
             implementation("${it.key}:${it.value}")
+            testImplementation("${it.key}:${it.value}")
         }
     }
     tasks.withType<KotlinCompile> {
