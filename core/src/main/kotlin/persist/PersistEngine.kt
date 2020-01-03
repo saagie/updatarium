@@ -21,10 +21,34 @@ import dsl.ChangeSet
 import dsl.Status
 import mu.KLoggable
 
+/**
+ * Engine to persist all changeset executions
+ *
+ * You should use this abstract class to create your own persist engine using existings functions
+ */
 abstract class PersistEngine : KLoggable {
     override val logger = logger()
+    /**
+     * This function will check the connection to the persistence system.
+     * If no check can be run, just do nothing.
+     */
     abstract fun checkConnection()
+
+    /**
+     * This function will check that the changeset (by its ID) have never be ran.
+     * Return true if the changeset has never be ran, false otherwise.
+     */
     abstract fun notAlreadyExecuted(changeSetId: String): Boolean
+
+    /**
+     * This function is here to "lock" the changeset, that's mean store a reference thant the changeset in parameter will be execute.
+     *
+     * It's to be sure, no parallel execution of the same changeset (using the same persistence engine) can be possible.
+     */
     abstract fun lock(changeSet: ChangeSet)
+
+    /**
+     * This function is called after the changeset execution, so you can now update the changeset status (in parameter).
+     */
     abstract fun unlock(changeSet: ChangeSet,status: Status)
 }

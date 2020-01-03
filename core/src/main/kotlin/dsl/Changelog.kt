@@ -24,7 +24,10 @@ import persist.PersistEngine
 @AutoDsl
 data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) {
 
-    fun execute(engine: PersistEngine = DefaultPersistEngine()) {
+    /**
+     * It will execute each changesets present in this changelog sequentially.
+     */
+    fun execute(engine: PersistEngine) {
         engine.checkConnection()
         changesets.forEach {
             it.execute(engine)
