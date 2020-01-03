@@ -15,25 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import io.saagie.updatarium.dsl.action.BashScriptAction
-import io.saagie.updatarium.dsl.changeSet
-import io.saagie.updatarium.dsl.changelog
+package io.saagie.updatarium.dsl.action
 
-changelog {
-    changesets {
-        +changeSet {
-            id = "ChangeSet-bash-1"
-            author = "Bash"
-            actions {
-                +BashScriptAction(
-                    script = """
-curl -I https://httpbin.org/get | grep -i Server &&\
-pwd &&\
-export | grep " PWD"
-""".trimIndent(),
-                    workingDir = "/tmp"
-                )
-            }
-        }
+import com.autodsl.annotation.AutoDsl
+import io.saagie.updatarium.engine.kubernetes.KubernetesEngine
+
+@AutoDsl
+class KubernetesScriptAction(
+    val namespace: String? = null,
+    val f: (kubernetesScriptAction: KubernetesScriptAction) -> Unit
+) : Action() {
+
+    val client = when {
+        namespace != null -> KubernetesEngine.getClient(namespace)
+        else -> KubernetesEngine.getClient()
+    }
+
+    override fun execute() {
+        f(this)
     }
 }

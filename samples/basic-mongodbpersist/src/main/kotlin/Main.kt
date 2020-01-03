@@ -15,13 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import persist.MongodbPersistEngine
+import io.saagie.updatarium.Updatarium
+import io.saagie.updatarium.persist.MongodbPersistEngine
 
 fun main() {
-    MagicalUpdater(MongodbPersistEngine()).executeChangelog("""
-        import dsl.action.BasicAction
-        import dsl.changeSet
-        import dsl.changelog
+    Updatarium(MongodbPersistEngine()).executeChangelog("""
+        import io.saagie.updatarium.dsl.action.BasicAction
+        import io.saagie.updatarium.dsl.changeSet
+        import io.saagie.updatarium.dsl.changelog
 
         changelog {
             changesets {
