@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <Blacklist></Blacklist>
+  <Whitelist>
+    <ID>LongMethod:SaagieTechnologiesGradlePlugin.kt$SaagieTechnologiesGradlePlugin$override fun apply(project: Project)</ID>
+    <ID>LongMethod:SaagieTechnologiesPackageGradlePlugin.kt$SaagieTechnologiesPackageGradlePlugin$override fun apply(project: Project)</ID>
+  </Whitelist>
+</SmellBaseline>
