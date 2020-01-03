@@ -27,6 +27,15 @@ import persist.PersistEngine
 data class ChangeSet(val id: String, val author: String, val actions: List<Action> = mutableListOf()) : KLoggable {
     override val logger = logger()
 
+    /**
+     * The changeset execution :
+     * - check if the changeset has already been execution (OK or KO)
+     * - if not :
+     *      - lock the changeset
+     *      - execute each action sequientially.
+     *      - unlock the changeset (with the correct status)
+     *  Status => OK if all actions was OK, KO otherwise ...
+     */
     fun execute(engine: PersistEngine = DefaultPersistEngine()) {
         if (engine.notAlreadyExecuted(id)) {
             logger.info { "$id will be executed" }
@@ -45,9 +54,5 @@ data class ChangeSet(val id: String, val author: String, val actions: List<Actio
         } else {
             logger.info { "$id already executed" }
         }
-    }
-
-    private fun unlock() {
-        logger.info { "UNLOCK" }
     }
 }

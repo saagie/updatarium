@@ -21,6 +21,12 @@ import dsl.ChangeSet
 import dsl.Status
 import persist.PersistEngine
 
+/**
+ * This is a basic implementation of the PersistEngine.
+ * It will store nothing and just let you execute the changeset.
+ *
+ * :warning: please do not use this in production if you don't want to replay all changesets.
+ */
 class DefaultPersistEngine : PersistEngine() {
     override fun checkConnection() {
         logger.warn { "***********************" }
