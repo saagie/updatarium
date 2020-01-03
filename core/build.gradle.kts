@@ -38,4 +38,15 @@ dependencies {
     // AutoDsl Annotation
     api("com.juanchosaravia.autodsl:annotation:0.0.9")
     kapt("com.juanchosaravia.autodsl:processor:0.0.9")
+
+    // Tests
+    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
+    testImplementation("com.github.codemonkeyfactory.test.logging:logging-test:1.0.0")
+}
+
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }
