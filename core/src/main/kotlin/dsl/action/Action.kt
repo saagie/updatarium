@@ -19,8 +19,18 @@ package dsl.action
 
 import mu.KLoggable
 
+/**
+ * This class represent an Action. All custom actions should use the abstract class.
+ *
+ * Only one function is available : `execute`, this function is called by the core engine for a not already execute changeset.
+ */
 abstract class Action : KLoggable {
     override val logger = logger()
 
+    /**
+     * The execute function.
+     *
+     * It will return an exception is something wrong happen.
+     */
     abstract fun execute()
 }

@@ -23,6 +23,13 @@ import java.io.Reader
 import java.nio.file.Files
 import java.nio.file.Path
 
+/**
+ * Main class of MagicalUpdater.
+ *
+ * MagicalUpdater is initialize with a PersistEngine (if not, use the DefaultPersistEngine),
+ * then you can call the function 'executeChangelog' using a Path, a Reader or directly the script in String.
+ * It will execute the changelog.
+ */
 class MagicalUpdater(val engine: PersistEngine = DefaultPersistEngine()) {
     val ktsLoader = KtsObjectLoader()
 

@@ -19,6 +19,12 @@ package dsl.action
 
 import com.autodsl.annotation.AutoDsl
 
+
+/**
+ * Here is a simple implementation for Action.
+ *
+ * It will simply execute the function in parameter.
+ */
 @AutoDsl
 class BasicAction(val f: (basicAction: BasicAction) -> Unit) : Action() {
 
