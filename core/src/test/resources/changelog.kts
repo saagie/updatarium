@@ -15,5 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-rootProject.name = 'persist-mongodb'
+import dsl.action.BasicAction
+import dsl.changeSet
+import dsl.changelog
 
+changelog {
+    changesets {
+        +changeSet {
+            id = "ChangeSet-1"
+            author = "HelloWorld"
+            actions {
+                +BasicAction { basicAction ->
+                    basicAction.logger.info { "Hello world" }
+                }
+            }
+        }
+    }
+}

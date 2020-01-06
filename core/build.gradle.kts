@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019 Pierre Leresteux.
+ * Copyright 2019-2020 Pierre Leresteux.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,4 +38,15 @@ dependencies {
     // AutoDsl Annotation
     api("com.juanchosaravia.autodsl:annotation:0.0.9")
     kapt("com.juanchosaravia.autodsl:processor:0.0.9")
+
+    // Tests
+    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
+    testImplementation("com.github.codemonkeyfactory.test.logging:logging-test:1.0.0")
+}
+
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }

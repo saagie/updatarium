@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019 Pierre Leresteux.
+ * Copyright 2019-2020 Pierre Leresteux.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,12 +75,6 @@ config {
             publish = true
         }
     }
-    quality {
-        detekt {
-            enabled = true
-            configFile = File("detekt-baseline.xml")
-        }
-    }
 }
 
 allprojects {
@@ -100,7 +94,8 @@ allprojects {
 val autoImportDependencies = mapOf(
     "io.github.microutils:kotlin-logging" to "1.7.8",
     "org.slf4j:slf4j-api" to "1.7.29",
-    "org.apache.logging.log4j:log4j-slf4j-impl" to "2.13.0"
+    "org.apache.logging.log4j:log4j-slf4j-impl" to "2.13.0",
+    "org.apache.logging.log4j:log4j-core" to "2.13.0"
 )
 
 subprojects {
@@ -112,6 +107,7 @@ subprojects {
     dependencies {
         autoImportDependencies.forEach {
             implementation("${it.key}:${it.value}")
+            testImplementation("${it.key}:${it.value}")
         }
     }
     tasks.withType<KotlinCompile> {
