@@ -81,7 +81,10 @@ class MongodbPersistEngine : PersistEngine() {
     }
 
     override fun unlock(changeSet: ChangeSet, status: Status) {
-        collection.updateOne(MongoDbChangeset::changesetId eq changeSet.id, setValue(MongoDbChangeset::status, status.name))
+        collection.updateOne(
+            MongoDbChangeset::changesetId eq changeSet.id,
+            setValue(MongoDbChangeset::status, status.name)
+        )
         logger.info { "${changeSet.id} marked as ${status}" }
     }
 }

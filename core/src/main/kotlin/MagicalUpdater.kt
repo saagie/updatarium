@@ -41,5 +41,4 @@ class MagicalUpdater(val engine: PersistEngine = DefaultPersistEngine()) {
             this.execute(engine)
         }
     }
-
 }

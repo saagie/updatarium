@@ -32,5 +32,3 @@ data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) {
     }
 }
 
-
-

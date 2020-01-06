@@ -23,6 +23,5 @@ class KubernetesEngine {
     companion object {
         fun getClient() = DefaultKubernetesClient()
         fun getClient(namespace: String) = getClient().inNamespace(namespace)
-
     }
 }

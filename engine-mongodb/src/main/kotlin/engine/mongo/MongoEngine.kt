@@ -35,5 +35,4 @@ class MongoEngine {
     }
 
     fun listDatabase(): MongoIterable<String> = mongoClient.listDatabaseNames()
-
 }

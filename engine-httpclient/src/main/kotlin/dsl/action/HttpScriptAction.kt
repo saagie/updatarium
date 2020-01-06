@@ -25,7 +25,6 @@ class HttpScriptAction(val f: (httpScriptAction: HttpScriptAction) -> Unit) : Ac
 
     val restClient = FuelManager.instance
 
-
     override fun execute() {
         f(this)
     }

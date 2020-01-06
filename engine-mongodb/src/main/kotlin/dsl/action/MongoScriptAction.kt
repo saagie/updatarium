@@ -26,7 +26,6 @@ class MongoScriptAction(val f: (mongoScriptAction: MongoScriptAction) -> Unit) :
     val mongoEngine = MongoEngine()
     val mongoClient = mongoEngine.mongoClient
 
-
     override fun execute() {
         f(this)
     }

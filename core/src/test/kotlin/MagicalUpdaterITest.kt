@@ -65,11 +65,10 @@ class MagicalUpdaterITest {
         Assertions.assertEquals("Hello world", logs.first().message)
     }
 
-
     @Test
     @LoggingTest
     @LoggingTestSpyManager(LoggingSpyManagerLog4j2Impl::class)
-    fun `should correctly execute a very simple changelog with multiple actions`(loggingSpy: LoggingSpy<Level, LogEvent>) {
+    fun `should correctly execute a simple changelog with multiple actions`(loggingSpy: LoggingSpy<Level, LogEvent>) {
 
         loggingSpy.enable()
         MagicalUpdater()
@@ -113,7 +112,7 @@ class MagicalUpdaterITest {
     @Test
     @LoggingTest
     @LoggingTestSpyManager(LoggingSpyManagerLog4j2Impl::class)
-    fun `should correctly execute a changelog with multiple changesets and actions`(loggingSpy: LoggingSpy<Level, LogEvent>) {
+    fun `should correctly execute a changelog with multiple changesets&actions`(loggingSpy: LoggingSpy<Level, LogEvent>) {
 
         loggingSpy.enable()
         MagicalUpdater()
@@ -163,7 +162,7 @@ class MagicalUpdaterITest {
     @Test
     @LoggingTest
     @LoggingTestSpyManager(LoggingSpyManagerLog4j2Impl::class)
-    fun `should correctly execute a very simple changelog using Path`(loggingSpy: LoggingSpy<Level, LogEvent>) {
+    fun `should correctly execute a simple changelog using Path`(loggingSpy: LoggingSpy<Level, LogEvent>) {
 
         loggingSpy.enable()
         MagicalUpdater().executeChangelog(Paths.get(MagicalUpdaterITest::class.java.getResource("changelog.kts").path))
