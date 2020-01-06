@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019 Pierre Leresteux.
+ * Copyright 2019-2020 Pierre Leresteux.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,10 @@ class MongodbPersistEngine : PersistEngine() {
     }
 
     override fun unlock(changeSet: ChangeSet, status: Status) {
-        collection.updateOne(MongoDbChangeset::changesetId eq changeSet.id, setValue(MongoDbChangeset::status, status.name))
+        collection.updateOne(
+            MongoDbChangeset::changesetId eq changeSet.id,
+            setValue(MongoDbChangeset::status, status.name)
+        )
         logger.info { "${changeSet.id} marked as ${status}" }
     }
 }

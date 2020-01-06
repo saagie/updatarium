@@ -1,3 +1,20 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright 2019-2020 Pierre Leresteux.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import com.github.codemonkeyfactory.test.logging.LoggingSpy
 import com.github.codemonkeyfactory.test.logging.junit.LoggingTest
 import com.github.codemonkeyfactory.test.logging.junit.LoggingTestSpyManager
@@ -48,11 +65,10 @@ class MagicalUpdaterITest {
         Assertions.assertEquals("Hello world", logs.first().message)
     }
 
-
     @Test
     @LoggingTest
     @LoggingTestSpyManager(LoggingSpyManagerLog4j2Impl::class)
-    fun `should correctly execute a very simple changelog with multiple actions`(loggingSpy: LoggingSpy<Level, LogEvent>) {
+    fun `should correctly execute a simple changelog with multiple actions`(loggingSpy: LoggingSpy<Level, LogEvent>) {
 
         loggingSpy.enable()
         MagicalUpdater()
@@ -96,7 +112,7 @@ class MagicalUpdaterITest {
     @Test
     @LoggingTest
     @LoggingTestSpyManager(LoggingSpyManagerLog4j2Impl::class)
-    fun `should correctly execute a changelog with multiple changesets and actions`(loggingSpy: LoggingSpy<Level, LogEvent>) {
+    fun `should correctly execute a changelog with multiple changesets&actions`(loggingSpy: LoggingSpy<Level, LogEvent>) {
 
         loggingSpy.enable()
         MagicalUpdater()
@@ -146,7 +162,7 @@ class MagicalUpdaterITest {
     @Test
     @LoggingTest
     @LoggingTestSpyManager(LoggingSpyManagerLog4j2Impl::class)
-    fun `should correctly execute a very simple changelog using Path`(loggingSpy: LoggingSpy<Level, LogEvent>) {
+    fun `should correctly execute a simple changelog using Path`(loggingSpy: LoggingSpy<Level, LogEvent>) {
 
         loggingSpy.enable()
         MagicalUpdater().executeChangelog(Paths.get(MagicalUpdaterITest::class.java.getResource("changelog.kts").path))
