@@ -17,8 +17,14 @@
  */
 package dsl
 
+/**
+ * Represent the status of the changeset.
+ */
 enum class Status {
+    // execution in progress
     EXECUTE,
+    // Execution is done with a correct status
     OK,
+    // Execution is done but it has failed
     KO
 }
