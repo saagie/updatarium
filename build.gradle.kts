@@ -75,12 +75,6 @@ config {
             publish = true
         }
     }
-    quality {
-        detekt {
-            enabled = true
-            configFile = File("detekt-baseline.xml")
-        }
-    }
 }
 
 allprojects {
