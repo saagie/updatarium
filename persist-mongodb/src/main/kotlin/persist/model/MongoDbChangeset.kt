@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019 Pierre Leresteux.
+ * Copyright 2019-2020 Pierre Leresteux.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,10 @@ package persist.model
 import dsl.ChangeSet
 import dsl.Status
 
-data class MongoDbChangeset(val changesetId: String, val author: String, val status : String)
+data class MongoDbChangeset(val changesetId: String, val author: String, val status: String)
 
-fun ChangeSet.toMongoDbDocument() = MongoDbChangeset(changesetId=this.id, author = this.author, status = Status.EXECUTE.name)
+fun ChangeSet.toMongoDbDocument() = MongoDbChangeset(
+    changesetId = this.id,
+    author = this.author,
+    status = Status.EXECUTE.name
+)

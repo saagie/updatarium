@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019 Pierre Leresteux.
+ * Copyright 2019-2020 Pierre Leresteux.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,12 +73,6 @@ config {
             name = "magicalupdater"
             githubRepo = "PierreLeresteux/magicalupdater"
             publish = true
-        }
-    }
-    quality {
-        detekt {
-            enabled = true
-            configFile = File("detekt-baseline.xml")
         }
     }
 }

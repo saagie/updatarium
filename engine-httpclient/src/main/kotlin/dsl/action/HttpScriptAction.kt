@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019 Pierre Leresteux.
+ * Copyright 2019-2020 Pierre Leresteux.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import com.github.kittinunf.fuel.core.FuelManager
 class HttpScriptAction(val f: (httpScriptAction: HttpScriptAction) -> Unit) : Action() {
 
     val restClient = FuelManager.instance
-
 
     override fun execute() {
         f(this)
