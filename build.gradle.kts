@@ -23,14 +23,13 @@ val bintrayApiKey: String by project
 
 plugins {
     kotlin("jvm") version "1.3.61"
-    id("org.kordamp.gradle.project") version "0.31.1"
-    id("org.kordamp.gradle.bintray") version "0.31.1"
+    id("org.kordamp.gradle.kotlin-project") version "0.31.2"
+    id("org.kordamp.gradle.bintray") version "0.31.2"
+    id("org.kordamp.gradle.detekt") version "0.31.2"
 }
 config {
 
     release = true
-
-    source { enabled = false }
 
     info {
         name = "Magical Updater"
@@ -73,6 +72,13 @@ config {
             userOrg = "pierresaagie"
             name = "magicalupdater"
             githubRepo = "PierreLeresteux/magicalupdater"
+            publish = true
+        }
+    }
+    quality {
+        detekt {
+            enabled = true
+            configFile = File("detekt-baseline.xml")
         }
     }
 }

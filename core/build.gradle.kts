@@ -23,7 +23,6 @@ plugins {
 config {
     bintray { enabled = true }
     publishing { enabled = true }
-//    source { enabled = true }
 }
 
 dependencies {
