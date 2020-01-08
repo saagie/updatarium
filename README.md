@@ -1,4 +1,4 @@
-Magical Updater
+Updatarium
 =
 
 Still in progress

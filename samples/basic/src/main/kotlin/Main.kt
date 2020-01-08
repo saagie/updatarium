@@ -1,3 +1,5 @@
+import io.saagie.updatarium.Updatarium
+
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,10 +18,10 @@
  * limitations under the License.
  */
 fun main() {
-    MagicalUpdater().executeChangelog("""
-        import dsl.action.BasicAction
-        import dsl.changeSet
-        import dsl.changelog
+    Updatarium().executeChangelog("""
+        import io.saagie.updatarium.dsl.action.BasicAction
+        import io.saagie.updatarium.dsl.changeSet
+        import io.saagie.updatarium.dsl.changelog
 
         changelog {
             changesets {

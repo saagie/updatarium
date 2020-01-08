@@ -29,22 +29,22 @@ plugins {
 }
 config {
 
-    release = true
+    release = false
 
     info {
-        name = "Magical Updater"
+        name = "Updatarium"
         description = "Automated update script management"
         inceptionYear = "2019"
         vendor = "Saagie"
 
         scm {
-            url = "https://github.com/PierreLeresteux/magicalupdater"
+            url = "https://github.com/PierreLeresteux/updatarium"
         }
 
         links {
             website = "https://www.saagie.com"
-            scm = "https://github.com/PierreLeresteux/magicalupdater"
-            issueTracker = "https://github.com/PierreLeresteux/magicalupdater/issues"
+            scm = "https://github.com/PierreLeresteux/updatarium"
+            issueTracker = "https://github.com/PierreLeresteux/updatarium/issues"
         }
 
         licensing {
@@ -70,8 +70,8 @@ config {
                 password = bintrayApiKey
             }
             userOrg = "pierresaagie"
-            name = "magicalupdater"
-            githubRepo = "PierreLeresteux/magicalupdater"
+            name = "updatarium"
+            githubRepo = "PierreLeresteux/updatarium"
             publish = true
         }
     }
@@ -100,6 +100,7 @@ val autoImportDependencies = mapOf(
 
 subprojects {
     apply(plugin = "java")
+    apply(plugin = "org.kordamp.gradle.kotlin-project")
 
     group = "io.saagie"
     version = "0.0.1"
