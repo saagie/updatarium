@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import dsl.action.KubernetesScriptAction
-import dsl.changeSet
-import dsl.changelog
+import io.saagie.updatarium.dsl.action.KubernetesScriptAction
+import io.saagie.updatarium.dsl.changeSet
+import io.saagie.updatarium.dsl.changelog
 
 changelog {
     changesets {

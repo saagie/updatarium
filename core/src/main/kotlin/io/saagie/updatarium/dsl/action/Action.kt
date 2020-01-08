@@ -15,25 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import io.saagie.updatarium.dsl.action.BashScriptAction
-import io.saagie.updatarium.dsl.changeSet
-import io.saagie.updatarium.dsl.changelog
+package io.saagie.updatarium.dsl.action
 
-changelog {
-    changesets {
-        +changeSet {
-            id = "ChangeSet-bash-1"
-            author = "Bash"
-            actions {
-                +BashScriptAction(
-                    script = """
-curl -I https://httpbin.org/get | grep -i Server &&\
-pwd &&\
-export | grep " PWD"
-""".trimIndent(),
-                    workingDir = "/tmp"
-                )
-            }
-        }
-    }
+import mu.KLoggable
+
+/**
+ * This class represent an Action. All custom actions should use the abstract class.
+ *
+ * Only one function is available : `execute`, this function is called by the core io.saagie.updatarium.engine for a not already execute changeset.
+ */
+abstract class Action : KLoggable {
+    override val logger = logger()
+
+    /**
+     * The execute function.
+     *
+     * It will return an exception is something wrong happen.
+     */
+    abstract fun execute()
 }

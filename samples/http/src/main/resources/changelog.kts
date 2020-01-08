@@ -17,9 +17,9 @@
  */
 import com.github.kittinunf.result.Result.Failure
 import com.github.kittinunf.result.Result.Success
-import dsl.action.HttpScriptAction
-import dsl.changeSet
-import dsl.changelog
+import io.saagie.updatarium.dsl.action.HttpScriptAction
+import io.saagie.updatarium.dsl.changeSet
+import io.saagie.updatarium.dsl.changelog
 import me.lazmaid.kraph.Kraph
 
 changelog {
