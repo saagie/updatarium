@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import dsl.action.MongoScriptAction
-import dsl.changeSet
-import dsl.changelog
+import io.saagie.updatarium.dsl.action.MongoScriptAction
+import io.saagie.updatarium.dsl.changeSet
+import io.saagie.updatarium.dsl.changelog
 import org.litote.kmongo.*
 
 changelog {

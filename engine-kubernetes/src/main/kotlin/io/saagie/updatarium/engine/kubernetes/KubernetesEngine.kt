@@ -15,25 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import io.saagie.updatarium.dsl.action.BashScriptAction
-import io.saagie.updatarium.dsl.changeSet
-import io.saagie.updatarium.dsl.changelog
+package io.saagie.updatarium.engine.kubernetes
 
-changelog {
-    changesets {
-        +changeSet {
-            id = "ChangeSet-bash-1"
-            author = "Bash"
-            actions {
-                +BashScriptAction(
-                    script = """
-curl -I https://httpbin.org/get | grep -i Server &&\
-pwd &&\
-export | grep " PWD"
-""".trimIndent(),
-                    workingDir = "/tmp"
-                )
-            }
-        }
+import io.fabric8.kubernetes.client.DefaultKubernetesClient
+
+class KubernetesEngine {
+    companion object {
+        fun getClient() = DefaultKubernetesClient()
+        fun getClient(namespace: String) = getClient().inNamespace(namespace)
     }
 }

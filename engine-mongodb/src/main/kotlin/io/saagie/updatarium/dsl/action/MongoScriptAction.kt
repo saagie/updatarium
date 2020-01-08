@@ -15,25 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import io.saagie.updatarium.dsl.action.BashScriptAction
-import io.saagie.updatarium.dsl.changeSet
-import io.saagie.updatarium.dsl.changelog
+package io.saagie.updatarium.dsl.action
 
-changelog {
-    changesets {
-        +changeSet {
-            id = "ChangeSet-bash-1"
-            author = "Bash"
-            actions {
-                +BashScriptAction(
-                    script = """
-curl -I https://httpbin.org/get | grep -i Server &&\
-pwd &&\
-export | grep " PWD"
-""".trimIndent(),
-                    workingDir = "/tmp"
-                )
-            }
-        }
+import com.autodsl.annotation.AutoDsl
+import io.saagie.updatarium.engine.mongo.MongoEngine
+
+@AutoDsl
+class MongoScriptAction(val f: (mongoScriptAction: MongoScriptAction) -> Unit) : Action() {
+
+    val mongoEngine = MongoEngine()
+    val mongoClient = mongoEngine.mongoClient
+
+    override fun execute() {
+        f(this)
     }
+
+    fun onCollection(databaseName: String, collectionName: String) =
+        mongoClient.getDatabase(databaseName).getCollection(collectionName)
 }

@@ -15,24 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import io.saagie.updatarium.dsl.action.BashScriptAction
-import io.saagie.updatarium.dsl.changeSet
-import io.saagie.updatarium.dsl.changelog
+package io.saagie.updatarium.engine.bash
 
-changelog {
-    changesets {
-        +changeSet {
-            id = "ChangeSet-bash-1"
-            author = "Bash"
-            actions {
-                +BashScriptAction(
-                    script = """
-curl -I https://httpbin.org/get | grep -i Server &&\
-pwd &&\
-export | grep " PWD"
-""".trimIndent(),
-                    workingDir = "/tmp"
-                )
+import io.saagie.updatarium.dsl.action.BashScriptAction
+import java.io.File
+
+class BashEngine {
+    fun runCommand(
+        bashScriptAction: BashScriptAction
+    ) {
+        with(bashScriptAction) {
+            val proc = ProcessBuilder(listOf("bash","-c",script))
+                .directory(File(workingDir))
+                .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                .redirectError(ProcessBuilder.Redirect.PIPE)
+                .start().apply { waitFor(timeoutAmount, timeoutUnit) }
+            val out = proc.inputStream.bufferedReader().readText()
+            when {
+                proc.exitValue() == 0 -> logger.info { out.dropLast(1) }
+                else -> throw Exception("Command '$script' execution error $out")
             }
         }
     }

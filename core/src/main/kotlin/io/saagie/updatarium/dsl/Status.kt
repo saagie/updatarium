@@ -15,25 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import io.saagie.updatarium.dsl.action.BashScriptAction
-import io.saagie.updatarium.dsl.changeSet
-import io.saagie.updatarium.dsl.changelog
+package io.saagie.updatarium.dsl
 
-changelog {
-    changesets {
-        +changeSet {
-            id = "ChangeSet-bash-1"
-            author = "Bash"
-            actions {
-                +BashScriptAction(
-                    script = """
-curl -I https://httpbin.org/get | grep -i Server &&\
-pwd &&\
-export | grep " PWD"
-""".trimIndent(),
-                    workingDir = "/tmp"
-                )
-            }
-        }
-    }
+/**
+ * Represent the status of the changeset.
+ */
+enum class Status {
+    // execution in progress
+    EXECUTE,
+    // Execution is done with a correct status
+    OK,
+    // Execution is done but it has failed
+    KO
 }
