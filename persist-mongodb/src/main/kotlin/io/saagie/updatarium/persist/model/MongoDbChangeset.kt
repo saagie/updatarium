@@ -15,25 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import io.saagie.updatarium.dsl.action.BashScriptAction
-import io.saagie.updatarium.dsl.changeSet
-import io.saagie.updatarium.dsl.changelog
+package io.saagie.updatarium.persist.model
 
-changelog {
-    changesets {
-        +changeSet {
-            id = "ChangeSet-bash-1"
-            author = "Bash"
-            actions {
-                +BashScriptAction(
-                    script = """
-curl -I https://httpbin.org/get | grep -i Server &&\
-pwd &&\
-export | grep " PWD"
-""".trimIndent(),
-                    workingDir = "/tmp"
-                )
-            }
-        }
-    }
-}
+import io.saagie.updatarium.dsl.ChangeSet
+import io.saagie.updatarium.dsl.Status
+
+data class MongoDbChangeset(val changesetId: String, val author: String, val status: String)
+
+fun ChangeSet.toMongoDbDocument() = MongoDbChangeset(
+    changesetId = this.id,
+    author = this.author,
+    status = Status.EXECUTE.name
+)

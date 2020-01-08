@@ -1,3 +1,5 @@
+import io.saagie.updatarium.Updatarium
+
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -18,6 +20,6 @@
 class Main
 
 fun main() {
-    MagicalUpdater().executeChangelog(Main::class.java.getResource("changelog.kts").readText())
+    Updatarium().executeChangelog(Main::class.java.getResource("changelog.kts").readText())
 
 }

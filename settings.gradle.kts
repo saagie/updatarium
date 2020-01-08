@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-rootProject.name = "magical_updater"
+rootProject.name = "updatarium"
 include(":core")
 include(":persist-mongodb")
 include(":engine-bash")
