@@ -21,7 +21,7 @@ import com.autodsl.annotation.AutoDsl
 import io.saagie.updatarium.engine.mongo.MongoEngine
 
 @AutoDsl
-class MongoScriptAction(val f: (mongoScriptAction: MongoScriptAction) -> Unit) : Action() {
+class MongoScriptAction(val f: MongoScriptAction.() -> Unit) : Action() {
 
     val mongoEngine = MongoEngine()
     val mongoClient = mongoEngine.mongoClient
