@@ -17,7 +17,14 @@ import io.saagie.updatarium.Updatarium
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+fun setIdeaIoUseFallback() {
+    val properties = System.getProperties()
+    properties.setProperty("idea.io.use.nio2", java.lang.Boolean.TRUE.toString())
+    properties.setProperty("idea.io.use.fallback", java.lang.Boolean.TRUE.toString())
+}
+
 fun main() {
+    setIdeaIoUseFallback() //Hack to fix an issue with Windows and JSR223
     Updatarium().executeChangelog("""
         import io.saagie.updatarium.dsl.action.BasicAction
         import io.saagie.updatarium.dsl.changeSet

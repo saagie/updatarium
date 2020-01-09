@@ -18,7 +18,14 @@
 import io.saagie.updatarium.Updatarium
 import io.saagie.updatarium.persist.MongodbPersistEngine
 
+fun setIdeaIoUseFallback() {
+    val properties = System.getProperties()
+    properties.setProperty("idea.io.use.nio2", java.lang.Boolean.TRUE.toString())
+    properties.setProperty("idea.io.use.fallback", java.lang.Boolean.TRUE.toString())
+}
+
 fun main() {
+    setIdeaIoUseFallback() //Hack to fix an issue with Windows and JSR223
     Updatarium(MongodbPersistEngine()).executeChangelog("""
         import io.saagie.updatarium.dsl.action.BasicAction
         import io.saagie.updatarium.dsl.changeSet
