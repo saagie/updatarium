@@ -23,7 +23,7 @@ import io.saagie.updatarium.engine.kubernetes.KubernetesEngine
 @AutoDsl
 class KubernetesScriptAction(
     val namespace: String? = null,
-    val f: (kubernetesScriptAction: KubernetesScriptAction) -> Unit
+    val f: KubernetesScriptAction.() -> Unit
 ) : Action() {
 
     val client = when {
