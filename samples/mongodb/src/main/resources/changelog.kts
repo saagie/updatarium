@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import io.saagie.updatarium.dsl.action.MongoScriptAction
 import io.saagie.updatarium.dsl.changeSet
 import io.saagie.updatarium.dsl.changelog
@@ -26,20 +27,19 @@ changelog {
             id = "ChangeSet-Mongodb-1"
             author = "MongoDb"
             actions {
-                +MongoScriptAction {mongoScriptAction ->
-                    mongoScriptAction.logger.info { "MongoDb" }
+                +MongoScriptAction {
+                    logger.info { "MongoDb" }
                     val database = "sample_mongodb"
                     val collection = "sample"
-
-                    mongoScriptAction.mongoClient.dropDatabase(database)
-                    mongoScriptAction.logger.info { "DB $database drop OK" }
-                    with(mongoScriptAction.onCollection(database, collection)) {
-                        mongoScriptAction.logger.info { "Collection OK" }
+                    mongoClient.dropDatabase(database)
+                    logger.info { "DB $database drop OK" }
+                    with(onCollection(database, collection)) {
+                        logger.info { "Collection OK" }
                         this.insertOne("{name:'Yoda',age:896}")
                         this.insertOne("{name:'Luke Skywalker',age:19}")
-                        mongoScriptAction.logger.info { "2 docs inserted in collection $database.$collection" }
+                        logger.info { "2 docs inserted in collection $database.$collection" }
                         this.find()
-                            .forEach {mongoScriptAction.logger.info { " name : ${it.get("name")} - age : ${it.get("age")}" }}
+                            .forEach { logger.info { " name : ${it["name"]} - age : ${it["age"]}" } }
 
                     }
                 }

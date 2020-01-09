@@ -19,7 +19,15 @@ import io.saagie.updatarium.Updatarium
  */
 class Main
 
+fun setIdeaIoUseFallback() {
+    val properties = System.getProperties()
+    properties.setProperty("idea.io.use.nio2", java.lang.Boolean.TRUE.toString())
+    properties.setProperty("idea.io.use.fallback", java.lang.Boolean.TRUE.toString())
+}
+
 fun main() {
+
+    setIdeaIoUseFallback() //Hack to fix an issue with Windows and JSR223
     Updatarium().executeChangelog(Main::class.java.getResource("changelog.kts").readText())
 
 }

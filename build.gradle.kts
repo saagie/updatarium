@@ -32,11 +32,11 @@ config {
     release = false
 
     info {
-        group = "io.saagie"
         name = "Updatarium"
         description = "Automated update script management"
         inceptionYear = "2019"
         vendor = "Saagie"
+        group = "io.saagie.updatarium"
 
         scm {
             url = "https://github.com/PierreLeresteux/updatarium"
@@ -103,7 +103,7 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "org.kordamp.gradle.kotlin-project")
 
-    group = "io.saagie"
+    group = "io.saagie.updatarium"
     version = "0.0.1"
 
     dependencies {
