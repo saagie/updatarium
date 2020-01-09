@@ -25,10 +25,10 @@ changelog {
             id = "ChangeSet-Kubernetes-1"
             author = "k8s"
             actions {
-                +KubernetesScriptAction { kubernetesScriptAction ->
-                    kubernetesScriptAction.logger.warn { "Need to be connected to a cluster" }
-                    kubernetesScriptAction.client.version.data
-                        .forEach { key, value -> kubernetesScriptAction.logger.info { "$key = $value" } }
+                +KubernetesScriptAction {
+                    logger.warn { "Need to be connected to a cluster" }
+                    client.version.data
+                        .forEach { (key, value) -> logger.info { "$key = $value" } }
                 }
             }
         }
