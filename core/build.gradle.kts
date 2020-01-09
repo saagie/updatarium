@@ -33,7 +33,7 @@ dependencies {
     implementation(kotlin("scripting-compiler-embeddable"))
     implementation(kotlin("script-util"))
     implementation("net.java.dev.jna:jna:5.5.0")
-    implementation("de.swirtz:ktsRunner:0.0.7") { exclude(group = "ch.qos.logback", module = "logback-classic") }
+    api("de.swirtz:ktsRunner:0.0.7") { exclude(group = "ch.qos.logback", module = "logback-classic") }
 
     // AutoDsl Annotation
     api("com.juanchosaravia.autodsl:annotation:0.0.9")
@@ -42,6 +42,7 @@ dependencies {
     // Tests
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
     testImplementation("com.github.codemonkeyfactory.test.logging:logging-test:1.0.0")
+    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.20")
 }
 
 tasks.test {
