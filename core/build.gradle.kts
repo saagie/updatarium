@@ -42,6 +42,7 @@ dependencies {
     // Tests
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
     testImplementation("com.github.codemonkeyfactory.test.logging:logging-test:1.0.0")
+    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.20")
 }
 
 tasks.test {
