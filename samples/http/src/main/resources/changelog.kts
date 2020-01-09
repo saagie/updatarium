@@ -29,10 +29,10 @@ changelog {
             author = "Postman"
             actions {
                 +HttpScriptAction {
-                    val (_, _, result) = it.restClient
+                    val (_, _, result) = restClient
                         .get("https://httpbin.org/get")
                         .responseString()
-                    it.logger.info { result.get() }
+                    logger.info { result.get() }
                 }
             }
         }
@@ -53,7 +53,7 @@ changelog {
                         }
                     }
 
-                    val (_, _, result) = it.restClient
+                    val (_, _, result) = restClient
                         .post("https://swapi-graphql.netlify.com/.netlify/functions/index")
                         .header("content-type" to "application/json", "Accept" to "application/json")
                         .body(query.toRequestString())
