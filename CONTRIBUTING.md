@@ -6,7 +6,7 @@ Please note we have a code of conduct, please follow it in all your interactions
 
 ## Pull Request Process
 
-1. Ensure any code or file you have created during your dev process are really needed before push it.
+1. Ensure any code or file you have created during your dev process are really needed before pushing it.
 2. Update the README.md with details of changes if needed.
 3. When your PR is submitted, owners and maintainers will review the PR and comment or accept it.
 
@@ -31,11 +31,11 @@ We use `com.autodsl.annotation.AutoDsl` annotation to transform our class in a s
 abstract fun execute()
 ```
 
-in your `execute` function you can implement your own logical. You can see existing `engine-XXX` to see some examples. 
+in your `execute` function you can implement your own logic. You can see existing `engine-XXX` to see some examples. 
 
 ## Persist Engine creation
 
-The persist engine creation is like action creation:quite simple too.  
+The persist engine creation is like action creation: quite simple too.  
 
 You need to create a new Kotlin project and just add the 
 `implementation(project("io.saagie.updatarium:core:{latest-version}"))`
@@ -54,13 +54,13 @@ Now you can create your own implementation of `PersistEngine`.
 
 Let's see in details each function : 
 
-- `checkConnection()` is call to check before start the changelog execution to assure the persistence is ready (check a database connection for exemple). This function return nothing, you have to throw an exception is the persistence is not ready, it will stop the process.
+- `checkConnection()` is called before starting the changelog execution to check that the persistence is ready (checking a database connection for example). This function returns nothing, you have to throw an exception is the persistence is not ready and it will stop the process.
 
-- `notAlreadyExecuted(changeSetId: String)` is call at the changeset execution beginning. You have to check in your persistence engine (database ? file ? memory ? ) if you have previously execute this changesetId. Return true to allow this changeset execution, false otherwise.
+- `notAlreadyExecuted(changeSetId: String)` is called at the changeset execution beginning. You have to check in your persistence engine (database ? file ? memory ? ) if you have previously executed this changesetId. Return true to allow this changeset execution, false otherwise.
 
-- `lock(changeSet: ChangeSet)` is call just before execute the changeset actions. You have to record the changeset execution in your persistence engine (with a `Status.EXECUTE` status).
+- `lock(changeSet: ChangeSet)` is called just before execute the changeset actions. You have to record the changeset execution in your persistence engine (with a `Status.EXECUTE` status).
 
-- `unlock(changeSet: ChangeSet,status: Status)` is call a the end of the actions execution for a changeset. You have the correct status (`Status.OK` or `Status.KO`), and you can update this new status to the changeset record.
+- `unlock(changeSet: ChangeSet,status: Status)` is called a the end of the actions execution for a changeset. You have the correct status (`Status.OK` or `Status.KO`), and you can update this new status to the changeset record.
 
 ## Code of Conduct
 
