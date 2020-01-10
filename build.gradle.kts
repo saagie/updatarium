@@ -64,6 +64,12 @@ config {
                 email = "pierre@saagie.com"
                 roles = listOf("author", "developer")
             }
+            person {
+                id = "richard"
+                name = "Richard Capraro"
+                email = "richard.capraro@saagie.com"
+                roles = listOf("developer")
+            }
         }
 
         bintray {
