@@ -32,7 +32,6 @@ config {
     release = false
 
     info {
-        group = "io.saagie"
         name = "Updatarium"
         description = "Automated update script management"
         inceptionYear = "2019"
