@@ -16,23 +16,27 @@
  * limitations under the License.
  */
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
+import java.util.*
 
 val bintrayUsername: String by project
 val bintrayApiKey: String by project
 
 plugins {
     kotlin("jvm") version "1.3.61"
+    id("net.thauvin.erik.gradle.semver").version("1.0.4")
     id("org.kordamp.gradle.kotlin-project") version "0.31.2"
     id("org.kordamp.gradle.bintray") version "0.31.2"
     id("org.kordamp.gradle.detekt") version "0.31.2"
+}
+
+val props = Properties().apply {
+    load(file("version.properties").inputStream())
 }
 config {
 
     release = false
 
     info {
-        group = "io.saagie"
         name = "Updatarium"
         description = "Automated update script management"
         inceptionYear = "2019"
@@ -92,12 +96,13 @@ allprojects {
         jcenter()
         maven(url = "https://dl.bintray.com/s1m0nw1/KtsRunner")
     }
+    group = "io.saagie.updatarium"
+    version = props.get("version.semver")!!
+
 
     tasks.withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "1.8"
     }
-
-
 }
 val autoImportDependencies = mapOf(
     "io.github.microutils:kotlin-logging" to "1.7.8",
@@ -112,9 +117,6 @@ val sampleAutoImportDependencies = mapOf(
 subprojects {
     apply(plugin = "java")
     apply(plugin = "org.kordamp.gradle.kotlin-project")
-
-    group = "io.saagie.updatarium"
-    version = "0.0.1"
 
     dependencies {
         autoImportDependencies.forEach {
