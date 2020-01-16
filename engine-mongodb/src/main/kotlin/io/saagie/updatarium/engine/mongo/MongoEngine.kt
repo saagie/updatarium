@@ -21,17 +21,15 @@ import com.mongodb.ConnectionString
 import com.mongodb.client.MongoIterable
 import org.litote.kmongo.KMongo
 
-const val MONGODB_CONNECTIONSTRING = "MONGODB_CONNECTIONSTRING"
-
-class MongoEngine {
+class MongoEngine(val connectionStringEnvVar: String) {
 
     val mongoClient by lazy { KMongo.createClient(ConnectionString(getConnectionString())) }
 
     private fun getConnectionString(): String {
-        if (System.getenv().containsKey(MONGODB_CONNECTIONSTRING)) {
-            return System.getenv(MONGODB_CONNECTIONSTRING)
+        if (System.getenv().containsKey(connectionStringEnvVar)) {
+            return System.getenv(connectionStringEnvVar)
         }
-        throw IllegalArgumentException("$MONGODB_CONNECTIONSTRING is missing (environment variable)")
+        throw IllegalArgumentException("$connectionStringEnvVar is missing (environment variable)")
     }
 
     fun listDatabase(): MongoIterable<String> = mongoClient.listDatabaseNames()

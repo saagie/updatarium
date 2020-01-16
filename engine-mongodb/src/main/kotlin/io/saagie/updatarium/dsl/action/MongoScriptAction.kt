@@ -20,10 +20,15 @@ package io.saagie.updatarium.dsl.action
 import com.autodsl.annotation.AutoDsl
 import io.saagie.updatarium.engine.mongo.MongoEngine
 
-@AutoDsl
-class MongoScriptAction(val f: MongoScriptAction.() -> Unit) : Action() {
+const val MONGODB_CONNECTIONSTRING = "MONGODB_CONNECTIONSTRING"
 
-    val mongoEngine = MongoEngine()
+@AutoDsl
+class MongoScriptAction(
+    connectionStringEnvVar: String = MONGODB_CONNECTIONSTRING,
+    val f: MongoScriptAction.() -> Unit
+) : Action() {
+
+    val mongoEngine = MongoEngine(connectionStringEnvVar)
     val mongoClient = mongoEngine.mongoClient
 
     override fun execute() {
