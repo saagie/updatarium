@@ -15,20 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.dsl.action
+import io.saagie.updatarium.dsl.action.BasicAction
+import io.saagie.updatarium.dsl.changeSet
+import io.saagie.updatarium.dsl.changelog
 
-import com.autodsl.annotation.AutoDsl
+changelog {
+    changesets {
+        +changeSet {
+            id = "ChangeSet-bash-2"
+            author = "Bash"
+            actions {
+                +BasicAction {
+                    (6..10).forEach {
+                        logger.info { "Hello $it!" }
+                    }
 
-
-/**
- * Here is a simple implementation for Action.
- *
- * It will simply execute the function in parameter.
- */
-@AutoDsl
-class BasicAction(val f: BasicAction.() -> Unit) : Action() {
-
-    override fun execute() {
-        f(this)
+                }
+            }
+        }
     }
 }
