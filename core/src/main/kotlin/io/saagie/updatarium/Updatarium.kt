@@ -1,4 +1,6 @@
-package io.saagie.updatarium/*
+package io.saagie.updatarium
+
+/*
  * SPDX-License-Identifier: Apache-2.0
  *
  * Copyright 2019-2020 Pierre Leresteux.
@@ -47,5 +49,20 @@ class Updatarium(val engine: PersistEngine = DefaultPersistEngine()) {
         with(ktsLoader.load<Changelog>(script)) {
             this.execute(engine)
         }
+    }
+
+    fun executeChangelogs(path: Path, pattern: String) {
+        if (Files.isDirectory(path)) {
+            path
+                .toFile()
+                .walk()
+                .filter { it.name.matches(Regex(pattern)) }
+                .sorted()
+                .forEach {
+                    this.executeChangelog(it.toPath())
+                }
+
+        }
+
     }
 }
