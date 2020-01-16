@@ -15,20 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.dsl.action
+plugins {
+    kotlin("jvm")
+}
 
-import com.autodsl.annotation.AutoDsl
+dependencies {
+    implementation(kotlin("stdlib-jdk8"))
+    implementation(project(":core"))
 
-
-/**
- * Here is a simple implementation for Action.
- *
- * It will simply execute the function in parameter.
- */
-@AutoDsl
-class BasicAction(val f: BasicAction.() -> Unit) : Action() {
-
-    override fun execute() {
-        f(this)
-    }
+    implementation(kotlin("scripting-compiler-embeddable"))
+    implementation(kotlin("script-util"))
 }

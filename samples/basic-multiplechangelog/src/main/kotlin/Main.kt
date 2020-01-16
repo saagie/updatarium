@@ -1,3 +1,6 @@
+import io.saagie.updatarium.Updatarium
+import java.nio.file.Paths
+
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,20 +18,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.dsl.action
+class Main
 
-import com.autodsl.annotation.AutoDsl
-
-
-/**
- * Here is a simple implementation for Action.
- *
- * It will simply execute the function in parameter.
- */
-@AutoDsl
-class BasicAction(val f: BasicAction.() -> Unit) : Action() {
-
-    override fun execute() {
-        f(this)
-    }
+fun main() {
+    val resourcesDirectory = Paths.get(Main::class.java.getResource("changelog1.kts").path).parent
+    Updatarium().executeChangelogs(resourcesDirectory, "changelog(.*).kts")
 }
