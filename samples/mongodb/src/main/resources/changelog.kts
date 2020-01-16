@@ -43,6 +43,23 @@ changelog {
 
                     }
                 }
+                +MongoScriptAction(connectionStringEnvVar="OTHERCONNECTIONSTRING") {
+                    logger.info { "MongoDb" }
+                    val database = "sample_mongodb2"
+                    val collection = "sample"
+
+                    mongoClient.dropDatabase(database)
+                    logger.info { "DB $database drop OK" }
+                    with(onCollection(database, collection)) {
+                        logger.info { "Collection OK" }
+                        this.insertOne("{name:'Yoda',age:896}")
+                        this.insertOne("{name:'Luke Skywalker',age:19}")
+                        logger.info { "2 docs inserted in collection $database.$collection" }
+                        this.find()
+                            .forEach { logger.info { " name : ${it["name"]} - age : ${it["age"]}" } }
+
+                    }
+                }
             }
         }
     }
