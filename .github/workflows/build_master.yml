@@ -1,0 +1,44 @@
+name: Build Master and Release
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    - name: Increment version number
+      run: ./gradlew incrementMinor
+    - name: Build with Gradle
+      run: ./gradlew build test
+    - name: Quality analysis
+      run: ./gradlew aggregateDetekt
+    - name: Publish on bintray
+      run: ./gradlew bintrayUpload -PbintrayUsername=${{ secrets.BINTRAY_USERNAME }} -PbintrayApiKey=${{ secrets.BINTRAY_APIKEY }}
+    - name: extract real version
+      id: extract_version
+      run: echo "::set-output name=v::$(cat version.properties | grep 'semver' | sed -e 's/^version.semver=//')"
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.extract_version.outputs.v }}
+        release_name: v${{ steps.extract_version.outputs.v }}
+        draft: false
+        prerelease: false
+    - name: Delete Branch
+      uses: jessfraz/branch-cleanup-action@master
+      env:
+        NO_BRANCH_DELETED_EXIT_CODE: 0
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

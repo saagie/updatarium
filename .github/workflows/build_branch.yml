@@ -1,6 +1,10 @@
 name: Build All
 
-on: [push]
+on:
+  push:
+    branches:
+      - '*'
+      - '!master'
 
 jobs:
   build:
@@ -14,6 +18,6 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      run: ./gradlew build test -PbintrayUsername=notset -PbintrayApiKey=notset
+      run: ./gradlew build test
     - name: Quality analysis
-      run: ./gradlew aggregateDetekt -PbintrayUsername=notset -PbintrayApiKey=notset
+      run: ./gradlew aggregateDetekt
