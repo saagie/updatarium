@@ -30,9 +30,9 @@ fun main() {
                     id = "ChangeSet-1"
                     author = "Hello World"
                     actions {
-                        +BasicAction {basicAction ->
+                        +BasicAction {
                             (1..5).forEach {
-                                basicAction.logger.info {"Hello ${"$"}it!"}
+                                logger.info {"Hello ${"$"}it!"}
                             }
 
                         }

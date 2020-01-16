@@ -25,8 +25,8 @@ changelog {
             id = "ChangeSet-1"
             author = "HelloWorld"
             actions {
-                +BasicAction { basicAction ->
-                    basicAction.logger.info { "Hello world" }
+                +BasicAction {
+                    logger.info { "Hello world" }
                 }
             }
         }
