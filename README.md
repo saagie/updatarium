@@ -1,10 +1,12 @@
 ![logo](./doc/updatarium_full.png)
 # Updatarium
 
+[![Releases](https://img.shields.io/github/v/release/pierreleresteux/updatarium?color=blue)][release]
 [![Issues](https://img.shields.io/github/issues-raw/PierreLeresteux/updatarium?color=blue)][issues]
 [![License](https://img.shields.io/github/license/PierreLeresteux/updatarium?color=lightgray)][license]
 [![Contributors](https://img.shields.io/github/contributors/PierreLeresteux/updatarium?color=lightgray)][contributors]
 
+[release]: https://github.com/PierreLeresteux/updatarium/releases
 [license]: https://github.com/PierreLeresteux/updatarium/blob/master/LICENSE
 [contributors]: https://github.com/PierreLeresteux/updatarium/graphs/contributors
 [issues]: https://github.com/PierreLeresteux/updatarium/issues
