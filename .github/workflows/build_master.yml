@@ -27,6 +27,16 @@ jobs:
     - name: extract real version
       id: extract_version
       run: echo "::set-output name=v::$(cat version.properties | grep 'semver' | sed -e 's/^version.semver=//')"
+    - name: Commit files
+      run: |
+       git config --local user.email "github-action@saagie.com"
+       git config --local user.name "GitHub Action Bot"
+       git add version.properties
+       git commit -m "[BOT] Bump new version"
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+       github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
