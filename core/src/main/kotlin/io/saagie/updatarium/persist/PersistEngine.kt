@@ -19,7 +19,10 @@ package io.saagie.updatarium.persist
 
 import io.saagie.updatarium.dsl.ChangeSet
 import io.saagie.updatarium.dsl.Status
+import io.saagie.updatarium.log.InMemoryEvent
 import mu.KLoggable
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.core.LogEvent
 
 /**
  * Engine to io.saagie.updatarium.persist all changeset executions
@@ -50,5 +53,8 @@ abstract class PersistEngine : KLoggable {
     /**
      * This function is called after the changeset execution, so you can now update the changeset status (in parameter).
      */
-    abstract fun unlock(changeSet: ChangeSet,status: Status)
+    abstract fun unlock(
+        changeSet: ChangeSet,
+        status: Status, logs: List<InMemoryEvent<Level, LogEvent>>
+    )
 }

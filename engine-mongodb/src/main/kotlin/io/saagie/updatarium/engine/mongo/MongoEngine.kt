@@ -21,7 +21,7 @@ import com.mongodb.ConnectionString
 import com.mongodb.client.MongoIterable
 import org.litote.kmongo.KMongo
 
-class MongoEngine(val connectionStringEnvVar: String) {
+class MongoEngine(private val connectionStringEnvVar: String) {
 
     val mongoClient by lazy { KMongo.createClient(ConnectionString(getConnectionString())) }
 

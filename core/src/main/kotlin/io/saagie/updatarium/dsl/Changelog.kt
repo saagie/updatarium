@@ -18,6 +18,7 @@
 package io.saagie.updatarium.dsl
 
 import com.autodsl.annotation.AutoDsl
+import io.saagie.updatarium.log.InMemoryAppenderManager
 import io.saagie.updatarium.persist.PersistEngine
 
 @AutoDsl
@@ -28,7 +29,9 @@ data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) {
      */
     fun execute(persistEngine: PersistEngine, tags: List<String> = emptyList()) {
         persistEngine.checkConnection()
+        InMemoryAppenderManager.setup()
         matchedChangesets(tags).forEach { it.execute(persistEngine) }
+        InMemoryAppenderManager.tearDown()
     }
 
     /**
