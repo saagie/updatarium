@@ -1,4 +1,6 @@
-package io.saagie.updatarium/*
+package io.saagie.updatarium
+
+/*
  * SPDX-License-Identifier: Apache-2.0
  *
  * Copyright 2019-2020 Pierre Leresteux.
@@ -108,7 +110,9 @@ class UpdatariumITest {
     @Test
     @LoggingTest
     @LoggingTestSpyManager(LoggingSpyManagerLog4j2Impl::class)
-    fun `should correctly execute a changelog with multiple changesets&actions`(loggingSpy: LoggingSpy<Level, LogEvent>) {
+    fun `should correctly execute a changelog with multiple changesets&actions`(
+        loggingSpy: LoggingSpy<Level, LogEvent>
+    ) {
 
         loggingSpy.enable()
         Updatarium()
@@ -159,8 +163,12 @@ class UpdatariumITest {
 
         // No tags supplied
         loggingSpy.enable()
-        Updatarium().executeChangelog(Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog.kts").path))
-        Updatarium().executeChangelog(Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path))
+        Updatarium().executeChangelog(
+            Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog.kts").path)
+        )
+        Updatarium().executeChangelog(
+            Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path)
+        )
         loggingSpy.disable()
         val logs = loggingSpy.getLogs().filter { it.loggerName.endsWith("BasicAction") }
         Assertions.assertEquals(2, logs.size)
@@ -173,10 +181,18 @@ class UpdatariumITest {
         loggingSpy.clear()
         loggingSpy.enable()
         Updatarium()
-            .executeChangelog(Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog.kts").path),"hello")
-        Updatarium().executeChangelog(Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path),"hello")
+            .executeChangelog(
+                Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog.kts").path),
+                "hello"
+            )
+        Updatarium()
+            .executeChangelog(
+                Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path),
+                "hello"
+            )
         loggingSpy.disable()
-        val logs2 = loggingSpy.getLogs().filter { it.loggerName.endsWith("BasicAction") }
+        val logs2 = loggingSpy
+            .getLogs().filter { it.loggerName.endsWith("BasicAction") }
         Assertions.assertEquals(1, logs2.size)
         Assertions.assertEquals(Level.INFO, logs2.first().level)
         Assertions.assertEquals("Hello world 2", logs2.first().message)

@@ -104,7 +104,8 @@ class ChangelogTest {
 
         @Test
         fun should_returns_all_changesets_when_no_tag_supplied_and_tags_set_in_changelog() {
-            val matchedChangesets = changelogWithtags(Pair(listOf("before"), listOf("after"))).matchedChangesets()
+            val matchedChangesets = changelogWithtags(Pair(listOf("before"), listOf("after")))
+                .matchedChangesets()
 
             assertThat(matchedChangesets).hasSize(2)
             assertThat(matchedChangesets.map { it.id }).containsExactly("changeset1", "changeset2")
@@ -112,21 +113,24 @@ class ChangelogTest {
 
         @Test
         fun should_returns_no_changeset_when_tag_are_supplied_and_no_tag_in_changelog() {
-            val matchedChangesets = changelogWithtags(Pair(null, null)).matchedChangesets(listOf("after"))
+            val matchedChangesets = changelogWithtags(Pair(null, null))
+                .matchedChangesets(listOf("after"))
 
             assertThat(matchedChangesets).isEmpty()
         }
 
         @Test
         fun should_returns_no_changeset_when_tag_are_supplied_and_tag_in_changelog_but_not_matched() {
-            val matchedChangesets = changelogWithtags(Pair(listOf("one"), listOf("two"))).matchedChangesets(listOf("three"))
+            val matchedChangesets = changelogWithtags(Pair(listOf("one"), listOf("two")))
+                .matchedChangesets(listOf("three"))
 
             assertThat(matchedChangesets).isEmpty()
         }
 
         @Test
         fun should_returns_changeset1_when_tag_are_supplied_and_tag_in_changeset1_matched() {
-            val matchedChangesets = changelogWithtags(Pair(listOf("before"), listOf("after"))).matchedChangesets(listOf("before"))
+            val matchedChangesets = changelogWithtags(Pair(listOf("before"), listOf("after")))
+                .matchedChangesets(listOf("before"))
 
             assertThat(matchedChangesets).hasSize(1)
             assertThat(matchedChangesets.map { it.id }).containsExactly("changeset1")
@@ -134,7 +138,8 @@ class ChangelogTest {
 
         @Test
         fun should_returns_all_changesets_when_all_tags_matched() {
-            val matchedChangesets = changelogWithtags(Pair(listOf("before"), listOf("after"))).matchedChangesets(listOf("before","after"))
+            val matchedChangesets = changelogWithtags(Pair(listOf("before"), listOf("after")))
+                .matchedChangesets(listOf("before","after"))
 
             assertThat(matchedChangesets).hasSize(2)
             assertThat(matchedChangesets.map { it.id }).containsExactly("changeset1","changeset2")
@@ -142,7 +147,8 @@ class ChangelogTest {
 
         @Test
         fun should_returns_all_changesets_with_a_list_of_tags_when_all_tags_matched() {
-            val matchedChangesets = changelogWithtags(Pair(listOf("before"), listOf("before","after"))).matchedChangesets(listOf("before"))
+            val matchedChangesets = changelogWithtags(Pair(listOf("before"), listOf("before","after")))
+                .matchedChangesets(listOf("before"))
 
             assertThat(matchedChangesets).hasSize(2)
             assertThat(matchedChangesets.map { it.id }).containsExactly("changeset1","changeset2")

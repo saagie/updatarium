@@ -22,12 +22,11 @@ import io.saagie.updatarium.dsl.changelog
 changelog {
     changesets {
         +changeSet {
-            id = "ChangeSet-bash-1-1"
+            id = "ChangeSet-bash-2-1"
             author = "Bash"
-            labels = listOf("before")
             actions {
                 +BasicAction {
-                    (1..5).forEach {
+                    (11..15).forEach {
                         logger.info { "Hello $it!" }
                     }
 
@@ -35,12 +34,12 @@ changelog {
             }
         }
         +changeSet {
-            id = "ChangeSet-bash-1-2"
+            id = "ChangeSet-bash-2-2"
             author = "Bash"
-            labels = listOf("after")
+            tags = listOf("before","after")
             actions {
                 +BasicAction {
-                    (6..10).forEach {
+                    (16..20).forEach {
                         logger.info { "Hello $it!" }
                     }
 
