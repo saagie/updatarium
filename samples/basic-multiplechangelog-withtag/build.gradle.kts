@@ -15,18 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-rootProject.name = "updatarium"
-include(":core")
-include(":persist-mongodb")
-include(":engine-bash")
-include(":engine-mongodb")
-include(":engine-kubernetes")
-include(":engine-httpclient")
-include(":samples:basic")
-include(":samples:basic-mongodbpersist")
-include(":samples:basic-multiplechangelog")
-include(":samples:basic-multiplechangelog-withtag")
-include(":samples:http")
-include(":samples:bash")
-include(":samples:mongodb")
-include(":samples:kubernetes")
+plugins {
+    kotlin("jvm")
+}
+
+dependencies {
+    implementation(kotlin("stdlib-jdk8"))
+    implementation(project(":core"))
+
+    implementation(kotlin("scripting-compiler-embeddable"))
+    implementation(kotlin("script-util"))
+}
