@@ -73,5 +73,4 @@ class ChangeSetTest {
         assertThat(engine.changeSetUnLocked.filter { it.first == changeset }.first().second).isEqualTo(Status.KO)
 
     }
-
 }
