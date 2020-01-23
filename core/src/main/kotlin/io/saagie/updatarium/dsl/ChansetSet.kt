@@ -19,12 +19,17 @@ package io.saagie.updatarium.dsl
 
 import com.autodsl.annotation.AutoDsl
 import io.saagie.updatarium.dsl.action.Action
-import mu.KLoggable
 import io.saagie.updatarium.persist.DefaultPersistEngine
 import io.saagie.updatarium.persist.PersistEngine
+import mu.KLoggable
 
 @AutoDsl
-data class ChangeSet(val id: String, val author: String, val actions: List<Action> = mutableListOf()) : KLoggable {
+data class ChangeSet(
+    val id: String,
+    val author: String,
+    val tags: List<String>? = mutableListOf(),
+    val actions: List<Action> = mutableListOf()
+) : KLoggable {
     override val logger = logger()
 
     /**
@@ -36,19 +41,19 @@ data class ChangeSet(val id: String, val author: String, val actions: List<Actio
      *      - unlock the changeset (with the correct status)
      *  Status => OK if all actions was OK, KO otherwise ...
      */
-    fun execute(engine: PersistEngine = DefaultPersistEngine()) {
-        if (engine.notAlreadyExecuted(id)) {
+    fun execute(persistEngine: PersistEngine = DefaultPersistEngine()) {
+        if (persistEngine.notAlreadyExecuted(id)) {
             logger.info { "$id will be executed" }
-            engine.lock(this)
+            persistEngine.lock(this)
             try {
                 this.actions.forEach {
                     it.execute()
                 }
-                engine.unlock(this, Status.OK)
+                persistEngine.unlock(this, Status.OK)
                 logger.info { "$id marked as ${Status.OK}" }
             } catch (e: Exception) {
                 logger.error(e) { "Error during apply update" }
-                engine.unlock(this, Status.KO)
+                persistEngine.unlock(this, Status.KO)
                 logger.info { "$id marked as ${Status.KO}" }
             }
         } else {

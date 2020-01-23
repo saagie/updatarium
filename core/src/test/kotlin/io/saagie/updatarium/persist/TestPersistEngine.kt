@@ -20,12 +20,6 @@ package io.saagie.updatarium.persist
 import io.saagie.updatarium.dsl.ChangeSet
 import io.saagie.updatarium.dsl.Status
 
-/**
- * This is a basic implementation of the PersistEngine.
- * It will store nothing and just let you execute the changeset.
- *
- * :warning: please do not use this in production if you don't want to replay all changesets.
- */
 class TestPersistEngine : PersistEngine() {
     val changeSetTested = mutableListOf<String>()
     val changeSetLocked = mutableListOf<ChangeSet>()
