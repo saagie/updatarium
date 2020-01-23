@@ -32,26 +32,42 @@ import java.nio.file.Path
  * then you can call the function 'executeChangelog' using a Path, a Reader or directly the script in String.
  * It will execute the changelog.
  */
-class Updatarium(val engine: PersistEngine = DefaultPersistEngine()) {
+class Updatarium(val persistEngine: PersistEngine = DefaultPersistEngine()) {
     val ktsLoader = KtsObjectLoader()
 
-    fun executeChangelog(path: Path) {
-        executeChangelog(Files.newBufferedReader(path))
-    }
-
-    fun executeChangelog(reader: Reader) {
+    fun executeChangelog(reader: Reader, tags: List<String> = emptyList()) {
         with(ktsLoader.load<Changelog>(reader)) {
-            this.execute(engine)
+            this.execute(persistEngine, tags)
         }
     }
 
-    fun executeChangelog(script: String) {
+    fun executeChangelog(script: String, tags: List<String> = emptyList()) {
         with(ktsLoader.load<Changelog>(script)) {
-            this.execute(engine)
+            this.execute(persistEngine, tags)
         }
     }
 
-    fun executeChangelogs(path: Path, pattern: String) {
+    fun executeChangelog(reader: Reader, tag: String) {
+        this.executeChangelog(reader, listOf(tag))
+    }
+
+    fun executeChangelog(path: Path, tags: List<String> = emptyList()) {
+        executeChangelog(Files.newBufferedReader(path), tags)
+    }
+
+    fun executeChangelog(path: Path, tag: String) {
+        executeChangelog(Files.newBufferedReader(path), listOf(tag))
+    }
+
+    fun executeChangelog(script: String, tag: String) {
+        executeChangelog(script, listOf(tag))
+    }
+
+    fun executeChangelogs(path: Path, pattern: String, tag: String) {
+        executeChangelogs(path, pattern, listOf(tag))
+    }
+
+    fun executeChangelogs(path: Path, pattern: String, tags: List<String> = emptyList()) {
         if (Files.isDirectory(path)) {
             path
                 .toFile()
@@ -59,10 +75,8 @@ class Updatarium(val engine: PersistEngine = DefaultPersistEngine()) {
                 .filter { it.name.matches(Regex(pattern)) }
                 .sorted()
                 .forEach {
-                    this.executeChangelog(it.toPath())
+                    this.executeChangelog(it.toPath(), tags)
                 }
-
         }
-
     }
 }

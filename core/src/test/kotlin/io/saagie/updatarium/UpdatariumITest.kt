@@ -1,4 +1,4 @@
-/*
+package io.saagie.updatarium/*
  * SPDX-License-Identifier: Apache-2.0
  *
  * Copyright 2019-2020 Pierre Leresteux.
@@ -19,7 +19,6 @@ import com.github.codemonkeyfactory.test.logging.LoggingSpy
 import com.github.codemonkeyfactory.test.logging.junit.LoggingTest
 import com.github.codemonkeyfactory.test.logging.junit.LoggingTestSpyManager
 import com.github.codemonkeyfactory.test.logging.log4j2.LoggingSpyManagerLog4j2Impl
-import io.saagie.updatarium.Updatarium
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.LogEvent
 import org.junit.jupiter.api.Assertions
@@ -158,13 +157,29 @@ class UpdatariumITest {
     @LoggingTestSpyManager(LoggingSpyManagerLog4j2Impl::class)
     fun `should correctly execute a simple changelog using Path`(loggingSpy: LoggingSpy<Level, LogEvent>) {
 
+        // No tags supplied
         loggingSpy.enable()
-        Updatarium().executeChangelog(Paths.get(UpdatariumITest::class.java.getResource("changelog.kts").path))
+        Updatarium().executeChangelog(Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog.kts").path))
+        Updatarium().executeChangelog(Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path))
         loggingSpy.disable()
         val logs = loggingSpy.getLogs().filter { it.loggerName.endsWith("BasicAction") }
-        Assertions.assertEquals(1, logs.size)
+        Assertions.assertEquals(2, logs.size)
         Assertions.assertEquals(Level.INFO, logs.first().level)
         Assertions.assertEquals("Hello world", logs.first().message)
+        Assertions.assertEquals(Level.INFO, logs.last().level)
+        Assertions.assertEquals("Hello world 2", logs.last().message)
+
+        // With tags supplied
+        loggingSpy.clear()
+        loggingSpy.enable()
+        Updatarium()
+            .executeChangelog(Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog.kts").path),"hello")
+        Updatarium().executeChangelog(Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path),"hello")
+        loggingSpy.disable()
+        val logs2 = loggingSpy.getLogs().filter { it.loggerName.endsWith("BasicAction") }
+        Assertions.assertEquals(1, logs2.size)
+        Assertions.assertEquals(Level.INFO, logs2.first().level)
+        Assertions.assertEquals("Hello world 2", logs2.first().message)
 
     }
 
@@ -173,22 +188,94 @@ class UpdatariumITest {
     @LoggingTestSpyManager(LoggingSpyManagerLog4j2Impl::class)
     fun `should correctly execute a very simple changelog using Reader`(loggingSpy: LoggingSpy<Level, LogEvent>) {
 
+        // No tags supplied
         loggingSpy.enable()
         Updatarium().executeChangelog(
             Files.newBufferedReader(
                 Paths.get(
                     UpdatariumITest::class.java.getResource(
-                        "changelog.kts"
+                        "/changelogs/changelog.kts"
                     ).path
+                )
+            )
+        )
+        Updatarium().executeChangelog(
+            Files.newBufferedReader(
+                Paths.get(
+                    UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path
                 )
             )
         )
         loggingSpy.disable()
         val logs = loggingSpy.getLogs().filter { it.loggerName.endsWith("BasicAction") }
-        Assertions.assertEquals(1, logs.size)
+        Assertions.assertEquals(2, logs.size)
         Assertions.assertEquals(Level.INFO, logs.first().level)
         Assertions.assertEquals("Hello world", logs.first().message)
+        Assertions.assertEquals(Level.INFO, logs.last().level)
+        Assertions.assertEquals("Hello world 2", logs.last().message)
+
+        // With tags supplied
+        loggingSpy.clear()
+        loggingSpy.enable()
+        Updatarium().executeChangelog(
+            Files.newBufferedReader(
+                Paths.get(
+                    UpdatariumITest::class.java.getResource(
+                        "/changelogs/changelog.kts"
+                    ).path
+                )
+            ),
+            "hello"
+        )
+        Updatarium().executeChangelog(
+            Files.newBufferedReader(
+                Paths.get(
+                    UpdatariumITest::class.java.getResource(
+                        "/changelogs/changelog_with_tags.kts"
+                    ).path
+                )
+            ),
+            "hello"
+        )
+        loggingSpy.disable()
+        val logs2 = loggingSpy.getLogs().filter { it.loggerName.endsWith("BasicAction") }
+        Assertions.assertEquals(1, logs2.size)
+        Assertions.assertEquals(Level.INFO, logs2.first().level)
+        Assertions.assertEquals("Hello world 2", logs2.first().message)
 
     }
 
+    @Test
+    @LoggingTest
+    @LoggingTestSpyManager(LoggingSpyManagerLog4j2Impl::class)
+    fun `should correctly execute a list of changelog`(loggingSpy: LoggingSpy<Level, LogEvent>) {
+
+        // No tags supplied
+        loggingSpy.enable()
+        Updatarium().executeChangelogs(
+            Paths.get(UpdatariumITest::class.java.getResource("/changelogs").path),
+            "changelog(.*).kts"
+        )
+        loggingSpy.disable()
+        val logs = loggingSpy.getLogs().filter { it.loggerName.endsWith("BasicAction") }
+        Assertions.assertEquals(2, logs.size)
+        Assertions.assertEquals(Level.INFO, logs.first().level)
+        Assertions.assertEquals("Hello world", logs.first().message)
+        Assertions.assertEquals(Level.INFO, logs.last().level)
+        Assertions.assertEquals("Hello world 2", logs.last().message)
+
+        // With tags supplied
+        loggingSpy.clear()
+        loggingSpy.enable()
+        Updatarium().executeChangelogs(
+            Paths.get(UpdatariumITest::class.java.getResource("/changelogs").path),
+            "changelog(.*).kts",
+            "hello"
+        )
+        loggingSpy.disable()
+        val logs2 = loggingSpy.getLogs().filter { it.loggerName.endsWith("BasicAction") }
+        Assertions.assertEquals(1, logs2.size)
+        Assertions.assertEquals(Level.INFO, logs2.first().level)
+        Assertions.assertEquals("Hello world 2", logs2.first().message)
+    }
 }

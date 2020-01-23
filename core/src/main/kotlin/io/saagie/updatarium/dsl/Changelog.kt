@@ -18,7 +18,6 @@
 package io.saagie.updatarium.dsl
 
 import com.autodsl.annotation.AutoDsl
-import io.saagie.updatarium.persist.DefaultPersistEngine
 import io.saagie.updatarium.persist.PersistEngine
 
 @AutoDsl
@@ -27,11 +26,18 @@ data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) {
     /**
      * It will execute each changesets present in this changelog sequentially.
      */
-    fun execute(engine: PersistEngine) {
-        engine.checkConnection()
-        changesets.forEach {
-            it.execute(engine)
-        }
+    fun execute(persistEngine: PersistEngine, tags: List<String> = emptyList()) {
+        persistEngine.checkConnection()
+        matchedChangesets(tags).forEach { it.execute(persistEngine) }
     }
+
+    /**
+     * filter the changesets that matched with the targetTags
+     * return all changesets if the targetTags list is empty
+     * return only the matched changesets (at least one tag matched)
+     */
+    fun matchedChangesets(targetTags: List<String> = emptyList()) =
+        this.changesets
+            .filter { targetTags.isEmpty() || targetTags.intersect(it.tags ?: emptyList()).isNotEmpty() }
 }
 
