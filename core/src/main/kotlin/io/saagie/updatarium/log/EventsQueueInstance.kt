@@ -15,16 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.persist.model
+package io.saagie.updatarium.log
 
-import io.saagie.updatarium.dsl.ChangeSet
-import io.saagie.updatarium.dsl.Status
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.core.LogEvent
+import java.util.concurrent.ConcurrentLinkedQueue
 
-data class MongoDbChangeset(val changesetId: String, val author: String, val status: String, val log : List<String>)
+/**
+ * Singleton instance of the Queue of [InMemoryEvent]
+ */
+object EventsQueueInstance {
+    lateinit var instance: ConcurrentLinkedQueue<InMemoryEvent<Level, LogEvent>>
+}
 
-fun ChangeSet.toMongoDbDocument() = MongoDbChangeset(
-    changesetId = this.id,
-    author = this.author,
-    status = Status.EXECUTE.name,
-    log = mutableListOf()
-)
+/**
+ * Allow access to the [InMemoryAppenderAccess] and its Queue of [InMemoryEvent]
+ */
+object InMemoryAppenderAccess {
+
+    fun getEvents(): List<InMemoryEvent<Level, LogEvent>> = EventsQueueInstance.instance.asSequence().toList()
+}

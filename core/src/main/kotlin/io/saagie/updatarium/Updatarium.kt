@@ -28,12 +28,12 @@ import java.nio.file.Path
 /**
  * Main class of Updatarium.
  *
- * Updatarium is initialize with a PersistEngine (if not, use the DefaultPersistEngine),
- * then you can call the function 'executeChangelog' using a Path, a Reader or directly the script in String.
+ * Updatarium is initialized with a PersistEngine (if not, it uses the DefaultPersistEngine),
+ * Then you can call the function 'executeChangelog' using a Path, a Reader or directly the script in String,
  * It will execute the changelog.
  */
 class Updatarium(val persistEngine: PersistEngine = DefaultPersistEngine()) {
-    val ktsLoader = KtsObjectLoader()
+    private val ktsLoader = KtsObjectLoader()
 
     fun executeChangelog(reader: Reader, tags: List<String> = emptyList()) {
         with(ktsLoader.load<Changelog>(reader)) {
