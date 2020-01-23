@@ -19,7 +19,7 @@ package io.saagie.updatarium.persist
 
 import io.saagie.updatarium.dsl.ChangeSet
 import io.saagie.updatarium.dsl.Status
-import io.saagie.updatarium.persist.PersistEngine
+import io.saagie.updatarium.log.InMemoryAppenderAccess
 
 /**
  * This is a basic implementation of the PersistEngine.
@@ -40,6 +40,7 @@ class DefaultPersistEngine : PersistEngine() {
     }
 
     override fun unlock(changeSet: ChangeSet, status: Status) {
-        logger.info { "${changeSet.id} marked as ${status}" }
+        logger.info { "${changeSet.id} marked as $status" }
+        logger.info { InMemoryAppenderAccess.dumpEvents() }
     }
 }

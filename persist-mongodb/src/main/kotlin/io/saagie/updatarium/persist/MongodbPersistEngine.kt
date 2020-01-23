@@ -20,14 +20,19 @@ package io.saagie.updatarium.persist
 import com.mongodb.ConnectionString
 import io.saagie.updatarium.dsl.ChangeSet
 import io.saagie.updatarium.dsl.Status
-import org.litote.kmongo.*
+import io.saagie.updatarium.log.InMemoryAppenderAccess
 import io.saagie.updatarium.persist.model.MongoDbChangeset
 import io.saagie.updatarium.persist.model.toMongoDbDocument
+import org.litote.kmongo.KMongo
+import org.litote.kmongo.eq
+import org.litote.kmongo.findOne
+import org.litote.kmongo.getCollection
+import org.litote.kmongo.set
+import org.litote.kmongo.setTo
 
 const val MONGODB_PERSIST_CONNECTIONSTRING = "MONGODB_PERSIST_CONNECTIONSTRING"
 const val DATABASE = "Updatarium"
 const val COLLECTION = "changelog"
-
 
 class MongodbPersistEngine : PersistEngine() {
 
@@ -48,12 +53,10 @@ class MongodbPersistEngine : PersistEngine() {
         logger.info { "CheckConnection ... " }
         collection.countDocuments()
         logger.info { "Connection to mongodb instance : successful" }
-
     }
 
     override fun notAlreadyExecuted(changeSetId: String): Boolean {
-        val doc = collection.findOne(MongoDbChangeset::changesetId eq changeSetId)
-        when (doc) {
+        when (val doc = collection.findOne(MongoDbChangeset::changesetId eq changeSetId)) {
             null -> {
                 logger.info { "$changeSetId not exists" }
                 return true
@@ -83,8 +86,11 @@ class MongodbPersistEngine : PersistEngine() {
     override fun unlock(changeSet: ChangeSet, status: Status) {
         collection.updateOne(
             MongoDbChangeset::changesetId eq changeSet.id,
-            setValue(MongoDbChangeset::status, status.name)
+            set(
+                MongoDbChangeset::status setTo status.name,
+                MongoDbChangeset::log setTo InMemoryAppenderAccess.dumpEvents()
+            )
         )
-        logger.info { "${changeSet.id} marked as ${status}" }
+        logger.info { "${changeSet.id} marked as $status" }
     }
 }
