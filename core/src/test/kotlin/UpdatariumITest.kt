@@ -50,8 +50,7 @@ class UpdatariumITest {
                     id = "ChangeSet-1"
                     author = "Hello World"
                     actions {
-                        +BasicAction {basicAction ->
-                            basicAction.logger.info {"Hello world"}
+                        +BasicAction {logger.info {"Hello world"}
                         }
                     }
                 }
@@ -85,14 +84,11 @@ class UpdatariumITest {
                     id = "ChangeSet-1"
                     author = "Hello World"
                     actions {
-                        +BasicAction {basicAction ->
-                            basicAction.logger.info {"0"}
+                        +BasicAction {logger.info {"0"}
                         }
-                        +BasicAction {basicAction ->
-                            basicAction.logger.info {"1"}
+                        +BasicAction {logger.info {"1"}
                         }
-                        +BasicAction {basicAction ->
-                            basicAction.logger.info {"2"}
+                        +BasicAction {logger.info {"2"}
                         }
                     }
                 }
@@ -129,8 +125,7 @@ class UpdatariumITest {
                     id = "ChangeSet-1"
                     author = "Hello 0"
                     actions {
-                        +BasicAction {basicAction ->
-                            basicAction.logger.info {"0"}
+                        +BasicAction { logger.info {"0"}
                         }
                     }
                 }
@@ -138,11 +133,9 @@ class UpdatariumITest {
                     id = "ChangeSet-2"
                     author = "Hello 1"
                     actions {
-                        +BasicAction {basicAction ->
-                            basicAction.logger.info {"1"}
+                        +BasicAction { logger.info {"1"}
                         }
-                        +BasicAction {basicAction ->
-                            basicAction.logger.info {"2"}
+                        +BasicAction { logger.info {"2"}
                         }
                     }
                 }
