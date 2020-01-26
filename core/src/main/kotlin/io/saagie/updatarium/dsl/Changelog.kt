@@ -29,7 +29,7 @@ data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) {
      */
     fun execute(persistEngine: PersistEngine, tags: List<String> = emptyList()) {
         persistEngine.checkConnection()
-        InMemoryAppenderManager.setup()
+        InMemoryAppenderManager.setup(persistConfig = persistEngine.configuration)
         matchedChangesets(tags).forEach { it.execute(persistEngine) }
         InMemoryAppenderManager.tearDown()
     }

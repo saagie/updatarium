@@ -19,9 +19,6 @@ package io.saagie.updatarium.persist
 
 import io.saagie.updatarium.dsl.ChangeSet
 import io.saagie.updatarium.dsl.Status
-import io.saagie.updatarium.log.InMemoryEvent
-import org.apache.logging.log4j.Level
-import org.apache.logging.log4j.core.LogEvent
 
 /**
  * This is a basic implementation of the PersistEngine.
@@ -29,7 +26,10 @@ import org.apache.logging.log4j.core.LogEvent
  *
  * :warning: please do not use this in production if you don't want to replay all changesets.
  */
-class DefaultPersistEngine : PersistEngine() {
+class DefaultPersistEngine(
+    configuration: PersistConfig =
+        PersistConfig(onSuccessStoreLogs = true, onErrorStoreLogs = true){event -> event.message?:""}
+) : PersistEngine(configuration) {
     override fun checkConnection() {
         logger.warn { "***********************" }
         logger.warn { "*NO PERSIST ENGINE !!!*" }
@@ -41,12 +41,8 @@ class DefaultPersistEngine : PersistEngine() {
         logger.info { "${changeSet.id} marked as ${Status.EXECUTE}" }
     }
 
-    override fun unlock(changeSet: ChangeSet, status: Status, logs: List<InMemoryEvent<Level, LogEvent>>) {
+    override fun unlock(changeSet: ChangeSet, status: Status, logs: List<String>) {
         logger.info { "${changeSet.id} marked as $status" }
-        logger.info { logs.toStringList() }
+        logger.info { logs }
     }
-}
-
-private fun List<InMemoryEvent<Level, LogEvent>>.toStringList(): List<String> = this.map { event ->
-    "${event.time} [${event.level.name()}] ${event.message} ${event.exception ?: ""}"
 }

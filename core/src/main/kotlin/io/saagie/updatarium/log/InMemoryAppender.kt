@@ -18,6 +18,7 @@
 package io.saagie.updatarium.log
 
 
+import io.saagie.updatarium.persist.PersistConfig
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.Appender
 import org.apache.logging.log4j.core.Core
@@ -42,10 +43,16 @@ class InMemoryAppender(
 
     private var enabled = false
 
+    private var persistConfig = PersistConfig()
+
     private val logEvents = ConcurrentLinkedQueue<InMemoryEvent<Level, LogEvent>>()
 
     init {
         EventsQueueInstance.instance = this.logEvents
+    }
+
+    fun setConfig(persistConfig: PersistConfig) {
+        this.persistConfig = persistConfig
     }
 
     override fun append(event: LogEvent?) {

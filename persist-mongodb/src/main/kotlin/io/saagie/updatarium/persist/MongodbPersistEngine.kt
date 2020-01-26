@@ -31,7 +31,7 @@ const val MONGODB_PERSIST_CONNECTIONSTRING = "MONGODB_PERSIST_CONNECTIONSTRING"
 const val DATABASE = "Updatarium"
 const val COLLECTION = "changelog"
 
-class MongodbPersistEngine : PersistEngine() {
+class MongodbPersistEngine : PersistEngine(configuration = PersistConfig()) {
 
     private val collection by lazy {
         with(KMongo.createClient(ConnectionString(getConnectionString()))) {
@@ -83,20 +83,15 @@ class MongodbPersistEngine : PersistEngine() {
     override fun unlock(
         changeSet: ChangeSet,
         status: Status,
-        logs: List<InMemoryEvent<Level, LogEvent>>
+        logs: List<String>
     ) {
         collection.updateOne(
             MongoDbChangeset::changesetId eq changeSet.id,
             set(
                 MongoDbChangeset::status setTo status.name,
-                MongoDbChangeset::log setTo logs.toStringList()
+                MongoDbChangeset::log setTo logs
             )
         )
         logger.info { "${changeSet.id} marked as $status" }
     }
 }
-
-private fun List<InMemoryEvent<Level, LogEvent>>.toStringList(): List<String> = this.map { event ->
-    "${event.time} [${event.level.name()}] ${event.message} ${event.exception ?: ""}"
-}
-

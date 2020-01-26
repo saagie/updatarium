@@ -17,30 +17,15 @@
  */
 package io.saagie.updatarium.persist
 
-import io.saagie.updatarium.dsl.ChangeSet
-import io.saagie.updatarium.dsl.Status
 import io.saagie.updatarium.log.InMemoryEvent
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.LogEvent
 
-class TestPersistEngine : PersistEngine(PersistConfig()){
-    val changeSetTested = mutableListOf<String>()
-    val changeSetLocked = mutableListOf<ChangeSet>()
-    val changeSetUnLocked = mutableListOf<Pair<ChangeSet, Status>>()
-
-    override fun checkConnection() {
+data class PersistConfig(
+    val level: Level = Level.INFO,
+    val onSuccessStoreLogs: Boolean = false,
+    val onErrorStoreLogs: Boolean = false,
+    val layout: (event: InMemoryEvent<Level, LogEvent>) -> String = { event ->
+        "${event.time} [${event.level.name()}] ${event.message} ${event.exception ?: ""}"
     }
-
-    override fun notAlreadyExecuted(changeSetId: String): Boolean {
-        changeSetTested.add(changeSetId)
-        return true
-    }
-
-    override fun lock(changeSet: ChangeSet) {
-        changeSetLocked.add(changeSet)
-    }
-
-    override fun unlock(changeSet: ChangeSet, status: Status, logs: List<String>) {
-        changeSetUnLocked.add(Pair(changeSet, status))
-    }
-}
+)
