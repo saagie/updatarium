@@ -21,9 +21,9 @@ import com.autodsl.annotation.AutoDsl
 import io.saagie.updatarium.dsl.action.Action
 import io.saagie.updatarium.log.InMemoryAppenderAccess
 import io.saagie.updatarium.log.InMemoryAppenderManager
-import mu.KLoggable
 import io.saagie.updatarium.persist.DefaultPersistEngine
 import io.saagie.updatarium.persist.PersistEngine
+import mu.KLoggable
 
 @AutoDsl
 data class ChangeSet(
@@ -53,11 +53,13 @@ data class ChangeSet(
                     it.execute()
                 }
                 InMemoryAppenderManager.stopRecord()
-                persistEngine.unlock(this, Status.OK,InMemoryAppenderAccess.getEvents())
+                persistEngine.unlock(this, Status.OK, InMemoryAppenderAccess
+                    .getEvents(persistConfig = persistEngine.configuration, success = true))
                 logger.info { "$id marked as ${Status.OK}" }
             } catch (e: Exception) {
                 logger.error(e) { "Error during apply update" }
-                persistEngine.unlock(this, Status.KO, InMemoryAppenderAccess.getEvents())
+                persistEngine.unlock(this, Status.KO, InMemoryAppenderAccess
+                    .getEvents(persistConfig = persistEngine.configuration, success = false))
                 logger.info { "$id marked as ${Status.KO}" }
             }
         } else {
