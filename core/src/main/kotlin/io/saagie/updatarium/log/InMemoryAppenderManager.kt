@@ -17,9 +17,10 @@
  */
 package io.saagie.updatarium.log
 
-import org.apache.logging.log4j.Level
+import io.saagie.updatarium.persist.PersistConfig
 import org.apache.logging.log4j.LogManager.getContext
 import org.apache.logging.log4j.core.LoggerContext
+import org.apache.logging.log4j.core.layout.PatternLayout.DEFAULT_CONVERSION_PATTERN
 
 /**
  * Manage the lifecycle of the [InMemoryAppender]: setup and teardown
@@ -28,17 +29,17 @@ object InMemoryAppenderManager {
 
     private val inMemoryAppender = InMemoryAppender("memory")
 
-    fun setup() {
+    fun setup(persistConfig: PersistConfig) {
         // Start the InMemory Appender
         val context = getContext(false) as LoggerContext
         val configuration = context.configuration
+        inMemoryAppender.setConfig(persistConfig)
         inMemoryAppender.start()
         configuration.addAppender(inMemoryAppender)
 
         // Add it to the Root logger
         val rootLoggerConfig = configuration.rootLogger
-        rootLoggerConfig.addAppender(inMemoryAppender, Level.ALL, null)
-        // rootLoggerConfig.level = Level.ALL
+        rootLoggerConfig.addAppender(inMemoryAppender, persistConfig.level, null)
         context.updateLoggers()
     }
 
