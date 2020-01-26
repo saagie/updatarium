@@ -40,7 +40,7 @@ class InMemoryAppender(
     name: String
 ) : AbstractAppender(name, null, PatternLayout.createDefaultLayout(), false, null) {
 
-    private var enabled = true
+    private var enabled = false
 
     private val logEvents = ConcurrentLinkedQueue<InMemoryEvent<Level, LogEvent>>()
 
@@ -63,11 +63,11 @@ class InMemoryAppender(
         }
     }
 
-    fun enable() {
+    fun enableRecording() {
         enabled = true
     }
 
-    fun disable() {
+    fun disableRecording() {
         enabled = false
     }
 }

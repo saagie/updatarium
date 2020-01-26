@@ -19,7 +19,9 @@ package io.saagie.updatarium.persist
 
 import io.saagie.updatarium.dsl.ChangeSet
 import io.saagie.updatarium.dsl.Status
-import io.saagie.updatarium.log.InMemoryAppenderAccess
+import io.saagie.updatarium.log.InMemoryEvent
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.core.LogEvent
 
 /**
  * This is a basic implementation of the PersistEngine.
@@ -39,8 +41,12 @@ class DefaultPersistEngine : PersistEngine() {
         logger.info { "${changeSet.id} marked as ${Status.EXECUTE}" }
     }
 
-    override fun unlock(changeSet: ChangeSet, status: Status) {
+    override fun unlock(changeSet: ChangeSet, status: Status, logs: List<InMemoryEvent<Level, LogEvent>>) {
         logger.info { "${changeSet.id} marked as $status" }
-        logger.info { InMemoryAppenderAccess.dumpEvents() }
+        logger.info { logs.toStringList() }
     }
+}
+
+private fun List<InMemoryEvent<Level, LogEvent>>.toStringList(): List<String> = this.map { event ->
+    "${event.time} [${event.level.name()}] ${event.message} ${event.exception ?: ""}"
 }

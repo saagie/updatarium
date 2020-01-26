@@ -19,6 +19,9 @@ package io.saagie.updatarium.persist
 
 import io.saagie.updatarium.dsl.ChangeSet
 import io.saagie.updatarium.dsl.Status
+import io.saagie.updatarium.log.InMemoryEvent
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.core.LogEvent
 
 class TestPersistEngine : PersistEngine() {
     val changeSetTested = mutableListOf<String>()
@@ -37,7 +40,7 @@ class TestPersistEngine : PersistEngine() {
         changeSetLocked.add(changeSet)
     }
 
-    override fun unlock(changeSet: ChangeSet, status: Status) {
+    override fun unlock(changeSet: ChangeSet, status: Status, logs: List<InMemoryEvent<Level, LogEvent>>) {
         changeSetUnLocked.add(Pair(changeSet, status))
     }
 }

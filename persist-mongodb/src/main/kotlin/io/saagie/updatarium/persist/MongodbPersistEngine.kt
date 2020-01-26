@@ -20,15 +20,12 @@ package io.saagie.updatarium.persist
 import com.mongodb.ConnectionString
 import io.saagie.updatarium.dsl.ChangeSet
 import io.saagie.updatarium.dsl.Status
-import io.saagie.updatarium.log.InMemoryAppenderAccess
+import io.saagie.updatarium.log.InMemoryEvent
 import io.saagie.updatarium.persist.model.MongoDbChangeset
 import io.saagie.updatarium.persist.model.toMongoDbDocument
-import org.litote.kmongo.KMongo
-import org.litote.kmongo.eq
-import org.litote.kmongo.findOne
-import org.litote.kmongo.getCollection
-import org.litote.kmongo.set
-import org.litote.kmongo.setTo
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.core.LogEvent
+import org.litote.kmongo.*
 
 const val MONGODB_PERSIST_CONNECTIONSTRING = "MONGODB_PERSIST_CONNECTIONSTRING"
 const val DATABASE = "Updatarium"
@@ -83,14 +80,23 @@ class MongodbPersistEngine : PersistEngine() {
         logger.info { "${changeSet.id} marked as ${Status.EXECUTE}" }
     }
 
-    override fun unlock(changeSet: ChangeSet, status: Status) {
+    override fun unlock(
+        changeSet: ChangeSet,
+        status: Status,
+        logs: List<InMemoryEvent<Level, LogEvent>>
+    ) {
         collection.updateOne(
             MongoDbChangeset::changesetId eq changeSet.id,
             set(
                 MongoDbChangeset::status setTo status.name,
-                MongoDbChangeset::log setTo InMemoryAppenderAccess.dumpEvents()
+                MongoDbChangeset::log setTo logs.toStringList()
             )
         )
         logger.info { "${changeSet.id} marked as $status" }
     }
 }
+
+private fun List<InMemoryEvent<Level, LogEvent>>.toStringList(): List<String> = this.map { event ->
+    "${event.time} [${event.level.name()}] ${event.message} ${event.exception ?: ""}"
+}
+

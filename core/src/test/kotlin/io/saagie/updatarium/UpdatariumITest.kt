@@ -17,13 +17,10 @@ package io.saagie.updatarium
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import com.github.codemonkeyfactory.test.logging.LoggingSpy
-import com.github.codemonkeyfactory.test.logging.junit.LoggingTest
-import com.github.codemonkeyfactory.test.logging.junit.LoggingTestSpyManager
-import com.github.codemonkeyfactory.test.logging.log4j2.LoggingSpyManagerLog4j2Impl
-import org.apache.logging.log4j.Level
-import org.apache.logging.log4j.core.LogEvent
-import org.junit.jupiter.api.Assertions
+import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.hasSize
+import io.saagie.updatarium.persist.TestPersistEngine
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import java.nio.file.Files
@@ -33,14 +30,11 @@ import java.nio.file.Paths
 class UpdatariumITest {
 
     @Test
-    @LoggingTest
-    @LoggingTestSpyManager(LoggingSpyManagerLog4j2Impl::class)
-    fun `should correctly execute a very simple changelog`(loggingSpy: LoggingSpy<Level, LogEvent>) {
-
-        loggingSpy.enable()
-        Updatarium()
-            .executeChangelog(
-                """
+    fun `should correctly execute a very simple changelog`() {
+        with(TestPersistEngine()) {
+            Updatarium(this)
+                .executeChangelog(
+                    """
         import io.saagie.updatarium.dsl.action.BasicAction
         import io.saagie.updatarium.dsl.changeSet
         import io.saagie.updatarium.dsl.changelog
@@ -58,23 +52,20 @@ class UpdatariumITest {
             }
         }
     """.trimIndent()
-            )
-        loggingSpy.disable()
-        val logs = loggingSpy.getLogs().filter { it.loggerName.endsWith("BasicAction") }
-        Assertions.assertEquals(1, logs.size)
-        Assertions.assertEquals(Level.INFO, logs.first().level)
-        Assertions.assertEquals("Hello world", logs.first().message)
+                )
+            assertThat(this.changeSetTested).hasSize(1)
+            assertThat(this.changeSetUnLocked.map { it.first.id })
+                .containsExactly("ChangeSet-1")
+        }
     }
 
     @Test
-    @LoggingTest
-    @LoggingTestSpyManager(LoggingSpyManagerLog4j2Impl::class)
-    fun `should correctly execute a simple changelog with multiple actions`(loggingSpy: LoggingSpy<Level, LogEvent>) {
+    fun `should correctly execute a simple changelog with multiple actions`() {
 
-        loggingSpy.enable()
-        Updatarium()
-            .executeChangelog(
-                """
+        with(TestPersistEngine()) {
+            Updatarium(this)
+                .executeChangelog(
+                    """
         import io.saagie.updatarium.dsl.action.BasicAction
         import io.saagie.updatarium.dsl.changeSet
         import io.saagie.updatarium.dsl.changelog
@@ -96,28 +87,20 @@ class UpdatariumITest {
             }
         }
     """.trimIndent()
-            )
-        loggingSpy.disable()
-        val logs = loggingSpy.getLogs().filter { it.loggerName.endsWith("BasicAction") }
-        Assertions.assertEquals(3, logs.size)
-        logs.forEachIndexed { index, capturedLog ->
-            Assertions.assertEquals(Level.INFO, capturedLog.level)
-            Assertions.assertEquals("$index", capturedLog.message)
+                )
+            assertThat(this.changeSetTested).hasSize(1)
+            assertThat(this.changeSetUnLocked.map { it.first.id })
+                .containsExactly("ChangeSet-1")
         }
-
     }
 
     @Test
-    @LoggingTest
-    @LoggingTestSpyManager(LoggingSpyManagerLog4j2Impl::class)
-    fun `should correctly execute a changelog with multiple changesets&actions`(
-        loggingSpy: LoggingSpy<Level, LogEvent>
-    ) {
+    fun `should correctly execute a changelog with multiple changesets&actions`() {
 
-        loggingSpy.enable()
-        Updatarium()
-            .executeChangelog(
-                """
+        with(TestPersistEngine()) {
+            Updatarium(this)
+                .executeChangelog(
+                    """
         import io.saagie.updatarium.dsl.action.BasicAction
         import io.saagie.updatarium.dsl.changeSet
         import io.saagie.updatarium.dsl.changelog
@@ -145,153 +128,126 @@ class UpdatariumITest {
             }
         }
     """.trimIndent()
+                )
+            assertThat(this.changeSetTested).hasSize(2)
+            assertThat(this.changeSetUnLocked.map { it.first.id })
+                .containsExactly("ChangeSet-1", "ChangeSet-2")
+        }
+    }
+
+    @Test
+    fun `should correctly execute a simple changelog using Path`() {
+
+        // No tags supplied
+        with(TestPersistEngine()) {
+            Updatarium(this).executeChangelog(
+                Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog.kts").path)
             )
-        loggingSpy.disable()
-        val logs = loggingSpy.getLogs().filter { it.loggerName.endsWith("BasicAction") }
-        Assertions.assertEquals(3, logs.size)
-        logs.forEachIndexed { index, capturedLog ->
-            Assertions.assertEquals(Level.INFO, capturedLog.level)
-            Assertions.assertEquals("$index", capturedLog.message)
+            Updatarium(this).executeChangelog(
+                Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path)
+            )
+            assertThat(this.changeSetTested).hasSize(2)
+            assertThat(this.changeSetUnLocked.map { it.first.id })
+                .containsExactly("ChangeSet-1", "ChangeSet-2")
+        }
+
+        // With tags supplied
+        with(TestPersistEngine()) {
+            Updatarium(this)
+                .executeChangelog(
+                    Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog.kts").path),
+                    "hello"
+                )
+            Updatarium(this)
+                .executeChangelog(
+                    Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path),
+                    "hello"
+                )
+            assertThat(this.changeSetTested).hasSize(1)
+            assertThat(this.changeSetUnLocked.map { it.first.id })
+                .containsExactly("ChangeSet-2")
         }
 
     }
 
     @Test
-    @LoggingTest
-    @LoggingTestSpyManager(LoggingSpyManagerLog4j2Impl::class)
-    fun `should correctly execute a simple changelog using Path`(loggingSpy: LoggingSpy<Level, LogEvent>) {
+    fun `should correctly execute a very simple changelog using Reader`() {
 
         // No tags supplied
-        loggingSpy.enable()
-        Updatarium().executeChangelog(
-            Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog.kts").path)
-        )
-        Updatarium().executeChangelog(
-            Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path)
-        )
-        loggingSpy.disable()
-        val logs = loggingSpy.getLogs().filter { it.loggerName.endsWith("BasicAction") }
-        Assertions.assertEquals(2, logs.size)
-        Assertions.assertEquals(Level.INFO, logs.first().level)
-        Assertions.assertEquals("Hello world", logs.first().message)
-        Assertions.assertEquals(Level.INFO, logs.last().level)
-        Assertions.assertEquals("Hello world 2", logs.last().message)
+        with(TestPersistEngine()) {
+            Updatarium(this).executeChangelog(
+                Files.newBufferedReader(
+                    Paths.get(
+                        UpdatariumITest::class.java.getResource(
+                            "/changelogs/changelog.kts"
+                        ).path
+                    )
+                )
+            )
+            Updatarium(this).executeChangelog(
+                Files.newBufferedReader(
+                    Paths.get(
+                        UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path
+                    )
+                )
+            )
+            assertThat(this.changeSetTested).hasSize(2)
+            assertThat(this.changeSetUnLocked.map { it.first.id })
+                .containsExactly("ChangeSet-1", "ChangeSet-2")
+        }
 
         // With tags supplied
-        loggingSpy.clear()
-        loggingSpy.enable()
-        Updatarium()
-            .executeChangelog(
-                Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog.kts").path),
+        with(TestPersistEngine()) {
+            Updatarium(this).executeChangelog(
+                Files.newBufferedReader(
+                    Paths.get(
+                        UpdatariumITest::class.java.getResource(
+                            "/changelogs/changelog.kts"
+                        ).path
+                    )
+                ),
                 "hello"
             )
-        Updatarium()
-            .executeChangelog(
-                Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path),
+            Updatarium(this).executeChangelog(
+                Files.newBufferedReader(
+                    Paths.get(
+                        UpdatariumITest::class.java.getResource(
+                            "/changelogs/changelog_with_tags.kts"
+                        ).path
+                    )
+                ),
                 "hello"
             )
-        loggingSpy.disable()
-        val logs2 = loggingSpy
-            .getLogs().filter { it.loggerName.endsWith("BasicAction") }
-        Assertions.assertEquals(1, logs2.size)
-        Assertions.assertEquals(Level.INFO, logs2.first().level)
-        Assertions.assertEquals("Hello world 2", logs2.first().message)
-
+            assertThat(this.changeSetTested).hasSize(1)
+            assertThat(this.changeSetUnLocked.map { it.first.id })
+                .containsExactly("ChangeSet-2")
+        }
     }
 
     @Test
-    @LoggingTest
-    @LoggingTestSpyManager(LoggingSpyManagerLog4j2Impl::class)
-    fun `should correctly execute a very simple changelog using Reader`(loggingSpy: LoggingSpy<Level, LogEvent>) {
+    fun `should correctly execute a list of changelog`() {
 
         // No tags supplied
-        loggingSpy.enable()
-        Updatarium().executeChangelog(
-            Files.newBufferedReader(
-                Paths.get(
-                    UpdatariumITest::class.java.getResource(
-                        "/changelogs/changelog.kts"
-                    ).path
-                )
+        with(TestPersistEngine()) {
+            Updatarium(this).executeChangelogs(
+                Paths.get(UpdatariumITest::class.java.getResource("/changelogs").path),
+                "changelog(.*).kts"
             )
-        )
-        Updatarium().executeChangelog(
-            Files.newBufferedReader(
-                Paths.get(
-                    UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path
-                )
+            assertThat(this.changeSetTested).hasSize(2)
+            assertThat(this.changeSetUnLocked.map { it.first.id })
+                .containsExactly("ChangeSet-1", "ChangeSet-2")
+        }
+        // With tags supplied
+        with(TestPersistEngine()) {
+            Updatarium(this).executeChangelogs(
+                Paths.get(UpdatariumITest::class.java.getResource("/changelogs").path),
+                "changelog(.*).kts",
+                "hello"
             )
-        )
-        loggingSpy.disable()
-        val logs = loggingSpy.getLogs().filter { it.loggerName.endsWith("BasicAction") }
-        Assertions.assertEquals(2, logs.size)
-        Assertions.assertEquals(Level.INFO, logs.first().level)
-        Assertions.assertEquals("Hello world", logs.first().message)
-        Assertions.assertEquals(Level.INFO, logs.last().level)
-        Assertions.assertEquals("Hello world 2", logs.last().message)
 
-        // With tags supplied
-        loggingSpy.clear()
-        loggingSpy.enable()
-        Updatarium().executeChangelog(
-            Files.newBufferedReader(
-                Paths.get(
-                    UpdatariumITest::class.java.getResource(
-                        "/changelogs/changelog.kts"
-                    ).path
-                )
-            ),
-            "hello"
-        )
-        Updatarium().executeChangelog(
-            Files.newBufferedReader(
-                Paths.get(
-                    UpdatariumITest::class.java.getResource(
-                        "/changelogs/changelog_with_tags.kts"
-                    ).path
-                )
-            ),
-            "hello"
-        )
-        loggingSpy.disable()
-        val logs2 = loggingSpy.getLogs().filter { it.loggerName.endsWith("BasicAction") }
-        Assertions.assertEquals(1, logs2.size)
-        Assertions.assertEquals(Level.INFO, logs2.first().level)
-        Assertions.assertEquals("Hello world 2", logs2.first().message)
-
-    }
-
-    @Test
-    @LoggingTest
-    @LoggingTestSpyManager(LoggingSpyManagerLog4j2Impl::class)
-    fun `should correctly execute a list of changelog`(loggingSpy: LoggingSpy<Level, LogEvent>) {
-
-        // No tags supplied
-        loggingSpy.enable()
-        Updatarium().executeChangelogs(
-            Paths.get(UpdatariumITest::class.java.getResource("/changelogs").path),
-            "changelog(.*).kts"
-        )
-        loggingSpy.disable()
-        val logs = loggingSpy.getLogs().filter { it.loggerName.endsWith("BasicAction") }
-        Assertions.assertEquals(2, logs.size)
-        Assertions.assertEquals(Level.INFO, logs.first().level)
-        Assertions.assertEquals("Hello world", logs.first().message)
-        Assertions.assertEquals(Level.INFO, logs.last().level)
-        Assertions.assertEquals("Hello world 2", logs.last().message)
-
-        // With tags supplied
-        loggingSpy.clear()
-        loggingSpy.enable()
-        Updatarium().executeChangelogs(
-            Paths.get(UpdatariumITest::class.java.getResource("/changelogs").path),
-            "changelog(.*).kts",
-            "hello"
-        )
-        loggingSpy.disable()
-        val logs2 = loggingSpy.getLogs().filter { it.loggerName.endsWith("BasicAction") }
-        Assertions.assertEquals(1, logs2.size)
-        Assertions.assertEquals(Level.INFO, logs2.first().level)
-        Assertions.assertEquals("Hello world 2", logs2.first().message)
+            assertThat(this.changeSetTested).hasSize(1)
+            assertThat(this.changeSetUnLocked.map { it.first.id })
+                .containsExactly("ChangeSet-2")
+        }
     }
 }

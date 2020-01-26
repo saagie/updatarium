@@ -40,13 +40,11 @@ dependencies {
     kapt("com.juanchosaravia.autodsl:processor:0.0.9")
 
     //log4j2 appender plugin
-    implementation("org.apache.logging.log4j:log4j-core:2.13.0")
+    api("org.apache.logging.log4j:log4j-core:2.13.0")
 
     // Tests
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
-    testImplementation("com.github.codemonkeyfactory.test.logging:logging-test:1.0.0")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.20")
-    testImplementation("org.apache.logging.log4j:log4j-core:2.13.0")
     testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:2.13.0")
 }
 

@@ -49,7 +49,7 @@ Now you can create your own implementation of `PersistEngine`.
    abstract fun checkConnection()
    abstract fun notAlreadyExecuted(changeSetId: String): Boolean
    abstract fun lock(changeSet: ChangeSet)
-   abstract fun unlock(changeSet: ChangeSet,status: Status)
+   abstract fun unlock(changeSet: ChangeSet, status: Status, logs: List<InMemoryEvent<Level, LogEvent>>)
 ```
 
 Let's see in details each function : 
@@ -60,7 +60,7 @@ Let's see in details each function :
 
 - `lock(changeSet: ChangeSet)` is called just before execute the changeset actions. You have to record the changeset execution in your persistence engine (with a `Status.EXECUTE` status).
 
-- `unlock(changeSet: ChangeSet,status: Status)` is called a the end of the actions execution for a changeset. You have the correct status (`Status.OK` or `Status.KO`), and you can update this new status to the changeset record.
+- `unlock(changeSet: ChangeSet,status: Status, logs: List<InMemoryEvent<Level, LogEvent>>)` is called a the end of the actions execution for a changeset. You have the correct status (`Status.OK` or `Status.KO`) and an ordered list containing all LogEvent captured during the execution of the changeset, and you can update this new status to the changeset record.
 
 ## Code of Conduct
 

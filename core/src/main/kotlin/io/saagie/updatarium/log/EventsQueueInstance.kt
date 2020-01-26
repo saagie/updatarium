@@ -34,9 +34,4 @@ object EventsQueueInstance {
 object InMemoryAppenderAccess {
 
     fun getEvents(): List<InMemoryEvent<Level, LogEvent>> = EventsQueueInstance.instance.asSequence().toList()
-
-    fun dumpEvents(): List<String> = getEvents()
-        .map { event ->
-            "${event.time} [${event.level.name()}] ${event.message} ${event.exception?:""}"
-        }
 }

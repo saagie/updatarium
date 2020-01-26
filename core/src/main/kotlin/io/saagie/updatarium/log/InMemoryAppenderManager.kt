@@ -49,5 +49,13 @@ object InMemoryAppenderManager {
         (getContext(false) as LoggerContext).reconfigure()
     }
 
+    fun startRecord() {
+        inMemoryAppender.enableRecording()
+    }
+
+    fun stopRecord() {
+        inMemoryAppender.disableRecording()
+    }
+
 }
 
