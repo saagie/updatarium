@@ -15,16 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.persist.model
+package io.saagie.updatarium.log
 
-import io.saagie.updatarium.dsl.ChangeSet
-import io.saagie.updatarium.dsl.Status
+import java.time.Instant
 
-data class MongoDbChangeset(val changesetId: String, val author: String, val status: String, val log : List<String>)
-
-fun ChangeSet.toMongoDbDocument() = MongoDbChangeset(
-    changesetId = this.id,
-    author = this.author,
-    status = Status.EXECUTE.name,
-    log = mutableListOf()
+/**
+ * Stores a [LogEvent] in memory with only the relevant information.
+ */
+data class InMemoryEvent<Level, LogEvent>(
+    val event: LogEvent,
+    val level: Level,
+    val loggerName: String,
+    val time: Instant,
+    val message: String? = null,
+    val exception: Throwable? = null
 )
