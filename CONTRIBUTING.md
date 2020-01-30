@@ -8,12 +8,13 @@ Please note we have a code of conduct, please follow it in all your interactions
 
 1. Ensure any code or file you have created during your dev process are really needed before pushing it.
 2. Update the README.md with details of changes if needed.
-3. When your PR is submitted, owners and maintainers will review the PR and comment or accept it.
+3. Commits should follow the [gitmoji][gitmoji] convention.
+4. When your PR is submitted, owners and maintainers will review the PR and comment or accept it.
 
 ## Tools we use to build
 - JDK 1.8+
 - Gradle 6+ (use ./gradlew[.bat] everytime !!!)
-- Kotlin 1.3+
+- Kotlin 1.3.61+
 - Github actions (see the .github directory)
 
 ## Action creation
@@ -49,7 +50,7 @@ Now you can create your own implementation of `PersistEngine`.
    abstract fun checkConnection()
    abstract fun notAlreadyExecuted(changeSetId: String): Boolean
    abstract fun lock(changeSet: ChangeSet)
-   abstract fun unlock(changeSet: ChangeSet, status: Status, logs: List<InMemoryEvent<Level, LogEvent>>)
+   abstract fun unlock(changeSet: ChangeSet, status: Status, logs: List<String>)
 ```
 
 Let's see in details each function : 
@@ -60,7 +61,7 @@ Let's see in details each function :
 
 - `lock(changeSet: ChangeSet)` is called just before execute the changeset actions. You have to record the changeset execution in your persistence engine (with a `Status.EXECUTE` status).
 
-- `unlock(changeSet: ChangeSet,status: Status, logs: List<InMemoryEvent<Level, LogEvent>>)` is called a the end of the actions execution for a changeset. You have the correct status (`Status.OK` or `Status.KO`) and an ordered list containing all LogEvent captured during the execution of the changeset, and you can update this new status to the changeset record.
+- `unlock(changeSet: ChangeSet,status: Status, logs: List<String>)` is called a the end of the actions execution for a changeset. You have the correct status (`Status.OK` or `Status.KO`) and an ordered list containing all LogEvent captured during the execution of the changeset, and you can update this new status to the changeset record and store logs (if PersitConfig is set to not store logs, the list is empty)
 
 ## Code of Conduct
 
@@ -136,3 +137,4 @@ available at [http://contributor-covenant.org/version/1/4][version]
 
 [homepage]: http://contributor-covenant.org
 [version]: http://contributor-covenant.org/version/1/4/
+[gitmoji]: https://gitmoji.carloscuesta.me/

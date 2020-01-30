@@ -51,7 +51,7 @@ abstract class PersistEngine(val configuration: PersistConfig) : KLoggable {
     abstract fun lock(changeSet: ChangeSet)
 
     /**
-     * This function is called after the changeset execution, so you can now update the changeset status (in parameter).
+     * This function is called after the changeset execution, so you can now update the changeset status (in parameter) and store the logs.
      */
     abstract fun unlock(
         changeSet: ChangeSet,
