@@ -44,13 +44,13 @@ config {
         group = "io.saagie.updatarium"
 
         scm {
-            url = "https://github.com/PierreLeresteux/updatarium"
+            url = "https://github.com/saagie/updatarium"
         }
 
         links {
             website = "https://www.saagie.com"
-            scm = "https://github.com/PierreLeresteux/updatarium"
-            issueTracker = "https://github.com/PierreLeresteux/updatarium/issues"
+            scm = "https://github.com/saagie/updatarium"
+            issueTracker = "https://github.com/saagie/updatarium/issues"
         }
 
         licensing {
@@ -81,9 +81,9 @@ config {
                 username = bintrayUsername
                 password = bintrayApiKey
             }
-            userOrg = "pierresaagie"
+            userOrg = "saagie"
             name = "updatarium"
-            githubRepo = "PierreLeresteux/updatarium"
+            githubRepo = "saagie/updatarium"
             publish = true
         }
     }
