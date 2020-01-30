@@ -17,6 +17,7 @@
  */
 package io.saagie.updatarium.log
 
+import io.saagie.updatarium.persist.PersistConfig
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.LogEvent
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -34,4 +35,10 @@ object EventsQueueInstance {
 object InMemoryAppenderAccess {
 
     fun getEvents(): List<InMemoryEvent<Level, LogEvent>> = EventsQueueInstance.instance.asSequence().toList()
+
+    fun getEvents(persistConfig: PersistConfig, success: Boolean) = EventsQueueInstance.instance
+        .asSequence()
+        .toList()
+        .filter { (success && persistConfig.onSuccessStoreLogs) || (!success && persistConfig.onErrorStoreLogs) }
+        .map { persistConfig.layout(it) }
 }
