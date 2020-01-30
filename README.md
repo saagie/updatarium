@@ -14,6 +14,157 @@
 
 The goal of this project is to provide an easy way to execute actions only if it was never executed before. It was inspired from liquibase mecanism, but instead of using XML files, we chose to use DSL and Kotlin script files.
 
+### How to use it / Usage
+
+This project generate some libs, so you just have to add them in your pom.xml or build.gradle.kts: 
+
+#### Maven
+
+In your pom.xml:
+
+Add our Bintray maven repository 
+```xml
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-saagie-maven</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/saagie/maven</url>
+        </repository>
+    </repositories>
+```
+And add our libs (core at least) replacing `updatarium.version` with the latest version
+
+```xml
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.saagie.updatarium</groupId>
+            <artifactId>core</artifactId>
+            <version>${updatarium.version}</version>
+        </dependency>
+    </dependencies>
+```
+
+You can also add some engines (example with `engine-httpclient`) or persit-engine
+```xml
+    <dependency>
+        <groupId>io.saagie.updatarium</groupId>
+        <artifactId>engine-httpclient</artifactId>
+        <version>${updatarium.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>io.saagie.updatarium</groupId>
+        <artifactId>persist-mongodb</artifactId>
+        <version>${updatarium.version}</version>
+    </dependency>
+```
+#### Gradle
+
+Add our Bintray maven repository
+
+```kotlin
+repositories {
+    //...
+    maven(url = "https://dl.bintray.com/saagie/maven")
+}
+```
+...  
+And add our libs (core at least) replacing `LATEST_VERSION` with the latest version
+```kotlin
+dependencies {
+    implementation(kotlin("stdlib-jdk8")) // Kotlin standard libs
+
+    implementation("io.saagie.updatarium:core:LATEST_VERSION") // Updatarium Core library (mandatory)
+    
+    // Kotlin scripting (mandatory to use kts compilation)
+    implementation(kotlin("scripting-compiler-embeddable")) 
+    implementation(kotlin("script-util"))
+}
+```
+
+You can also add some engines (example with `engine-httpclient`) or persit-engine
+```kotlin
+implementation("io.saagie.updatarium:engine-httpclient:LATEST_VERSION")
+implementation("io.saagie.updatarium:persist-mongodb:LATEST_VERSION")
+```
+
+#### Running a changelog
+
+You need to create an Updatarium instance, then call the `executeChangelog` function with a Path of your changelog file (or a Reader): 
+```kotlin
+Updatarium().executeChangelog(pathOfYourChangelogFile)
+```
+
+You can also use a persist-engine (to store executions and logs ... see below to know more about persist-engines):  
+```kotlin
+Updatarium(MongodbPersistEngine()).executeChangelog(pathOfYourChangelogFile)
+```
+
+
+#### Running multiples changelogs 
+
+You can also run some changelogs, using this function `executeChangelogs` (`resourcesDirectory` is a Path - needs to be a directory, and the second arguments is a regex pattern to select changelogs files): 
+
+```kotlin
+Updatarium().executeChangelogs(resourcesDirectory, "changelog(.*).kts")
+```
+ 
+#### The tag system
+You can add some tags into a changeset like this : 
+```kotlin
++changeSet {
+    id = "ChangeSet-bash-1-1"
+    author = "Bash"
+    tags = listOf("before")
+    actions {
+        +BasicAction {
+            (1..5).forEach {
+                logger.info { "Hello $it!" }
+            }
+
+        }
+    }
+}
+``` 
+
+And you can executeChangelog(s) with a list of tag. If none, no tag matching system is applied...   
+ If you add a list of tags, all changesets matched with at least one tag you use will be executed.  
+
+In this example, `ChangeSet-bash-1-1` will be executed. 
+ ```kotlin
+Updatarium().executeChangelog(changelog,listOf("before","after")) 
+```
+In this example, `ChangeSet-bash-1-1` will not be executed.
+```kotlin
+Updatarium().executeChangelog(changelog,listOf("after")) 
+```
+
+#### PersistConfiguration
+
+You can configure the persistEngine, using a PersitConfiguration like this : 
+
+```kotlin
+val config = PersistConfig(
+            level = Level.INFO,
+            onSuccessStoreLogs = true,
+            onErrorStoreLogs = true
+        ) { event -> event.message!! }
+Updatarium(MongodbPersistEngine(config)).executeChangelog(pathOfYourChangelogFile)
+```
+
+A `PersistConfig` instance sould have : 
+ - level : org.apache.logging.log4j.Level (the minimal log level captured)
+ - onSuccessStoreLogs : boolean. At true, persitEngine will receive a list of logs when call the `unlock` function in case of succes.
+ - onErrorStoreLogs : boolean. At true, persitEngine will receive a list of logs when call the `unlock` function in case of failure.
+ - layout : a lambda representing the transformation to applied to map a `InMemoryEvent` into a `String`
+ 
 ### Architecture
 
 #### The concept of Changelogs and Changesets?
@@ -67,11 +218,10 @@ For the moment :
 are supported, but you can easily create your own `engine-XXX` project (see the CONTRIBUTING.md for more informations
 - ##### samples
 
-All these projects contains some changelog examples "How to use this engine" 
-
+You'll find in the sample directory some examples to use Updatarium.
 ### Credits
 Logo : 
- - Made by [@saagie](https://github.com/saagie)
+ - Made by [@pierreLeresteux](https://github.com/pierreLeresteux)
  - Rocket : Created by [Gregor Cresnar](https://thenounproject.com/grega.cresnar/) from noun project 
  - Font : Moon of Jupyter by Frederik (fthafm.com) [https://www.dafont.com/moon-of-jupiter.font](https://www.dafont.com/profile.php?user=982187) 
  

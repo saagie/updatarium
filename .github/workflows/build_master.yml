@@ -29,10 +29,6 @@ jobs:
         git config --local user.name "Updatarium GitHub Action Bot"
         git add version.properties
         git commit -m ":bookmark: Bump new version ${{ steps.extract_version.outputs.v }}"
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Build with Gradle
       run: ./gradlew build test
     - name: Quality analysis
@@ -49,3 +45,7 @@ jobs:
         release_name: v${{ steps.extract_version.outputs.v }}
         draft: false
         prerelease: false
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
