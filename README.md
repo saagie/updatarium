@@ -1,15 +1,15 @@
 ![logo](./doc/updatarium_full.png)
 # Updatarium
 
-[![Releases](https://img.shields.io/github/v/release/pierreleresteux/updatarium?color=blue)][release]
-[![Issues](https://img.shields.io/github/issues-raw/PierreLeresteux/updatarium?color=blue)][issues]
-[![License](https://img.shields.io/github/license/PierreLeresteux/updatarium?color=lightgray)][license]
-[![Contributors](https://img.shields.io/github/contributors/PierreLeresteux/updatarium?color=lightgray)][contributors]
+[![Releases](https://img.shields.io/github/v/release/saagie/updatarium?color=blue)][release]
+[![Issues](https://img.shields.io/github/issues-raw/saagie/updatarium?color=blue)][issues]
+[![License](https://img.shields.io/github/license/saagie/updatarium?color=lightgray)][license]
+[![Contributors](https://img.shields.io/github/contributors/saagie/updatarium?color=lightgray)][contributors]
 
-[release]: https://github.com/PierreLeresteux/updatarium/releases
-[license]: https://github.com/PierreLeresteux/updatarium/blob/master/LICENSE
-[contributors]: https://github.com/PierreLeresteux/updatarium/graphs/contributors
-[issues]: https://github.com/PierreLeresteux/updatarium/issues
+[release]: https://github.com/saagie/updatarium/releases
+[license]: https://github.com/saagie/updatarium/blob/master/LICENSE
+[contributors]: https://github.com/saagie/updatarium/graphs/contributors
+[issues]: https://github.com/saagie/updatarium/issues
 ### Goal
 
 The goal of this project is to provide an easy way to execute actions only if it was never executed before. It was inspired from liquibase mecanism, but instead of using XML files, we chose to use DSL and Kotlin script files.
@@ -71,7 +71,7 @@ All these projects contains some changelog examples "How to use this engine"
 
 ### Credits
 Logo : 
- - Made by [@PierreLeresteux](https://github.com/PierreLeresteux)
+ - Made by [@saagie](https://github.com/saagie)
  - Rocket : Created by [Gregor Cresnar](https://thenounproject.com/grega.cresnar/) from noun project 
  - Font : Moon of Jupyter by Frederik (fthafm.com) [https://www.dafont.com/moon-of-jupiter.font](https://www.dafont.com/profile.php?user=982187) 
  
