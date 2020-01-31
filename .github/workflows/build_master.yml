@@ -17,7 +17,7 @@ jobs:
       with:
         java-version: 1.8
     - name: Increment version number
-      run: ./gradlew incrementMajor
+      run: ./.github/script/incrementVersion.sh
     - name: extract real version
       id: extract_version
       run: echo "::set-output name=v::$(cat version.properties | grep 'semver' | sed -e 's/^version.semver=//')"
