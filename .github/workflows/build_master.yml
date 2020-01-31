@@ -17,12 +17,10 @@ jobs:
       with:
         java-version: 1.8
     - name: Increment version number
-      run: ./gradlew incrementMajor
+      run: ./.github/script/incrementVersion.sh
     - name: extract real version
       id: extract_version
       run: echo "::set-output name=v::$(cat version.properties | grep 'semver' | sed -e 's/^version.semver=//')"
-    - name: Build
-      run: ./gradlew build
     - name: Commit files
       run: |
         git config --local user.email "updatarium@saagie.com"
@@ -31,8 +29,6 @@ jobs:
         git commit -m ":bookmark: Bump new version ${{ steps.extract_version.outputs.v }}"
     - name: Build with Gradle
       run: ./gradlew build test
-    - name: Quality analysis
-      run: ./gradlew aggregateDetekt
     - name: Publish on bintray
       run: ./gradlew bintrayUpload -PbintrayUsername=${{ secrets.BINTRAY_USERNAME }} -PbintrayApiKey=${{ secrets.BINTRAY_APIKEY }}
     - name: Create Release
