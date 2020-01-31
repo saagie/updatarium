@@ -2,6 +2,8 @@
 # Updatarium
 
 [![Releases](https://img.shields.io/github/v/release/saagie/updatarium?color=blue)][release]
+[![Bintray](https://img.shields.io/bintray/v/saagie/maven/updatarium)][bintray]
+
 [![Issues](https://img.shields.io/github/issues-raw/saagie/updatarium?color=blue)][issues]
 [![License](https://img.shields.io/github/license/saagie/updatarium?color=lightgray)][license]
 [![Contributors](https://img.shields.io/github/contributors/saagie/updatarium?color=lightgray)][contributors]
@@ -10,6 +12,7 @@
 [license]: https://github.com/saagie/updatarium/blob/master/LICENSE
 [contributors]: https://github.com/saagie/updatarium/graphs/contributors
 [issues]: https://github.com/saagie/updatarium/issues
+[bintray]: https://bintray.com/saagie/maven/updatarium/_latestVersion
 ### Goal
 
 The goal of this project is to provide an easy way to execute actions only if it was never executed before. It was inspired from liquibase mecanism, but instead of using XML files, we chose to use DSL and Kotlin script files.
@@ -22,16 +25,16 @@ This project generate some libs, so you just have to add them in your pom.xml or
 
 In your pom.xml:
 
-Add our Bintray maven repository 
+Add JCenter maven repository 
 ```xml
     <repositories>
         <repository>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-            <id>bintray-saagie-maven</id>
-            <name>bintray</name>
-            <url>https://dl.bintray.com/saagie/maven</url>
+            <id>central</id>
+            <name>bintray-plugins</name>
+            <url>https://jcenter.bintray.com</url>
         </repository>
     </repositories>
 ```
@@ -67,12 +70,12 @@ You can also add some engines (example with `engine-httpclient`) or persit-engin
 ```
 #### Gradle
 
-Add our Bintray maven repository
+Add JCenter maven repository
 
 ```kotlin
 repositories {
     //...
-    maven(url = "https://dl.bintray.com/saagie/maven")
+    jcenter()
 }
 ```
 ...  

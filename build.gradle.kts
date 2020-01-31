@@ -99,7 +99,6 @@ allprojects {
     group = "io.saagie.updatarium"
     version = props.get("version.semver")!!
 
-
     tasks.withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "1.8"
     }
