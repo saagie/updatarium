@@ -46,7 +46,7 @@ dependencies {
 
     // Tests
     testImplementation("org.junit.jupiter:junit-jupiter:5.6.0")
-    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.20")
+    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.21")
     testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:2.13.0")
     testImplementation(kotlin("reflect"))
 }
