@@ -105,7 +105,7 @@ allprojects {
 }
 val autoImportDependencies = mapOf(
     "io.github.microutils:kotlin-logging" to "1.7.8",
-    "org.slf4j:slf4j-api" to "1.7.29"
+    "org.slf4j:slf4j-api" to "1.7.30"
 )
 
 val sampleAutoImportDependencies = mapOf(
