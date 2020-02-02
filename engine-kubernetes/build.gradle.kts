@@ -24,7 +24,7 @@ config {
     publishing { enabled = true }
 }
 
-val fabric8K8SClientVersion = "4.6.4"
+val fabric8K8SClientVersion = "4.7.1"
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":core"))

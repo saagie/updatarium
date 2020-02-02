@@ -19,6 +19,7 @@ package io.saagie.updatarium
  */
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.extracting
 import assertk.assertions.hasSize
 import io.saagie.updatarium.persist.TestPersistEngine
 import org.junit.jupiter.api.DisplayName
@@ -54,7 +55,8 @@ class UpdatariumITest {
     """.trimIndent()
                 )
             assertThat(this.changeSetTested).hasSize(1)
-            assertThat(this.changeSetUnLocked.map { it.first.id })
+            assertThat(this.changeSetUnLocked)
+                .extracting { it.first.id }
                 .containsExactly("ChangeSet-1")
         }
     }
@@ -89,7 +91,8 @@ class UpdatariumITest {
     """.trimIndent()
                 )
             assertThat(this.changeSetTested).hasSize(1)
-            assertThat(this.changeSetUnLocked.map { it.first.id })
+            assertThat(this.changeSetUnLocked)
+                .extracting { it.first.id }
                 .containsExactly("ChangeSet-1")
         }
     }
@@ -130,7 +133,8 @@ class UpdatariumITest {
     """.trimIndent()
                 )
             assertThat(this.changeSetTested).hasSize(2)
-            assertThat(this.changeSetUnLocked.map { it.first.id })
+            assertThat(this.changeSetUnLocked)
+                .extracting { it.first.id }
                 .containsExactly("ChangeSet-1", "ChangeSet-2")
         }
     }
@@ -147,7 +151,8 @@ class UpdatariumITest {
                 Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path)
             )
             assertThat(this.changeSetTested).hasSize(2)
-            assertThat(this.changeSetUnLocked.map { it.first.id })
+            assertThat(this.changeSetUnLocked)
+                .extracting { it.first.id }
                 .containsExactly("ChangeSet-1", "ChangeSet-2")
         }
 
@@ -164,7 +169,8 @@ class UpdatariumITest {
                     "hello"
                 )
             assertThat(this.changeSetTested).hasSize(1)
-            assertThat(this.changeSetUnLocked.map { it.first.id })
+            assertThat(this.changeSetUnLocked)
+                .extracting { it.first.id }
                 .containsExactly("ChangeSet-2")
         }
 
@@ -192,7 +198,8 @@ class UpdatariumITest {
                 )
             )
             assertThat(this.changeSetTested).hasSize(2)
-            assertThat(this.changeSetUnLocked.map { it.first.id })
+            assertThat(this.changeSetUnLocked)
+                .extracting { it.first.id }
                 .containsExactly("ChangeSet-1", "ChangeSet-2")
         }
 
@@ -219,7 +226,8 @@ class UpdatariumITest {
                 "hello"
             )
             assertThat(this.changeSetTested).hasSize(1)
-            assertThat(this.changeSetUnLocked.map { it.first.id })
+            assertThat(this.changeSetUnLocked)
+                .extracting { it.first.id }
                 .containsExactly("ChangeSet-2")
         }
     }
@@ -234,7 +242,8 @@ class UpdatariumITest {
                 "changelog(.*).kts"
             )
             assertThat(this.changeSetTested).hasSize(2)
-            assertThat(this.changeSetUnLocked.map { it.first.id })
+            assertThat(this.changeSetUnLocked)
+                .extracting { it.first.id }
                 .containsExactly("ChangeSet-1", "ChangeSet-2")
         }
         // With tags supplied
@@ -246,7 +255,8 @@ class UpdatariumITest {
             )
 
             assertThat(this.changeSetTested).hasSize(1)
-            assertThat(this.changeSetUnLocked.map { it.first.id })
+            assertThat(this.changeSetUnLocked)
+                .extracting { it.first.id }
                 .containsExactly("ChangeSet-2")
         }
     }

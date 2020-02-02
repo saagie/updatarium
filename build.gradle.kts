@@ -24,9 +24,9 @@ val bintrayApiKey: String by project
 plugins {
     kotlin("jvm") version "1.3.61"
     id("net.thauvin.erik.gradle.semver").version("1.0.4")
-    id("org.kordamp.gradle.kotlin-project") version "0.31.2"
-    id("org.kordamp.gradle.bintray") version "0.31.2"
-    id("org.kordamp.gradle.detekt") version "0.31.2"
+    id("org.kordamp.gradle.kotlin-project") version "0.32.0"
+    id("org.kordamp.gradle.bintray") version "0.32.0"
+    id("org.kordamp.gradle.detekt") version "0.32.0"
 }
 
 val props = Properties().apply {
@@ -105,7 +105,7 @@ allprojects {
 }
 val autoImportDependencies = mapOf(
     "io.github.microutils:kotlin-logging" to "1.7.8",
-    "org.slf4j:slf4j-api" to "1.7.29"
+    "org.slf4j:slf4j-api" to "1.7.30"
 )
 
 val sampleAutoImportDependencies = mapOf(
