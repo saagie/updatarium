@@ -26,6 +26,8 @@ plugins {
     id("net.thauvin.erik.gradle.semver").version("1.0.4")
     id("org.kordamp.gradle.kotlin-project") version "0.32.0"
     id("org.kordamp.gradle.bintray") version "0.32.0"
+    id("org.kordamp.gradle.coveralls") version "0.32.0"
+    id("org.kordamp.gradle.jacoco") version "0.32.0"
     id("org.kordamp.gradle.detekt") version "0.32.0"
     id("com.adarshr.test-logger") version "2.0.0"
 }
@@ -59,6 +61,15 @@ config {
                 license {
                     id = "Apache-2.0"
                 }
+            }
+        }
+
+        coverage {
+            jacoco {
+                enabled = true
+            }
+            coveralls {
+                enabled = true
             }
         }
 

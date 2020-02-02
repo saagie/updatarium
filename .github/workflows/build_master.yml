@@ -29,6 +29,11 @@ jobs:
         git commit -m ":bookmark: Bump new version ${{ steps.extract_version.outputs.v }}"
     - name: Build with Gradle
       run: ./gradlew build test
+    - name: Quality analysis
+      env:
+        COVERALLS_REPO_TOKEN: "${{ secrets.COVERALLS_REPO_TOKEN }}"
+        COVERALLS_GIT_BRANCH: "master"
+      run: ./gradlew aggregateDetekt aggregateJacocoReport coveralls
     - name: Publish on bintray
       run: ./gradlew bintrayUpload -PbintrayUsername=${{ secrets.BINTRAY_USERNAME }} -PbintrayApiKey=${{ secrets.BINTRAY_APIKEY }}
     - name: Create Release
