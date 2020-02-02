@@ -34,6 +34,23 @@ data class ChangeSet(
 ) : KLoggable {
     override val logger = logger()
 
+    private var changelogId = ""
+
+    /**
+     * Set the changelogId is not empty
+     */
+    fun setChangelogId(id: String): ChangeSet {
+        if (id.isNotEmpty()) {
+            this.changelogId = "${id}_"
+        }
+        return this
+    }
+
+    /**
+     * Generate an ID (changelogId id)
+     */
+    fun calculateId() = "$changelogId$id"
+
     /**
      * The changeset execution :
      * - check if the changeset has already been execution (OK or KO)
@@ -44,7 +61,7 @@ data class ChangeSet(
      *  Status => OK if all actions was OK, KO otherwise ...
      */
     fun execute(persistEngine: PersistEngine = DefaultPersistEngine()) {
-        if (persistEngine.notAlreadyExecuted(id)) {
+        if (persistEngine.notAlreadyExecuted(calculateId())) {
             logger.info { "$id will be executed" }
             persistEngine.lock(this)
             try {
@@ -53,13 +70,17 @@ data class ChangeSet(
                     it.execute()
                 }
                 InMemoryAppenderManager.stopRecord()
-                persistEngine.unlock(this, Status.OK, InMemoryAppenderAccess
-                    .getEvents(persistConfig = persistEngine.configuration, success = true))
+                persistEngine.unlock(
+                    this, Status.OK, InMemoryAppenderAccess
+                        .getEvents(persistConfig = persistEngine.configuration, success = true)
+                )
                 logger.info { "$id marked as ${Status.OK}" }
             } catch (e: Exception) {
                 logger.error(e) { "Error during apply update" }
-                persistEngine.unlock(this, Status.KO, InMemoryAppenderAccess
-                    .getEvents(persistConfig = persistEngine.configuration, success = false))
+                persistEngine.unlock(
+                    this, Status.KO, InMemoryAppenderAccess
+                        .getEvents(persistConfig = persistEngine.configuration, success = false)
+                )
                 logger.info { "$id marked as ${Status.KO}" }
             }
         } else {

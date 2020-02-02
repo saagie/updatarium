@@ -20,10 +20,10 @@ package io.saagie.updatarium.persist.model
 import io.saagie.updatarium.dsl.ChangeSet
 import io.saagie.updatarium.dsl.Status
 
-data class MongoDbChangeset(val changesetId: String, val author: String, val status: String, val log : List<String>)
+data class MongoDbChangeset(val changesetId: String, val author: String, val status: String, val log: List<String>)
 
 fun ChangeSet.toMongoDbDocument() = MongoDbChangeset(
-    changesetId = this.id,
+    changesetId = this.calculateId(),
     author = this.author,
     status = Status.EXECUTE.name,
     log = mutableListOf()

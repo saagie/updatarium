@@ -21,10 +21,13 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
 import io.saagie.updatarium.dsl.action.BasicAction
 import io.saagie.updatarium.persist.TestPersistEngine
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.jvm.isAccessible
 
 
 class ChangelogTest {
@@ -139,22 +142,35 @@ class ChangelogTest {
         @Test
         fun should_returns_all_changesets_when_all_tags_matched() {
             val matchedChangesets = changelogWithtags(Pair(listOf("before"), listOf("after")))
-                .matchedChangesets(listOf("before","after"))
+                .matchedChangesets(listOf("before", "after"))
 
             assertThat(matchedChangesets).hasSize(2)
-            assertThat(matchedChangesets.map { it.id }).containsExactly("changeset1","changeset2")
+            assertThat(matchedChangesets.map { it.id }).containsExactly("changeset1", "changeset2")
         }
 
         @Test
         fun should_returns_all_changesets_with_a_list_of_tags_when_all_tags_matched() {
-            val matchedChangesets = changelogWithtags(Pair(listOf("before"), listOf("before","after")))
+            val matchedChangesets = changelogWithtags(Pair(listOf("before"), listOf("before", "after")))
                 .matchedChangesets(listOf("before"))
 
             assertThat(matchedChangesets).hasSize(2)
-            assertThat(matchedChangesets.map { it.id }).containsExactly("changeset1","changeset2")
+            assertThat(matchedChangesets.map { it.id }).containsExactly("changeset1", "changeset2")
+        }
+    }
+
+    @Nested
+    inner class SetIdTest {
+
+        @Test
+        fun should_set_an_id_if_set() {
+            val changelog = Changelog()
+            assertThat(changelog.getIdValue()).isEmpty()
+            changelog.setId("newId")
+            assertThat(changelog.getIdValue()).isEqualTo("newId")
         }
     }
 }
+
 fun changelogWithtags(tags: Pair<List<String>?, List<String>?>) = Changelog().apply {
     changesets = listOf(
         ChangeSet(
@@ -170,3 +186,10 @@ fun changelogWithtags(tags: Pair<List<String>?, List<String>?>) = Changelog().ap
         )
     )
 }
+
+fun Changelog.getIdValue(): String = this::class.declaredMemberProperties
+    .first { it.name == "id" }
+    .let {
+        it.isAccessible = true
+        return (it.getter.call(this)) as String
+    }

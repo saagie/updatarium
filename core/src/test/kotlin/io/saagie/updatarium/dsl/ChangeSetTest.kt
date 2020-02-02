@@ -73,4 +73,32 @@ class ChangeSetTest {
         assertThat(engine.changeSetUnLocked.filter { it.first == changeset }.first().second).isEqualTo(Status.KO)
 
     }
+
+    @Test
+    fun should_set_an_id_if_changelogId_is_not_empty() {
+        val changeset = ChangeSet(
+            id = "changeset1",
+            author = "test",
+            actions = listOf(
+                BasicAction { Unit }
+            )
+        )
+        assertThat(changeset.calculateId()).isEqualTo(changeset.id)
+        changeset.setChangelogId("newId")
+        assertThat(changeset.calculateId()).isEqualTo("newId_${changeset.id}")
+    }
+
+    @Test
+    fun should_do_nothing_if_changelogId_is_empty() {
+        val changeset = ChangeSet(
+            id = "changeset1",
+            author = "test",
+            actions = listOf(
+                BasicAction { Unit }
+            )
+        )
+        assertThat(changeset.calculateId()).isEqualTo(changeset.id)
+        changeset.setChangelogId("")
+        assertThat(changeset.calculateId()).isEqualTo(changeset.id)
+    }
 }
