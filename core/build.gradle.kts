@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.testImplementation
-
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -41,7 +39,7 @@ dependencies {
     api("com.juanchosaravia.autodsl:annotation:0.0.9")
     kapt("com.juanchosaravia.autodsl:processor:0.0.9")
 
-    //log4j2 appender plugin
+    // log4j2 appender plugin
     api("org.apache.logging.log4j:log4j-core:2.13.0")
 
     // Tests
