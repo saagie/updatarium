@@ -27,6 +27,7 @@ plugins {
     id("org.kordamp.gradle.kotlin-project") version "0.32.0"
     id("org.kordamp.gradle.bintray") version "0.32.0"
     id("org.kordamp.gradle.detekt") version "0.32.0"
+    id("com.adarshr.test-logger") version "2.0.0"
 }
 
 val props = Properties().apply {

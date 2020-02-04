@@ -21,7 +21,7 @@ plugins {
     kotlin("jvm")
     kotlin("kapt")
 }
-
+apply(plugin = "com.adarshr.test-logger")
 config {
     bintray { enabled = true }
     publishing { enabled = true }
