@@ -6,13 +6,15 @@
 
 [![Issues](https://img.shields.io/github/issues-raw/saagie/updatarium?color=blue)][issues]
 [![License](https://img.shields.io/github/license/saagie/updatarium?color=lightgray)][license]
-[![Contributors](https://img.shields.io/github/contributors/saagie/updatarium?color=lightgray)][contributors]
+[![Contributors](https://img.shields.io/github/contributors/saagie/updatarium?color=lightgray)][contributors]  
+[![Coveralls github](https://img.shields.io/coveralls/github/saagie/updatarium)][coveralls]
 
 [release]: https://github.com/saagie/updatarium/releases
 [license]: https://github.com/saagie/updatarium/blob/master/LICENSE
 [contributors]: https://github.com/saagie/updatarium/graphs/contributors
 [issues]: https://github.com/saagie/updatarium/issues
 [bintray]: https://bintray.com/saagie/maven/updatarium/_latestVersion
+[coveralls]: https://coveralls.io/github/saagie/updatarium
 ### Goal
 
 The goal of this project is to provide an easy way to execute actions only if it was never executed before. It was inspired from liquibase mecanism, but instead of using XML files, we chose to use DSL and Kotlin script files.
