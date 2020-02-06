@@ -17,6 +17,10 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
       - name: Increment version number
         run: ./.github/script/incrementVersion.sh
       - name: Build with Gradle
@@ -24,5 +28,11 @@ jobs:
       - name: Quality analysis
         env:
           COVERALLS_REPO_TOKEN: "${{ secrets.COVERALLS_REPO_TOKEN }}"
-          COVERALLS_GIT_BRANCH: ${GITHUB_REF##*/}
+          COVERALLS_GIT_BRANCH: ${{ steps.extract_branch.outputs.branch }}
         run: ./gradlew aggregateDetekt aggregateJacocoReport coveralls
+      - name: DockerFile creation
+        run: docker build -f updatarium-cli/Dockerfile -t saagie/updatarium:latest updatarium-cli/build/distributions
+      - name: Docker check image
+        run: docker run --rm -v ${PWD}:/updatarium-src saagie/updatarium:latest /updatarium-src/samples/basic-multiplechangelog-withtag/src/main/resources/changelogs
+      - name: Docker run tests with and without tags
+        run: ./.github/script/testDocker.sh

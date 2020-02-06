@@ -34,6 +34,19 @@ jobs:
         COVERALLS_REPO_TOKEN: "${{ secrets.COVERALLS_REPO_TOKEN }}"
         COVERALLS_GIT_BRANCH: "master"
       run: ./gradlew aggregateDetekt aggregateJacocoReport coveralls
+    - name: Docker login
+      run: "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+      env:
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+    - name: Docker image creation and push
+      run: |
+        docker build -f updatarium-cli/Dockerfile -t saagie/updatarium:latest updatarium-cli/build/distributions
+        docker tag saagie/updatarium:latest saagie/updatarium:${{ steps.extract_version.outputs.v }}
+    - name: Docker push
+      run: |
+        docker push saagie/updatarium:latest
+        docker push saagie/updatarium:${{ steps.extract_version.outputs.v }}
     - name: Publish on bintray
       run: ./gradlew bintrayUpload -PbintrayUsername=${{ secrets.BINTRAY_USERNAME }} -PbintrayApiKey=${{ secrets.BINTRAY_APIKEY }}
     - name: Create Release
