@@ -35,32 +35,34 @@ import java.nio.file.Path
 class Updatarium(val persistEngine: PersistEngine = DefaultPersistEngine()) {
     private val ktsLoader = KtsObjectLoader()
 
-    fun executeChangelog(reader: Reader, tags: List<String> = emptyList()) {
+    fun executeChangelog(reader: Reader, tags: List<String> = emptyList(), changelogId: String = "") {
         with(ktsLoader.load<Changelog>(reader)) {
+            this.setId(changelogId)
             this.execute(persistEngine, tags)
         }
     }
 
-    fun executeChangelog(script: String, tags: List<String> = emptyList()) {
+    fun executeChangelog(script: String, tags: List<String> = emptyList(), changelogId: String = "") {
         with(ktsLoader.load<Changelog>(script)) {
+            this.setId(changelogId)
             this.execute(persistEngine, tags)
         }
     }
 
-    fun executeChangelog(reader: Reader, tag: String) {
-        this.executeChangelog(reader, listOf(tag))
+    fun executeChangelog(reader: Reader, tag: String, changelogId: String = "") {
+        this.executeChangelog(reader, listOf(tag), changelogId)
     }
 
     fun executeChangelog(path: Path, tags: List<String> = emptyList()) {
-        executeChangelog(Files.newBufferedReader(path), tags)
+        executeChangelog(Files.newBufferedReader(path), tags, path.toAbsolutePath().toString())
     }
 
     fun executeChangelog(path: Path, tag: String) {
-        executeChangelog(Files.newBufferedReader(path), listOf(tag))
+        executeChangelog(Files.newBufferedReader(path), listOf(tag), path.toAbsolutePath().toString())
     }
 
-    fun executeChangelog(script: String, tag: String) {
-        executeChangelog(script, listOf(tag))
+    fun executeChangelog(script: String, tag: String, changelogId: String = "") {
+        executeChangelog(script, listOf(tag), changelogId)
     }
 
     fun executeChangelogs(path: Path, pattern: String, tag: String) {

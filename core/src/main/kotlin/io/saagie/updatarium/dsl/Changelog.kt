@@ -24,13 +24,22 @@ import io.saagie.updatarium.persist.PersistEngine
 @AutoDsl
 data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) {
 
+    private var id = ""
+
+    /**
+     * Set the ID of the changelog
+     */
+    fun setId(id: String) {
+        this.id = id
+    }
+
     /**
      * It will execute each changesets present in this changelog sequentially.
      */
     fun execute(persistEngine: PersistEngine, tags: List<String> = emptyList()) {
         persistEngine.checkConnection()
         InMemoryAppenderManager.setup(persistConfig = persistEngine.configuration)
-        matchedChangesets(tags).forEach { it.execute(persistEngine) }
+        matchedChangesets(tags).forEach { it.setChangelogId(id).execute(persistEngine) }
         InMemoryAppenderManager.tearDown()
     }
 

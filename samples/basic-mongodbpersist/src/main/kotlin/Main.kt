@@ -17,9 +17,12 @@
  */
 import io.saagie.updatarium.Updatarium
 import io.saagie.updatarium.persist.MongodbPersistEngine
+import io.saagie.updatarium.persist.PersistConfig
+import org.apache.logging.log4j.Level
 
 fun main() {
-    Updatarium(MongodbPersistEngine()).executeChangelog("""
+    val persistConfig = PersistConfig(level = Level.INFO,onSuccessStoreLogs = true,onErrorStoreLogs = true)
+    Updatarium(MongodbPersistEngine(persistConfig)).executeChangelog("""
         import io.saagie.updatarium.dsl.action.BasicAction
         import io.saagie.updatarium.dsl.changeSet
         import io.saagie.updatarium.dsl.changelog

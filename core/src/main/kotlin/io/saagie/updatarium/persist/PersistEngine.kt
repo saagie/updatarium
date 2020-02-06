@@ -29,7 +29,7 @@ import org.apache.logging.log4j.core.LogEvent
  *
  * You should use this abstract class to create your own io.saagie.updatarium.persist io.saagie.updatarium.engine using existings functions
  */
-abstract class PersistEngine(val configuration: PersistConfig) : KLoggable {
+abstract class PersistEngine(open val configuration: PersistConfig) : KLoggable {
     override val logger = logger()
     /**
      * This function will check the connection to the persistence system.
