@@ -20,18 +20,15 @@ package io.saagie.updatarium.persist
 import com.mongodb.ConnectionString
 import io.saagie.updatarium.dsl.ChangeSet
 import io.saagie.updatarium.dsl.Status
-import io.saagie.updatarium.log.InMemoryEvent
 import io.saagie.updatarium.persist.model.MongoDbChangeset
 import io.saagie.updatarium.persist.model.toMongoDbDocument
-import org.apache.logging.log4j.Level
-import org.apache.logging.log4j.core.LogEvent
 import org.litote.kmongo.*
 
 const val MONGODB_PERSIST_CONNECTIONSTRING = "MONGODB_PERSIST_CONNECTIONSTRING"
 const val DATABASE = "Updatarium"
 const val COLLECTION = "changelog"
 
-class MongodbPersistEngine : PersistEngine(configuration = PersistConfig()) {
+class MongodbPersistEngine(override val configuration: PersistConfig = PersistConfig()) : PersistEngine(configuration) {
 
     private val collection by lazy {
         with(KMongo.createClient(ConnectionString(getConnectionString()))) {
