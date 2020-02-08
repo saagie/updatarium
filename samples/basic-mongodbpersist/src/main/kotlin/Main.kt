@@ -30,12 +30,13 @@ fun main() {
         changelog {
             changesets {
                 +changeSet {
-                    id = "ChangeSet-1"
+                    id = "ChangeSet-2"
                     author = "Hello World"
                     actions {
                         +BasicAction {
                             (1..5).forEach {
                                 logger.info {"Hello ${"$"}it!"}
+                                Thread.sleep(300)
                             }
 
                         }

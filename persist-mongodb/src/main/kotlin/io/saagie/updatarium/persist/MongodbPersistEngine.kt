@@ -23,10 +23,11 @@ import io.saagie.updatarium.dsl.Status
 import io.saagie.updatarium.persist.model.MongoDbChangeset
 import io.saagie.updatarium.persist.model.toMongoDbDocument
 import org.litote.kmongo.*
+import java.time.Instant
 
 const val MONGODB_PERSIST_CONNECTIONSTRING = "MONGODB_PERSIST_CONNECTIONSTRING"
 const val DATABASE = "Updatarium"
-const val COLLECTION = "changelog"
+const val COLLECTION = "changeset"
 
 class MongodbPersistEngine(override val configuration: PersistConfig = PersistConfig()) : PersistEngine(configuration) {
 
@@ -86,6 +87,7 @@ class MongodbPersistEngine(override val configuration: PersistConfig = PersistCo
             MongoDbChangeset::changesetId eq changeSet.id,
             set(
                 MongoDbChangeset::status setTo status.name,
+                MongoDbChangeset::statusDate setTo Instant.now(),
                 MongoDbChangeset::log setTo logs
             )
         )
