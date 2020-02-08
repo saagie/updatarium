@@ -226,6 +226,10 @@ are supported, but you can easily create your own `engine-XXX` project (see the 
 - ##### samples
 
 You'll find in the sample directory some examples to use Updatarium.
+
+- ##### updatarium-cli
+
+A command line module to provide a all-in-one application a ship it into a Docker image ([saagie/updatarium](https://hub.docker.com/r/saagie/updatarium)))
 ### Credits
 Logo : 
  - Made by [@pierreLeresteux](https://github.com/pierreLeresteux)
