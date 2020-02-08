@@ -63,3 +63,13 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2.0.0
+      env:
+        SLACK_CHANNEL: tmp-oss-updatarium
+        SLACK_COLOR: '#254285'
+        SLACK_ICON: https://github.com/saagie/updatarium/raw/master/doc/updatarium_full.png
+        SLACK_MESSAGE: "Changelog for the release ${{ steps.extract_version.outputs.v }}:\n\n ${{ github.event.head_commit.message }} \n\nSee : https://github.com/saagie/updatarium/releases/tag/${{ steps.extract_version.outputs.v }} for details."
+        SLACK_TITLE: "Release ${{ steps.extract_version.outputs.v }} :tada:"
+        SLACK_USERNAME: Updatarium Github Bot
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
