@@ -56,6 +56,9 @@ class Standalone : CliktCommand(printHelpOnEmptyArgs = true) {
     val dryrun by option("--dryrun", "-d",
         help = "dryRun = when activated, no execution and no lock, just logs")
         .flag()
+    val failfast by option("--failfast", "-f",
+        help = "failfast (activated by default) = when activated, stop at the first error")
+        .flag("--no-failfast", default = true)
 
     // PersistEngine options
     val persitEngine by option(help = "Choose the PersitEngine", envvar = "UPDATARIUM_PERSIST_ENGINE").choice(
@@ -96,6 +99,7 @@ class Standalone : CliktCommand(printHelpOnEmptyArgs = true) {
         val updatarium = Updatarium(
             UpdatariumConfiguration(
                 dryRun = dryrun,
+                failfast = failfast,
                 persistEngine = when (persitEngine) {
                     MONGODB.name -> MongodbPersistEngine(config)
                     else -> DefaultPersistEngine(config)

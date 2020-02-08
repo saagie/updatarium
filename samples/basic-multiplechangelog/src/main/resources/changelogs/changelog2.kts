@@ -26,6 +26,15 @@ changelog {
             author = "Bash"
             actions {
                 +BasicAction {
+                    throw IllegalStateException("Fail during execution")
+                }
+            }
+        }
+        +changeSet {
+            id = "ChangeSet-bash-2"
+            author = "Bash"
+            actions {
+                +BasicAction {
                     (6..10).forEach {
                         logger.info { "Hello $it!" }
                     }

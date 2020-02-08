@@ -20,9 +20,11 @@ package io.saagie.updatarium.dsl
 import com.autodsl.annotation.AutoDsl
 import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.log.InMemoryAppenderManager
+import mu.KLoggable
 
 @AutoDsl
-data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) {
+data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) : KLoggable {
+    override val logger = logger()
 
     private var id = ""
 

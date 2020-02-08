@@ -15,13 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.config
+import io.saagie.updatarium.dsl.action.BasicAction
+import io.saagie.updatarium.dsl.changeSet
+import io.saagie.updatarium.dsl.changelog
 
-import io.saagie.updatarium.persist.DefaultPersistEngine
-import io.saagie.updatarium.persist.PersistEngine
+changelog {
+    changesets {
+        +changeSet {
+            id = "ChangeSet-bash-3"
+            author = "Bash"
+            actions {
+                +BasicAction {
+                    (6..10).forEach {
+                        logger.info { "Hello $it!" }
+                    }
 
-data class UpdatariumConfiguration(
-    val dryRun: Boolean = false,
-    val failfast: Boolean = true,
-    val persistEngine: PersistEngine = DefaultPersistEngine()
-)
+                }
+            }
+        }
+    }
+}

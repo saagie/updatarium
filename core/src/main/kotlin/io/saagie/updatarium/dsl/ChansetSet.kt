@@ -90,6 +90,9 @@ data class ChangeSet(
                         .getEvents(persistConfig = persistEngine.configuration, success = false)
                 )
                 logger.info { "$id marked as $KO" }
+                if (configuration.failfast) {
+                    throw e
+                }
             }
         } else {
             logger.info { "$id already executed" }

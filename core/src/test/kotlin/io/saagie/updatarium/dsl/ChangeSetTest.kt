@@ -66,7 +66,7 @@ class ChangeSetTest {
                 BasicAction { actionRecord.add("action4") }
             )
         )
-        val config = UpdatariumConfiguration(persistEngine = TestPersistEngine())
+        val config = UpdatariumConfiguration(failfast = false,persistEngine = TestPersistEngine())
         changeset.execute(config)
 
         assertThat(actionRecord)
