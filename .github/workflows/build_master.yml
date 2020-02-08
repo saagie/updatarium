@@ -59,6 +59,16 @@ jobs:
         release_name: v${{ steps.extract_version.outputs.v }}
         draft: false
         prerelease: false
+    - name: Upload Application in release
+      id: upload-release-asset-certified
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_SECRET}}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./updatarium-cli/build/distributions/updatarium-cli-${{ steps.extract_version.outputs.v }}.zip
+        asset_name: updatarium-cli-${{ steps.extract_version.outputs.v }}.zip
+        asset_content_type: application/zip
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
