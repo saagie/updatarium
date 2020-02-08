@@ -63,7 +63,7 @@ jobs:
       id: upload-release-asset-certified
       uses: actions/upload-release-asset@v1.0.1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_SECRET}}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./updatarium-cli/build/distributions/updatarium-cli-${{ steps.extract_version.outputs.v }}.zip
