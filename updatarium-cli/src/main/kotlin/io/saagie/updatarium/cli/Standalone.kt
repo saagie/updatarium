@@ -28,6 +28,7 @@ import com.github.ajalt.clikt.parameters.types.path
 import io.saagie.updatarium.Updatarium
 import io.saagie.updatarium.cli.PersitEngine.MONGODB
 import io.saagie.updatarium.cli.PersitEngine.NONE
+import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.persist.DefaultPersistEngine
 import io.saagie.updatarium.persist.MongodbPersistEngine
 import io.saagie.updatarium.persist.PersistConfig
@@ -47,22 +48,32 @@ class Standalone : CliktCommand(printHelpOnEmptyArgs = true) {
         readable = true,
         fileOkay = true
     )
-    val tags by option(help = "Tags to execute (OR)", envvar = "UPDATARIUM_TAGS").multiple()
+    val tags by option("--tags", "-t", help = "Tags to execute (OR)", envvar = "UPDATARIUM_TAGS").multiple()
     val changelogsPattern by option(
         help = "Changelogs pattern regex (if --changelog is a directory) : `changelog(.*).kts` by default",
         envvar = "UPDATARIUM_CHANGELOGS_PATTERN"
     ).default("changelog(.*).kts")
+    val dryrun by option("--dryrun", "-d",
+        help = "dryRun = when activated, no execution and no lock, just logs")
+        .flag()
 
     // PersistEngine options
     val persitEngine by option(help = "Choose the PersitEngine", envvar = "UPDATARIUM_PERSIST_ENGINE").choice(
         NONE.name,
         MONGODB.name
-        ,ignoreCase = true
+        , ignoreCase = true
     ).default(NONE.name)
 
     // PersistEngineConfig
     val persistLoggerLevel by option(help = "Logger level (Default : INFO)", envvar = "UPDATARIUM_PERSIST_LOGLEVEL")
-        .choice(Level.TRACE.name, Level.DEBUG.name, Level.INFO.name, Level.WARN.name, Level.ERROR.name,ignoreCase = true)
+        .choice(
+            Level.TRACE.name,
+            Level.DEBUG.name,
+            Level.INFO.name,
+            Level.WARN.name,
+            Level.ERROR.name,
+            ignoreCase = true
+        )
         .default(Level.INFO.name)
 
     val persistLogOnSuccess by option(
@@ -80,13 +91,17 @@ class Standalone : CliktCommand(printHelpOnEmptyArgs = true) {
             level = org.apache.logging.log4j.Level.getLevel(persistLoggerLevel),
             onErrorStoreLogs = persistLogOnError,
             onSuccessStoreLogs = persistLogOnSuccess,
-            layout = {event -> event.message?:""}
+            layout = { event -> event.message ?: "" }
         )
         val updatarium = Updatarium(
-            persistEngine = when (persitEngine) {
-                MONGODB.name -> MongodbPersistEngine(config)
-                else -> DefaultPersistEngine(config)
-            }
+            UpdatariumConfiguration(
+                dryRun = dryrun,
+                persistEngine = when (persitEngine) {
+                    MONGODB.name -> MongodbPersistEngine(config)
+                    else -> DefaultPersistEngine(config)
+                }
+            )
+
         )
 
         when {

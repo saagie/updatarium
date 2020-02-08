@@ -22,6 +22,7 @@ import assertk.assertions.containsExactly
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.dsl.action.BasicAction
 import io.saagie.updatarium.persist.TestPersistEngine
 import org.junit.jupiter.api.Nested
@@ -52,12 +53,19 @@ class ChangelogTest {
                 )
             }
 
-            val engine = TestPersistEngine()
-            changelog.execute(engine)
+            val config = UpdatariumConfiguration(persistEngine = TestPersistEngine())
+            changelog.execute(config)
 
-            assertThat(engine.changeSetTested).containsExactly("changeset1", "changeset2")
-            assertThat(engine.changeSetUnLocked.map { it.first.id }).containsExactly("changeset1", "changeset2")
-            assertThat(engine.changeSetUnLocked.map { "${it.first.id}-${it.second}" }).containsExactly(
+            assertThat((config.persistEngine as TestPersistEngine).changeSetTested).containsExactly(
+                "changeset1",
+                "changeset2"
+            )
+            assertThat(
+                (config.persistEngine as TestPersistEngine).changeSetUnLocked
+                    .map { it.first.id }).containsExactly("changeset1", "changeset2")
+            assertThat(
+                (config.persistEngine as TestPersistEngine).changeSetUnLocked
+                    .map { "${it.first.id}-${it.second}" }).containsExactly(
                 "changeset1-OK",
                 "changeset2-OK"
             )
@@ -82,12 +90,21 @@ class ChangelogTest {
                 )
             }
 
-            val engine = TestPersistEngine()
-            changelog.execute(engine)
+            val config = UpdatariumConfiguration(persistEngine = TestPersistEngine())
+            changelog.execute(config)
 
-            assertThat(engine.changeSetTested).containsExactly("changeset1", "changeset2")
-            assertThat(engine.changeSetUnLocked.map { "${it.first.id}" }).containsExactly("changeset1", "changeset2")
-            assertThat(engine.changeSetUnLocked.map { "${it.first.id}-${it.second}" }).containsExactly(
+            assertThat((config.persistEngine as TestPersistEngine).changeSetTested).containsExactly(
+                "changeset1",
+                "changeset2"
+            )
+            assertThat(
+                (config.persistEngine as TestPersistEngine).changeSetUnLocked.map { "${it.first.id}" }).containsExactly(
+                "changeset1",
+                "changeset2"
+            )
+            assertThat(
+                (config.persistEngine as TestPersistEngine).changeSetUnLocked
+                    .map { "${it.first.id}-${it.second}" }).containsExactly(
                 "changeset1-KO",
                 "changeset2-OK"
             )

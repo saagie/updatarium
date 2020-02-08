@@ -18,9 +18,8 @@ package io.saagie.updatarium
  * limitations under the License.
  */
 import de.swirtz.ktsrunner.objectloader.KtsObjectLoader
+import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.dsl.Changelog
-import io.saagie.updatarium.persist.DefaultPersistEngine
-import io.saagie.updatarium.persist.PersistEngine
 import java.io.Reader
 import java.nio.file.Files
 import java.nio.file.Path
@@ -32,20 +31,20 @@ import java.nio.file.Path
  * Then you can call the function 'executeChangelog' using a Path, a Reader or directly the script in String,
  * It will execute the changelog.
  */
-class Updatarium(val persistEngine: PersistEngine = DefaultPersistEngine()) {
+class Updatarium(val configuration: UpdatariumConfiguration = UpdatariumConfiguration()) {
     private val ktsLoader = KtsObjectLoader()
 
     fun executeChangelog(reader: Reader, tags: List<String> = emptyList(), changelogId: String = "") {
         with(ktsLoader.load<Changelog>(reader)) {
             this.setId(changelogId)
-            this.execute(persistEngine, tags)
+            this.execute(configuration, tags)
         }
     }
 
     fun executeChangelog(script: String, tags: List<String> = emptyList(), changelogId: String = "") {
         with(ktsLoader.load<Changelog>(script)) {
             this.setId(changelogId)
-            this.execute(persistEngine, tags)
+            this.execute(configuration, tags)
         }
     }
 

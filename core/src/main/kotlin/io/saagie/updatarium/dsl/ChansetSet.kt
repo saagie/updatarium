@@ -18,11 +18,12 @@
 package io.saagie.updatarium.dsl
 
 import com.autodsl.annotation.AutoDsl
+import io.saagie.updatarium.config.UpdatariumConfiguration
+import io.saagie.updatarium.dsl.Status.KO
+import io.saagie.updatarium.dsl.Status.OK
 import io.saagie.updatarium.dsl.action.Action
 import io.saagie.updatarium.log.InMemoryAppenderAccess
 import io.saagie.updatarium.log.InMemoryAppenderManager
-import io.saagie.updatarium.persist.DefaultPersistEngine
-import io.saagie.updatarium.persist.PersistEngine
 import mu.KLoggable
 
 @AutoDsl
@@ -60,31 +61,48 @@ data class ChangeSet(
      *      - unlock the changeset (with the correct status)
      *  Status => OK if all actions was OK, KO otherwise ...
      */
-    fun execute(persistEngine: PersistEngine = DefaultPersistEngine()) {
+    fun execute(configuration: UpdatariumConfiguration = UpdatariumConfiguration()) {
+        val persistEngine = configuration.persistEngine
         if (persistEngine.notAlreadyExecuted(calculateId())) {
             logger.info { "$id will be executed" }
-            persistEngine.lock(this)
+            if (!(configuration.dryRun)) {
+                persistEngine.lock(this)
+            }
             try {
                 InMemoryAppenderManager.startRecord()
                 this.actions.forEach {
-                    it.execute()
+                    if (configuration.dryRun) {
+                        logger.warn { "DryRun => don't run it" }
+                    } else {
+                        it.execute()
+                    }
                 }
                 InMemoryAppenderManager.stopRecord()
-                persistEngine.unlock(
-                    this, Status.OK, InMemoryAppenderAccess
+                this.sendUnlockToPersistEngine(
+                    configuration, OK, InMemoryAppenderAccess
                         .getEvents(persistConfig = persistEngine.configuration, success = true)
                 )
-                logger.info { "$id marked as ${Status.OK}" }
+                logger.info { "$id marked as $OK" }
             } catch (e: Exception) {
                 logger.error(e) { "Error during apply update" }
-                persistEngine.unlock(
-                    this, Status.KO, InMemoryAppenderAccess
+                this.sendUnlockToPersistEngine(
+                    configuration, KO, InMemoryAppenderAccess
                         .getEvents(persistConfig = persistEngine.configuration, success = false)
                 )
-                logger.info { "$id marked as ${Status.KO}" }
+                logger.info { "$id marked as $KO" }
             }
         } else {
             logger.info { "$id already executed" }
+        }
+    }
+
+    private fun ChangeSet.sendUnlockToPersistEngine(
+        configuration: UpdatariumConfiguration,
+        status: Status,
+        events: List<String>
+    ) {
+        if (!(configuration.dryRun)) {
+            configuration.persistEngine.unlock(this, status, events)
         }
     }
 }

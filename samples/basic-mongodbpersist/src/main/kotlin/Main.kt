@@ -16,13 +16,15 @@
  * limitations under the License.
  */
 import io.saagie.updatarium.Updatarium
+import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.persist.MongodbPersistEngine
 import io.saagie.updatarium.persist.PersistConfig
 import org.apache.logging.log4j.Level
 
 fun main() {
-    val persistConfig = PersistConfig(level = Level.INFO,onSuccessStoreLogs = true,onErrorStoreLogs = true)
-    Updatarium(MongodbPersistEngine(persistConfig)).executeChangelog("""
+    val persistConfig = PersistConfig(level = Level.INFO, onSuccessStoreLogs = true, onErrorStoreLogs = true)
+    Updatarium(UpdatariumConfiguration(persistEngine = MongodbPersistEngine(persistConfig))).executeChangelog(
+        """
         import io.saagie.updatarium.dsl.action.BasicAction
         import io.saagie.updatarium.dsl.changeSet
         import io.saagie.updatarium.dsl.changelog
@@ -44,5 +46,6 @@ fun main() {
                 }
             }
         }
-    """.trimIndent())
+    """.trimIndent()
+    )
 }
