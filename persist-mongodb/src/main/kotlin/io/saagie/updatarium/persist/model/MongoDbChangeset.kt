@@ -19,8 +19,16 @@ package io.saagie.updatarium.persist.model
 
 import io.saagie.updatarium.dsl.ChangeSet
 import io.saagie.updatarium.dsl.Status
+import java.time.Instant
 
-data class MongoDbChangeset(val changesetId: String, val author: String, val status: String, val log: List<String>)
+data class MongoDbChangeset(
+    val changesetId: String,
+    val author: String,
+    val status: String,
+    val lockDate: Instant = Instant.now(),
+    val statusDate: Instant? = null,
+    val log: List<String>
+)
 
 fun ChangeSet.toMongoDbDocument() = MongoDbChangeset(
     changesetId = this.calculateId(),
