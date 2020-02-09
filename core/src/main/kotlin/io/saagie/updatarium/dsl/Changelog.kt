@@ -18,11 +18,13 @@
 package io.saagie.updatarium.dsl
 
 import com.autodsl.annotation.AutoDsl
+import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.log.InMemoryAppenderManager
-import io.saagie.updatarium.persist.PersistEngine
+import mu.KLoggable
 
 @AutoDsl
-data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) {
+data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) : KLoggable {
+    override val logger = logger()
 
     private var id = ""
 
@@ -36,10 +38,10 @@ data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) {
     /**
      * It will execute each changesets present in this changelog sequentially.
      */
-    fun execute(persistEngine: PersistEngine, tags: List<String> = emptyList()) {
-        persistEngine.checkConnection()
-        InMemoryAppenderManager.setup(persistConfig = persistEngine.configuration)
-        matchedChangesets(tags).forEach { it.setChangelogId(id).execute(persistEngine) }
+    fun execute(configuration: UpdatariumConfiguration, tags: List<String> = emptyList()) {
+        configuration.persistEngine.checkConnection()
+        InMemoryAppenderManager.setup(persistConfig = configuration.persistEngine.configuration)
+        matchedChangesets(tags).forEach { it.setChangelogId(id).execute(configuration) }
         InMemoryAppenderManager.tearDown()
     }
 

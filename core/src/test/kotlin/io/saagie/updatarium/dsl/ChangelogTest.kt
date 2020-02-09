@@ -18,14 +18,14 @@
 package io.saagie.updatarium.dsl
 
 import assertk.assertThat
-import assertk.assertions.containsExactly
-import assertk.assertions.hasSize
-import assertk.assertions.isEmpty
-import assertk.assertions.isEqualTo
+import assertk.assertions.*
+import assertk.fail
+import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.dsl.action.BasicAction
 import io.saagie.updatarium.persist.TestPersistEngine
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.fail
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.jvm.isAccessible
 
@@ -52,12 +52,19 @@ class ChangelogTest {
                 )
             }
 
-            val engine = TestPersistEngine()
-            changelog.execute(engine)
+            val config = UpdatariumConfiguration(persistEngine = TestPersistEngine())
+            changelog.execute(config)
 
-            assertThat(engine.changeSetTested).containsExactly("changeset1", "changeset2")
-            assertThat(engine.changeSetUnLocked.map { it.first.id }).containsExactly("changeset1", "changeset2")
-            assertThat(engine.changeSetUnLocked.map { "${it.first.id}-${it.second}" }).containsExactly(
+            assertThat((config.persistEngine as TestPersistEngine).changeSetTested).containsExactly(
+                "changeset1",
+                "changeset2"
+            )
+            assertThat(
+                (config.persistEngine as TestPersistEngine).changeSetUnLocked
+                    .map { it.first.id }).containsExactly("changeset1", "changeset2")
+            assertThat(
+                (config.persistEngine as TestPersistEngine).changeSetUnLocked
+                    .map { "${it.first.id}-${it.second}" }).containsExactly(
                 "changeset1-OK",
                 "changeset2-OK"
             )
@@ -82,15 +89,61 @@ class ChangelogTest {
                 )
             }
 
-            val engine = TestPersistEngine()
-            changelog.execute(engine)
+            val config = UpdatariumConfiguration(failfast = false, persistEngine = TestPersistEngine())
+            changelog.execute(config)
 
-            assertThat(engine.changeSetTested).containsExactly("changeset1", "changeset2")
-            assertThat(engine.changeSetUnLocked.map { "${it.first.id}" }).containsExactly("changeset1", "changeset2")
-            assertThat(engine.changeSetUnLocked.map { "${it.first.id}-${it.second}" }).containsExactly(
+            assertThat((config.persistEngine as TestPersistEngine).changeSetTested).containsExactly(
+                "changeset1",
+                "changeset2"
+            )
+            assertThat(
+                (config.persistEngine as TestPersistEngine).changeSetUnLocked.map { "${it.first.id}" }).containsExactly(
+                "changeset1",
+                "changeset2"
+            )
+            assertThat(
+                (config.persistEngine as TestPersistEngine).changeSetUnLocked
+                    .map { "${it.first.id}-${it.second}" }).containsExactly(
                 "changeset1-KO",
                 "changeset2-OK"
             )
+        }
+    }
+
+    @Test
+    fun should_stop_when_an_action_throws_an_exceptionand_failfast() {
+        val changelog = Changelog().apply {
+            changesets = listOf(
+                ChangeSet(
+                    id = "changeset1", author = "test", actions = listOf(
+                        BasicAction { },
+                        BasicAction { throw IllegalStateException("Fail in action") }
+                    )
+                ),
+                ChangeSet(
+                    id = "changeset2", author = "test", actions = listOf(
+                        BasicAction { }
+                    )
+                )
+            )
+        }
+
+        val config = UpdatariumConfiguration(failfast = true, persistEngine = TestPersistEngine())
+        try {
+            changelog.execute(config)
+            fail("In failfast mode, exception should be thrown")
+        } catch (e: IllegalStateException) {
+            assertThat(e).hasMessage("Fail in action")
+            assertThat((config.persistEngine as TestPersistEngine).changeSetTested).containsExactly(
+                "changeset1"
+            )
+            assertThat(
+                (config.persistEngine as TestPersistEngine).changeSetUnLocked.map { "${it.first.id}" }).containsExactly(
+                "changeset1"
+            )
+            assertThat(
+                (config.persistEngine as TestPersistEngine).changeSetUnLocked
+                    .map { "${it.first.id}-${it.second}" }).containsExactly("changeset1-KO")
         }
     }
 
@@ -169,27 +222,27 @@ class ChangelogTest {
             assertThat(changelog.getIdValue()).isEqualTo("newId")
         }
     }
-}
 
-fun changelogWithtags(tags: Pair<List<String>?, List<String>?>) = Changelog().apply {
-    changesets = listOf(
-        ChangeSet(
-            id = "changeset1", author = "test", tags = tags.first, actions = listOf(
-                BasicAction { },
-                BasicAction { }
-            )
-        ),
-        ChangeSet(
-            id = "changeset2", author = "test", tags = tags.second, actions = listOf(
-                BasicAction { }
+    fun changelogWithtags(tags: Pair<List<String>?, List<String>?>) = Changelog().apply {
+        changesets = listOf(
+            ChangeSet(
+                id = "changeset1", author = "test", tags = tags.first, actions = listOf(
+                    BasicAction { },
+                    BasicAction { }
+                )
+            ),
+            ChangeSet(
+                id = "changeset2", author = "test", tags = tags.second, actions = listOf(
+                    BasicAction { }
+                )
             )
         )
-    )
-}
-
-fun Changelog.getIdValue(): String = this::class.declaredMemberProperties
-    .first { it.name == "id" }
-    .let {
-        it.isAccessible = true
-        return (it.getter.call(this)) as String
     }
+
+    fun Changelog.getIdValue(): String = this::class.declaredMemberProperties
+        .first { it.name == "id" }
+        .let {
+            it.isAccessible = true
+            return (it.getter.call(this)) as String
+        }
+}

@@ -28,7 +28,7 @@ import io.saagie.updatarium.dsl.Status
  */
 class DefaultPersistEngine(
     configuration: PersistConfig =
-        PersistConfig(onSuccessStoreLogs = true, onErrorStoreLogs = true){event -> event.message?:""}
+        PersistConfig(onSuccessStoreLogs = true, onErrorStoreLogs = true)
 ) : PersistEngine(configuration) {
     override fun checkConnection() {
         logger.warn { "***********************" }

@@ -21,6 +21,7 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.extracting
 import assertk.assertions.hasSize
+import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.persist.TestPersistEngine
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -35,9 +36,11 @@ class UpdatariumITest {
     val changelogWithTagPath =
         Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path)
 
+    fun getConfig() = UpdatariumConfiguration(dryRun = false,persistEngine = TestPersistEngine())
+
     @Test
     fun `should correctly execute a very simple changelog`() {
-        with(TestPersistEngine()) {
+        with(getConfig()) {
             Updatarium(this)
                 .executeChangelog(
                     """
@@ -59,8 +62,8 @@ class UpdatariumITest {
         }
     """.trimIndent()
                 )
-            assertThat(this.changeSetTested).hasSize(1)
-            assertThat(this.changeSetUnLocked)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(1)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.first.id }
                 .containsExactly("ChangeSet-1")
         }
@@ -69,7 +72,7 @@ class UpdatariumITest {
     @Test
     fun `should correctly execute a simple changelog with multiple actions`() {
 
-        with(TestPersistEngine()) {
+        with(getConfig()) {
             Updatarium(this)
                 .executeChangelog(
                     """
@@ -95,8 +98,8 @@ class UpdatariumITest {
         }
     """.trimIndent()
                 )
-            assertThat(this.changeSetTested).hasSize(1)
-            assertThat(this.changeSetUnLocked)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(1)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.first.id }
                 .containsExactly("ChangeSet-1")
         }
@@ -105,7 +108,7 @@ class UpdatariumITest {
     @Test
     fun `should correctly execute a changelog with multiple changesets&actions`() {
 
-        with(TestPersistEngine()) {
+        with(getConfig()) {
             Updatarium(this)
                 .executeChangelog(
                     """
@@ -137,8 +140,8 @@ class UpdatariumITest {
         }
     """.trimIndent()
                 )
-            assertThat(this.changeSetTested).hasSize(2)
-            assertThat(this.changeSetUnLocked)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.first.id }
                 .containsExactly("ChangeSet-1", "ChangeSet-2")
         }
@@ -148,23 +151,23 @@ class UpdatariumITest {
     fun `should correctly execute a simple changelog using Path`() {
 
         // No tags supplied
-        with(TestPersistEngine()) {
+        with(getConfig()) {
             Updatarium(this).executeChangelog(changelogPath)
             Updatarium(this).executeChangelog(changelogWithTagPath)
 
-            assertThat(this.changeSetTested).hasSize(2)
-            assertThat(this.changeSetTested)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                 .containsExactly(
                     "${changelogPath.toAbsolutePath().toString()}_ChangeSet-1",
                     "${changelogWithTagPath.toAbsolutePath().toString()}_ChangeSet-2"
                 )
-            assertThat(this.changeSetUnLocked)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.first.id }
                 .containsExactly("ChangeSet-1", "ChangeSet-2")
         }
 
         // With tags supplied
-        with(TestPersistEngine()) {
+        with(getConfig()) {
             Updatarium(this)
                 .executeChangelog(
                     changelogPath,
@@ -175,11 +178,11 @@ class UpdatariumITest {
                     changelogWithTagPath,
                     "hello"
                 )
-            assertThat(this.changeSetTested).hasSize(1)
-            assertThat(this.changeSetTested).containsExactly(
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(1)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested).containsExactly(
                 "${changelogWithTagPath.toAbsolutePath().toString()}_ChangeSet-2"
             )
-            assertThat(this.changeSetUnLocked)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.first.id }
                 .containsExactly("ChangeSet-2")
         }
@@ -189,7 +192,7 @@ class UpdatariumITest {
     fun `should correctly execute a very simple changelog using Reader`() {
 
         // No tags supplied
-        with(TestPersistEngine()) {
+        with(getConfig()) {
             Updatarium(this).executeChangelog(
                 Files.newBufferedReader(
                     Paths.get(
@@ -206,14 +209,14 @@ class UpdatariumITest {
                     )
                 )
             )
-            assertThat(this.changeSetTested).hasSize(2)
-            assertThat(this.changeSetUnLocked)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.first.id }
                 .containsExactly("ChangeSet-1", "ChangeSet-2")
         }
 
         // With tags supplied
-        with(TestPersistEngine()) {
+        with(getConfig()) {
             Updatarium(this).executeChangelog(
                 Files.newBufferedReader(
                     Paths.get(
@@ -234,8 +237,8 @@ class UpdatariumITest {
                 ),
                 "hello"
             )
-            assertThat(this.changeSetTested).hasSize(1)
-            assertThat(this.changeSetUnLocked)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(1)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.first.id }
                 .containsExactly("ChangeSet-2")
         }
@@ -245,35 +248,35 @@ class UpdatariumITest {
     fun `should correctly execute a list of changelog`() {
 
         // No tags supplied
-        with(TestPersistEngine()) {
+        with(getConfig()) {
             Updatarium(this).executeChangelogs(
                 resourcesPath,
                 "changelog(.*).kts"
             )
-            assertThat(this.changeSetTested).hasSize(2)
-            assertThat(this.changeSetTested)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                 .containsExactly(
                     "${changelogPath.toAbsolutePath().toString()}_ChangeSet-1",
                     "${changelogWithTagPath.toAbsolutePath().toString()}_ChangeSet-2"
                 )
-            assertThat(this.changeSetUnLocked)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.first.id }
                 .containsExactly("ChangeSet-1", "ChangeSet-2")
         }
         // With tags supplied
-        with(TestPersistEngine()) {
+        with(getConfig()) {
             Updatarium(this).executeChangelogs(
                 resourcesPath,
                 "changelog(.*).kts",
                 "hello"
             )
 
-            assertThat(this.changeSetTested).hasSize(1)
-            assertThat(this.changeSetTested)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(1)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                 .containsExactly(
                     "${changelogWithTagPath.toAbsolutePath().toString()}_ChangeSet-2"
                 )
-            assertThat(this.changeSetUnLocked)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.first.id }
                 .containsExactly("ChangeSet-2")
         }

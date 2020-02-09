@@ -22,16 +22,7 @@ import io.saagie.updatarium.dsl.changelog
 changelog {
     changesets {
         +changeSet {
-            id = "ChangeSet-bash-2"
-            author = "Bash"
-            actions {
-                +BasicAction {
-                    throw IllegalStateException("Fail during execution")
-                }
-            }
-        }
-        +changeSet {
-            id = "ChangeSet-bash-2"
+            id = "ChangeSet-bash-3"
             author = "Bash"
             actions {
                 +BasicAction {

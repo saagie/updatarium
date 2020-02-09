@@ -1,4 +1,5 @@
 import io.saagie.updatarium.Updatarium
+import io.saagie.updatarium.config.UpdatariumConfiguration
 
 /*
  * SPDX-License-Identifier: Apache-2.0
@@ -18,7 +19,7 @@ import io.saagie.updatarium.Updatarium
  * limitations under the License.
  */
 fun main() {
-    Updatarium().executeChangelog("""
+    Updatarium(UpdatariumConfiguration(dryRun = true)).executeChangelog("""
         import io.saagie.updatarium.dsl.action.BasicAction
         import io.saagie.updatarium.dsl.changeSet
         import io.saagie.updatarium.dsl.changelog
