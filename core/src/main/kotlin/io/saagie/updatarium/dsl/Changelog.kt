@@ -19,8 +19,11 @@ package io.saagie.updatarium.dsl
 
 import com.autodsl.annotation.AutoDsl
 import io.saagie.updatarium.config.UpdatariumConfiguration
+import io.saagie.updatarium.dsl.UpdatariumError.ChangesetError
 import io.saagie.updatarium.log.InMemoryAppenderManager
 import mu.KLoggable
+import mu.KLogger
+import mu.KotlinLogging
 
 @AutoDsl
 data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) : KLoggable {
@@ -36,13 +39,24 @@ data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) : KLogga
     }
 
     /**
-     * It will execute each changesets present in this changelog sequentially.
+     * It will execute each changesets present in this changelog sequentially and return the list of Changeset
+     * exceptions (if not failfast)
      */
-    fun execute(configuration: UpdatariumConfiguration, tags: List<String> = emptyList()) {
+    fun execute(
+        configuration: UpdatariumConfiguration,
+        tags: List<String> = emptyList()
+    ): ChangelogReport {
+        val exceptions: MutableList<ChangesetError> = mutableListOf()
         configuration.persistEngine.checkConnection()
         InMemoryAppenderManager.setup(persistConfig = configuration.persistEngine.configuration)
-        matchedChangesets(tags).forEach { it.setChangelogId(id).execute(configuration) }
+        matchedChangesets(tags).forEach {
+            exceptions.addAll(it.setChangelogId(id).execute(configuration))
+            if (configuration.failfast && exceptions.isNotEmpty()){
+                return ChangelogReport(exceptions)
+            }
+        }
         InMemoryAppenderManager.tearDown()
+        return ChangelogReport(exceptions)
     }
 
     /**
@@ -55,3 +69,7 @@ data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) : KLogga
             .filter { targetTags.isEmpty() || targetTags.intersect(it.tags ?: emptyList()).isNotEmpty() }
 }
 
+data class ChangelogReport(
+    val changeSetException: List<ChangesetError>,
+    override val logger: KLogger = KotlinLogging.logger {}
+) : KLoggable
