@@ -39,19 +39,11 @@ class Updatarium(val configuration: UpdatariumConfiguration = UpdatariumConfigur
     private val ktsLoader = KtsObjectLoader()
 
     fun executeChangelog(reader: Reader, tags: List<String> = emptyList(), changelogId: String = "") {
-        with(ktsLoader.load<Changelog>(reader)) {
-            this.setId(changelogId)
-            this.execute(configuration, tags)
-                .checkExceptions()
-        }
+        executeScript(reader.readText(), changelogId, tags)
     }
 
     fun executeChangelog(script: String, tags: List<String> = emptyList(), changelogId: String = "") {
-        with(ktsLoader.load<Changelog>(script)) {
-            this.setId(changelogId)
-            this.execute(configuration, tags)
-                .checkExceptions()
-        }
+        executeScript(script, changelogId, tags)
     }
 
     fun executeChangelog(reader: Reader, tag: String, changelogId: String = "") {
@@ -75,7 +67,10 @@ class Updatarium(val configuration: UpdatariumConfiguration = UpdatariumConfigur
     }
 
     fun executeChangelogs(path: Path, pattern: String, tags: List<String> = emptyList()) {
-        if (Files.isDirectory(path)) {
+        if (!Files.isDirectory(path)) {
+            logger.error { "$path is not a directory." }
+            throw UpdatariumError.ExitError
+        } else {
             val exceptions: MutableList<UpdatariumError.ExitError> = mutableListOf()
             path
                 .toFile()
@@ -96,16 +91,23 @@ class Updatarium(val configuration: UpdatariumConfiguration = UpdatariumConfigur
             if (exceptions.isNotEmpty()) {
                 throw UpdatariumError.ExitError
             }
-        } else {
-            logger.error { "$path is not a directory." }
-            throw UpdatariumError.ExitError
+        }
+    }
+
+    private fun Updatarium.executeScript(
+        script: String,
+        changelogId: String,
+        tags: List<String>
+    ) {
+        with(ktsLoader.load<Changelog>(script)) {
+            this.setId(changelogId)
+            with (this.execute(configuration, tags).changeSetException){
+                if (this.isNotEmpty()){
+                    this.forEach { logger.error { it } }
+                    throw UpdatariumError.ExitError
+                }
+            }
         }
     }
 }
 
-private fun ChangelogReport.checkExceptions() {
-    if (this.changeSetException.isNotEmpty()) {
-        this.changeSetException.forEach { logger.error { it } }
-        throw UpdatariumError.ExitError
-    }
-}

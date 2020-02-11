@@ -22,8 +22,6 @@ import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.dsl.UpdatariumError.ChangesetError
 import io.saagie.updatarium.log.InMemoryAppenderManager
 import mu.KLoggable
-import mu.KLogger
-import mu.KotlinLogging
 
 @AutoDsl
 data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) : KLoggable {
@@ -51,7 +49,7 @@ data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) : KLogga
         InMemoryAppenderManager.setup(persistConfig = configuration.persistEngine.configuration)
         matchedChangesets(tags).forEach {
             exceptions.addAll(it.setChangelogId(id).execute(configuration))
-            if (configuration.failfast && exceptions.isNotEmpty()){
+            if (configuration.failfast && exceptions.isNotEmpty()) {
                 return ChangelogReport(exceptions)
             }
         }
@@ -70,6 +68,5 @@ data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) : KLogga
 }
 
 data class ChangelogReport(
-    val changeSetException: List<ChangesetError>,
-    override val logger: KLogger = KotlinLogging.logger {}
-) : KLoggable
+    val changeSetException: List<ChangesetError>
+)
