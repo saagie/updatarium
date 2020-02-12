@@ -19,13 +19,11 @@ package io.saagie.updatarium.dsl
 
 import assertk.assertThat
 import assertk.assertions.*
-import assertk.fail
 import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.dsl.action.BasicAction
 import io.saagie.updatarium.persist.TestPersistEngine
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.fail
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.jvm.isAccessible
 
@@ -129,11 +127,11 @@ class ChangelogTest {
         }
 
         val config = UpdatariumConfiguration(failfast = true, persistEngine = TestPersistEngine())
-        try {
-            changelog.execute(config)
-            fail("In failfast mode, exception should be thrown")
-        } catch (e: IllegalStateException) {
-            assertThat(e).hasMessage("Fail in action")
+        val changelogReport = changelog.execute(config)
+        assertThat(changelogReport.changeSetException).hasSize(1)
+        with(changelogReport.changeSetException.first()) {
+            assertThat(this.changeSet).isEqualTo(changelog.changesets.first())
+            assertThat(this.e!!).hasMessage("Fail in action")
             assertThat((config.persistEngine as TestPersistEngine).changeSetTested).containsExactly(
                 "changeset1"
             )

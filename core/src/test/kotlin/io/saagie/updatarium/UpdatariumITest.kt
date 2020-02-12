@@ -22,8 +22,10 @@ import assertk.assertions.containsExactly
 import assertk.assertions.extracting
 import assertk.assertions.hasSize
 import io.saagie.updatarium.config.UpdatariumConfiguration
+import io.saagie.updatarium.dsl.UpdatariumError
 import io.saagie.updatarium.persist.TestPersistEngine
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -35,8 +37,10 @@ class UpdatariumITest {
     val changelogPath = Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog.kts").path)
     val changelogWithTagPath =
         Paths.get(UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path)
+    val failedChangelogPath =
+        Paths.get(UpdatariumITest::class.java.getResource("/changelogs/failed_changelog.kts").path)
 
-    fun getConfig() = UpdatariumConfiguration(dryRun = false,persistEngine = TestPersistEngine())
+    fun getConfig() = UpdatariumConfiguration(dryRun = false, persistEngine = TestPersistEngine())
 
     @Test
     fun `should correctly execute a very simple changelog`() {
@@ -279,6 +283,94 @@ class UpdatariumITest {
             assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.first.id }
                 .containsExactly("ChangeSet-2")
+        }
+    }
+
+    @Nested
+    inner class ExitCode {
+
+        @Test
+        fun should_exit_when_one_changelog_fail_and_failfast() {
+            with(getConfig()) {
+                try {
+                    Updatarium(this).executeChangelogs(
+                        resourcesPath,
+                        "failed(.*).kts"
+                    )
+                } catch (exitError: UpdatariumError.ExitError) {
+                    assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
+                    assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
+                        .containsExactly(
+                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-1",
+                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-2"
+                        )
+                    assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
+                        .extracting { "${it.first.id}-${it.second.name}" }
+                        .containsExactly("ChangeSet-1-OK", "ChangeSet-2-KO")
+                }
+            }
+        }
+
+        @Test
+        fun should_exit_when_one_changelog_fail_and_no_failfast() {
+            with(getConfig().copy(failfast = false)) {
+                try {
+                    Updatarium(this).executeChangelogs(
+                        resourcesPath,
+                        "failed(.*).kts"
+                    )
+                } catch (exitError: UpdatariumError.ExitError) {
+                    assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(3)
+                    assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
+                        .containsExactly(
+                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-1",
+                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-2",
+                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-3"
+                        )
+                    assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
+                        .extracting { "${it.first.id}-${it.second.name}" }
+                        .containsExactly("ChangeSet-1-OK", "ChangeSet-2-KO", "ChangeSet-3-OK")
+                }
+            }
+        }
+
+        @Test
+        fun should_exit_when_a_changelog_fail_and_failfast() {
+            with(getConfig()) {
+                try {
+                    Updatarium(this).executeChangelog(failedChangelogPath)
+                } catch (exitError: UpdatariumError.ExitError) {
+                    assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
+                    assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
+                        .containsExactly(
+                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-1",
+                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-2"
+                        )
+                    assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
+                        .extracting { "${it.first.id}-${it.second.name}" }
+                        .containsExactly("ChangeSet-1-OK", "ChangeSet-2-KO")
+                }
+            }
+        }
+
+        @Test
+        fun should_exit_when_a_changelog_fail_and_no_failfast() {
+            with(getConfig().copy(failfast = false)) {
+                try {
+                    Updatarium(this).executeChangelog(failedChangelogPath)
+                } catch (exitError: UpdatariumError.ExitError) {
+                    assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(3)
+                    assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
+                        .containsExactly(
+                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-1",
+                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-2",
+                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-3"
+                        )
+                    assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
+                        .extracting { "${it.first.id}-${it.second.name}" }
+                        .containsExactly("ChangeSet-1-OK", "ChangeSet-2-KO", "ChangeSet-3-OK")
+                }
+            }
         }
     }
 }

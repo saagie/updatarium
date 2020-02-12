@@ -21,6 +21,7 @@ import com.autodsl.annotation.AutoDsl
 import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.dsl.Status.KO
 import io.saagie.updatarium.dsl.Status.OK
+import io.saagie.updatarium.dsl.UpdatariumError.ChangesetError
 import io.saagie.updatarium.dsl.action.Action
 import io.saagie.updatarium.log.InMemoryAppenderAccess
 import io.saagie.updatarium.log.InMemoryAppenderManager
@@ -61,9 +62,12 @@ data class ChangeSet(
      *      - unlock the changeset (with the correct status)
      *  Status => OK if all actions was OK, KO otherwise ...
      */
-    fun execute(configuration: UpdatariumConfiguration = UpdatariumConfiguration()) {
+    fun execute(configuration: UpdatariumConfiguration = UpdatariumConfiguration()): List<ChangesetError> {
+        val exceptions: MutableList<ChangesetError> = mutableListOf()
         val persistEngine = configuration.persistEngine
-        if (persistEngine.notAlreadyExecuted(calculateId())) {
+        if (!persistEngine.notAlreadyExecuted(calculateId())) {
+            logger.info { "$id already executed" }
+        } else {
             logger.info { "$id will be executed" }
             if (!(configuration.dryRun)) {
                 persistEngine.lock(this)
@@ -90,13 +94,15 @@ data class ChangeSet(
                         .getEvents(persistConfig = persistEngine.configuration, success = false)
                 )
                 logger.info { "$id marked as $KO" }
-                if (configuration.failfast) {
-                    throw e
+                with(ChangesetError(this, e)) {
+                    exceptions.add(this)
+                    if (configuration.failfast) {
+                        return exceptions.toList()
+                    }
                 }
             }
-        } else {
-            logger.info { "$id already executed" }
         }
+        return exceptions.toList()
     }
 
     private fun ChangeSet.sendUnlockToPersistEngine(

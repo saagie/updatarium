@@ -20,6 +20,9 @@ package io.saagie.updatarium
 import de.swirtz.ktsrunner.objectloader.KtsObjectLoader
 import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.dsl.Changelog
+import io.saagie.updatarium.dsl.ChangelogReport
+import io.saagie.updatarium.dsl.UpdatariumError
+import mu.KotlinLogging
 import java.io.Reader
 import java.nio.file.Files
 import java.nio.file.Path
@@ -32,20 +35,15 @@ import java.nio.file.Path
  * It will execute the changelog.
  */
 class Updatarium(val configuration: UpdatariumConfiguration = UpdatariumConfiguration()) {
+    private val logger = KotlinLogging.logger {}
     private val ktsLoader = KtsObjectLoader()
 
     fun executeChangelog(reader: Reader, tags: List<String> = emptyList(), changelogId: String = "") {
-        with(ktsLoader.load<Changelog>(reader)) {
-            this.setId(changelogId)
-            this.execute(configuration, tags)
-        }
+        executeScript(reader.readText(), changelogId, tags)
     }
 
     fun executeChangelog(script: String, tags: List<String> = emptyList(), changelogId: String = "") {
-        with(ktsLoader.load<Changelog>(script)) {
-            this.setId(changelogId)
-            this.execute(configuration, tags)
-        }
+        executeScript(script, changelogId, tags)
     }
 
     fun executeChangelog(reader: Reader, tag: String, changelogId: String = "") {
@@ -69,15 +67,47 @@ class Updatarium(val configuration: UpdatariumConfiguration = UpdatariumConfigur
     }
 
     fun executeChangelogs(path: Path, pattern: String, tags: List<String> = emptyList()) {
-        if (Files.isDirectory(path)) {
+        if (!Files.isDirectory(path)) {
+            logger.error { "$path is not a directory." }
+            throw UpdatariumError.ExitError
+        } else {
+            val exceptions: MutableList<UpdatariumError.ExitError> = mutableListOf()
             path
                 .toFile()
                 .walk()
                 .filter { it.name.matches(Regex(pattern)) }
                 .sorted()
                 .forEach {
-                    this.executeChangelog(it.toPath(), tags)
+                    try {
+                        this.executeChangelog(it.toPath(), tags)
+                    } catch (e: UpdatariumError.ExitError) {
+                        if (configuration.failfast) {
+                            throw e
+                        } else {
+                            exceptions.add(e)
+                        }
+                    }
                 }
+            if (exceptions.isNotEmpty()) {
+                throw UpdatariumError.ExitError
+            }
+        }
+    }
+
+    private fun Updatarium.executeScript(
+        script: String,
+        changelogId: String,
+        tags: List<String>
+    ) {
+        with(ktsLoader.load<Changelog>(script)) {
+            this.setId(changelogId)
+            with (this.execute(configuration, tags).changeSetException){
+                if (this.isNotEmpty()){
+                    this.forEach { logger.error { it } }
+                    throw UpdatariumError.ExitError
+                }
+            }
         }
     }
 }
+
