@@ -37,4 +37,10 @@ class MongoScriptAction(
 
     fun onCollection(databaseName: String, collectionName: String) =
         mongoClient.getDatabase(databaseName).getCollection(collectionName)
+
+
+    fun onCollections(databaseNameRegex: Regex, collectionName: String) =
+        mongoClient.listDatabaseNames().filter { it.matches(databaseNameRegex) }.map {
+            mongoClient.getDatabase(it).getCollection(collectionName)
+        }
 }

@@ -86,6 +86,12 @@ config {
                 email = "richard.capraro@saagie.com"
                 roles = listOf("developer")
             }
+            person {
+                id = "guillaume"
+                name = "Guillaume Naimi"
+                email = "guillaume.naimi@saagie.com"
+                roles = listOf("developer")
+            }
         }
 
         bintray {
