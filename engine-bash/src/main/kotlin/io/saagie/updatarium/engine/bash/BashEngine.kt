@@ -17,24 +17,29 @@
  */
 package io.saagie.updatarium.engine.bash
 
-import io.saagie.updatarium.dsl.action.BashScriptAction
+import mu.KLogger
 import java.io.File
+import java.lang.ProcessBuilder.Redirect
+import java.time.Duration
+import java.util.concurrent.TimeUnit.MILLISECONDS
 
-class BashEngine {
+class BashEngine(private val logger: KLogger) {
     fun runCommand(
-        bashScriptAction: BashScriptAction
+        script: String,
+        workingDir: String = ".",
+        timeout: Duration = Duration.ofMinutes(1)
     ) {
-        with(bashScriptAction) {
-            val proc = ProcessBuilder(listOf("bash","-c",script))
-                .directory(File(workingDir))
-                .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                .redirectError(ProcessBuilder.Redirect.PIPE)
-                .start().apply { waitFor(timeoutAmount, timeoutUnit) }
-            val out = proc.inputStream.bufferedReader().readText()
-            when {
-                proc.exitValue() == 0 -> logger.info { out.dropLast(1) }
-                else -> throw Exception("Command '$script' execution error $out")
-            }
+
+        val proc = ProcessBuilder(listOf("bash", "-c", script))
+            .directory(File(workingDir))
+            .redirectOutput(Redirect.PIPE)
+            .redirectError(Redirect.PIPE)
+            .start().apply { waitFor(timeout.toMillis(), MILLISECONDS) }
+
+        val out = proc.inputStream.bufferedReader().readText()
+        when {
+            proc.exitValue() == 0 -> logger.info { out.dropLast(1) }
+            else -> throw Exception("Command '$script' execution error $out")
         }
     }
 }

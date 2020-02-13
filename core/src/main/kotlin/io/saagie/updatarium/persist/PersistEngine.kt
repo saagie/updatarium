@@ -17,12 +17,9 @@
  */
 package io.saagie.updatarium.persist
 
-import io.saagie.updatarium.dsl.ChangeSet
-import io.saagie.updatarium.dsl.Status
-import io.saagie.updatarium.log.InMemoryEvent
+import io.saagie.updatarium.model.ChangeSet
+import io.saagie.updatarium.model.Status
 import mu.KLoggable
-import org.apache.logging.log4j.Level
-import org.apache.logging.log4j.core.LogEvent
 
 /**
  * Engine to io.saagie.updatarium.persist all changeset executions

@@ -15,22 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.dsl.action
+package io.saagie.updatarium.model.action
 
-import com.autodsl.annotation.AutoDsl
-import io.saagie.updatarium.engine.bash.BashEngine
-import java.util.concurrent.TimeUnit
+import com.github.kittinunf.fuel.core.FuelManager
+import io.saagie.updatarium.model.ChangeSetDsl
+import mu.KotlinLogging
 
-@AutoDsl
-data class BashScriptAction(
-    val script: String,
-    val workingDir: String = ".",
-    val timeoutAmount: Long = 60,
-    val timeoutUnit: TimeUnit = TimeUnit.SECONDS
-) : Action() {
-    val bashEngine = BashEngine()
+fun ChangeSetDsl.httpAction(
+    block: HttpScriptActionDsl.() -> Unit
+) {
+    this.action { HttpScriptActionDsl().block() }
+}
 
-    override fun execute() {
-        bashEngine.runCommand(this)
-    }
+class HttpScriptActionDsl {
+    val logger = KotlinLogging.logger("httpAction")
+    val restClient = FuelManager.instance
 }

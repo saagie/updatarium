@@ -17,7 +17,6 @@
  */
 plugins {
     kotlin("jvm")
-    kotlin("kapt")
 }
 apply(plugin = "com.adarshr.test-logger")
 config {
@@ -34,10 +33,6 @@ dependencies {
     implementation(kotlin("script-util"))
     implementation("net.java.dev.jna:jna:5.5.0")
     api("de.swirtz:ktsRunner:0.0.7") { exclude(group = "ch.qos.logback", module = "logback-classic") }
-
-    // AutoDsl Annotation
-    api("com.juanchosaravia.autodsl:annotation:0.0.9")
-    kapt("com.juanchosaravia.autodsl:processor:0.0.9")
 
     // log4j2 appender plugin
     api("org.apache.logging.log4j:log4j-core:2.13.0")

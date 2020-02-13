@@ -15,40 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.dsl
+package io.saagie.updatarium.model
 
-import com.autodsl.annotation.AutoDsl
 import io.saagie.updatarium.config.UpdatariumConfiguration
-import io.saagie.updatarium.dsl.UpdatariumError.ChangesetError
 import io.saagie.updatarium.log.InMemoryAppenderManager
+import io.saagie.updatarium.model.UpdatariumError.ChangeSetError
 import mu.KLoggable
 
-@AutoDsl
-data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) : KLoggable {
+data class ChangeLog(val id: String = "", val changeSets: List<ChangeSet> = emptyList()) : KLoggable {
     override val logger = logger()
 
-    private var id = ""
-
     /**
-     * Set the ID of the changelog
-     */
-    fun setId(id: String) {
-        this.id = id
-    }
-
-    /**
-     * It will execute each changesets present in this changelog sequentially and return the list of Changeset
-     * exceptions (if not failfast)
+     * It will execute each changeSets present in this changelog sequentially and return the list of ChangeSet
+     * exceptions (if not failFast)
      */
     fun execute(
         configuration: UpdatariumConfiguration,
         tags: List<String> = emptyList()
-    ): ChangelogReport {
+    ): ChangeLogReport {
         configuration.persistEngine.checkConnection()
         InMemoryAppenderManager.setup(persistConfig = configuration.persistEngine.configuration)
 
-        val state = matchedChangesets(tags).fold(ChangelogExecutionState()) { state, changeSet ->
-            state.execute(configuration.failfast) {
+        val state = matchedChangeSets(tags).fold(ChangelogExecutionState()) { state, changeSet ->
+            state.execute(configuration.failFast) {
                 changeSet.setChangelogId(id).execute(configuration)
             }
         }
@@ -57,15 +46,15 @@ data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) : KLogga
     }
 
     /**
-     * filter the changesets that matched with the targetTags
-     * return all changesets if the targetTags list is empty
-     * return only the matched changesets (at least one tag matched)
+     * filter the changeSets that matched with the targetTags
+     * return all changeSets if the targetTags list is empty
+     * return only the matched changeSets (at least one tag matched)
      */
-    fun matchedChangesets(targetTags: List<String> = emptyList()) =
-        this.changesets
-            .filter { targetTags.isEmpty() || targetTags.intersect(it.tags ?: emptyList()).isNotEmpty() }
+    fun matchedChangeSets(targetTags: List<String> = emptyList()) =
+        this.changeSets
+            .filter { targetTags.isEmpty() || targetTags.intersect(it.tags).isNotEmpty() }
 }
 
-data class ChangelogReport(
-    val changeSetException: List<ChangesetError>
+data class ChangeLogReport(
+    val changeSetExceptions: List<ChangeSetError>
 )

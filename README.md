@@ -19,17 +19,19 @@
 [build_master]: https://github.com/saagie/updatarium/actions?query=workflow%3A%22Build+Master+and+Release%22
 ### Goal
 
-The goal of this project is to provide an easy way to execute actions only if it was never executed before. It was inspired from liquibase mecanism, but instead of using XML files, we chose to use DSL and Kotlin script files.
+The goal of this project is to provide an easy way to execute actions only if it was never executed before. 
+It was inspired from liquibase mechanism, but instead of using XML files, we chose to use DSL and Kotlin script files.
 
 ### How to use it / Usage
 
-This project generate some libs, so you just have to add them in your pom.xml or build.gradle.kts: 
+This project generates some libs, so you just have to add them in your `pom.xml` or `build.gradle.kts`: 
 
 #### Maven
 
-In your pom.xml:
+In your `pom.xml`:
 
-Add JCenter maven repository 
+Add JCenter maven repository
+ 
 ```xml
     <repositories>
         <repository>
@@ -42,6 +44,7 @@ Add JCenter maven repository
         </repository>
     </repositories>
 ```
+
 And add our libs (core at least) replacing `updatarium.version` with the latest version
 
 ```xml
@@ -59,8 +62,10 @@ And add our libs (core at least) replacing `updatarium.version` with the latest 
     </dependencies>
 ```
 
-You can also add some engines (example with `engine-httpclient`) or persit-engine
+You can also add some engines (example with `engine-httpclient`) or persist-engine
+
 ```xml
+<dependencies>
     <dependency>
         <groupId>io.saagie.updatarium</groupId>
         <artifactId>engine-httpclient</artifactId>
@@ -71,7 +76,9 @@ You can also add some engines (example with `engine-httpclient`) or persit-engin
         <artifactId>persist-mongodb</artifactId>
         <version>${updatarium.version}</version>
     </dependency>
+</dependencies>
 ```
+
 #### Gradle
 
 Add JCenter maven repository
@@ -82,8 +89,11 @@ repositories {
     jcenter()
 }
 ```
-...  
+
+...
+
 And add our libs (core at least) replacing `LATEST_VERSION` with the latest version
+
 ```kotlin
 dependencies {
     implementation(kotlin("stdlib-jdk8")) // Kotlin standard libs
@@ -96,66 +106,69 @@ dependencies {
 }
 ```
 
-You can also add some engines (example with `engine-httpclient`) or persit-engine
+You can also add some engines (example with `engine-httpclient`) or persist-engine
+
 ```kotlin
 implementation("io.saagie.updatarium:engine-httpclient:LATEST_VERSION")
 implementation("io.saagie.updatarium:persist-mongodb:LATEST_VERSION")
 ```
 
-#### Running a changelog
+#### Running a changeLog
 
-You need to create an Updatarium instance, then call the `executeChangelog` function with a Path of your changelog file (or a Reader): 
+You need to create an Updatarium instance, then call the `executeChangeLog` function with a `Path` of your changeLog file (or a `Reader`): 
+
 ```kotlin
-Updatarium().executeChangelog(pathOfYourChangelogFile)
+Updatarium().executeChangeLog(pathOfYourChangeLogFile)
 ```
 
 You can also use a persist-engine (to store executions and logs ... see below to know more about persist-engines):  
 ```kotlin
-Updatarium(MongodbPersistEngine()).executeChangelog(pathOfYourChangelogFile)
+Updatarium(MongodbPersistEngine()).executeChangeLog(pathOfYourChangeLogFile)
 ```
 
 
-#### Running multiples changelogs 
+#### Running multiples changeLogs 
 
-You can also run some changelogs, using this function `executeChangelogs` (`resourcesDirectory` is a Path - needs to be a directory, and the second arguments is a regex pattern to select changelogs files): 
+You can also run some changeLogs, using this function `executeChangeLogs` (`resourcesDirectory` is a Path - needs to be a directory,
+and the second arguments is a regex pattern to select changeLogs files): 
 
 ```kotlin
-Updatarium().executeChangelogs(resourcesDirectory, "changelog(.*).kts")
+Updatarium().executeChangeLogs(resourcesDirectory, "changeLog(.*).kts")
 ```
  
 #### The tag system
-You can add some tags into a changeset like this : 
-```kotlin
-+changeSet {
-    id = "ChangeSet-bash-1-1"
-    author = "Bash"
-    tags = listOf("before")
-    actions {
-        +BasicAction {
-            (1..5).forEach {
-                logger.info { "Hello $it!" }
-            }
 
+You can add some tags into a changeSet like this : 
+
+```kotlin
+changeSet(id = "ChangeSet-bash-1-1", author = "Bash") {
+    tags = listOf("before")
+    action {
+        (1..5).forEach {
+            logger.info { "Hello $it!" }
         }
     }
 }
 ``` 
 
-And you can executeChangelog(s) with a list of tag. If none, no tag matching system is applied...   
- If you add a list of tags, all changesets matched with at least one tag you use will be executed.  
+And you can `executeChangeLog`(s) with a list of tag. If none, no tag matching system is applied...
+If you add a list of tags, all changeSets matched with at least one tag you use will be executed.  
 
 In this example, `ChangeSet-bash-1-1` will be executed. 
+
  ```kotlin
-Updatarium().executeChangelog(changelog,listOf("before","after")) 
+Updatarium().executeChangeLog(changeLog,listOf("before","after")) 
 ```
+
 In this example, `ChangeSet-bash-1-1` will not be executed.
+
 ```kotlin
-Updatarium().executeChangelog(changelog,listOf("after")) 
+Updatarium().executeChangeLog(changeLog,listOf("after")) 
 ```
 
 #### PersistConfiguration
 
-You can configure the persistEngine, using a PersitConfiguration like this : 
+You can configure the persistEngine, using a `PersitConfiguration` like this : 
 
 ```kotlin
 val config = PersistConfig(
@@ -163,40 +176,43 @@ val config = PersistConfig(
             onSuccessStoreLogs = true,
             onErrorStoreLogs = true
         ) { event -> event.message!! }
-Updatarium(MongodbPersistEngine(config)).executeChangelog(pathOfYourChangelogFile)
+Updatarium(MongodbPersistEngine(config)).executeChangeLog(pathOfYourChangeLogFile)
 ```
 
-A `PersistConfig` instance sould have : 
+A `PersistConfig` instance should have :
+ 
  - level : org.apache.logging.log4j.Level (the minimal log level captured)
- - onSuccessStoreLogs : boolean. At true, persitEngine will receive a list of logs when call the `unlock` function in case of succes.
- - onErrorStoreLogs : boolean. At true, persitEngine will receive a list of logs when call the `unlock` function in case of failure.
+ - onSuccessStoreLogs : boolean. At true, persistEngine will receive a list of logs when call the `unlock` function in case of success.
+ - onErrorStoreLogs : boolean. At true, persistEngine will receive a list of logs when call the `unlock` function in case of failure.
  - layout : a lambda representing the transformation to applied to map a `InMemoryEvent` into a `String`
  
 ### Architecture
 
-#### The concept of Changelogs and Changesets?
+#### The concept of ChangeLogs and ChangeSets?
 
-A changelog represent all changes you have to execute for a version, a date,...
+A changeLog represent all changes you have to execute for a version, a date,...
 
-In a changelog, you can have one or more changesets. 
+In a changeLog, you can have one or more changeSets. 
 
-Each changeset represent a list of dependent changes to execute.
+Each changeSet represent a list of dependent changes to execute.
 
-One example :  
-for a new release you need to update all customer documents in a MongoDb database by adding a new field, then call a HTTP endpoint to activate a feature. And for the same release, you should do some modifications in Kubernetes pods with no link with the customers documents modification.  
-You have 2 changesets: 
+One example :
+for a new release you need to update all customer documents in a MongoDb database by adding a new field, then call an HTTP endpoint to activate a feature. 
+And for the same release, you should do some modifications in Kubernetes pods with no link with the customers documents modification.
+You have 2 changeSets: 
  - one for the customer documents and HTTP call
  - one for the Kubernetes modification  
 
-because they are no links between both, but you have a link between the MongoDb document update and the HTTP call ... If the MongoDb update failed, you should not execute the HTTP call.
+because they are no links between both, but you have a link between the MongoDb document update, and the HTTP call ...
+If the MongoDb update failed, you should not execute the HTTP call.
 
 So you'll have this : 
 
-- Changelog
-   - Changeset1 
+- ChangeLog
+   - ChangeSet1 
      - action: update MongoDb
      - action: HTTP call
-   - Changeset2
+   - ChangeSet2
      - action: Kubernetes modification
  
 #### Internal organization
@@ -204,32 +220,39 @@ So you'll have this :
 By design, we decide to split all engines to have a light library.
 
 - ##### core
-This project contains all the main code for Updatarium to run.  
-It contains the changelog/changeset model, and the mecanism for the execution and all necessary Interface (`Action` and `PersistEngine`)   
 
-To have a running project, you have a basic implementation of Action (BasicAction) and a basic persist implementation (without persistence ... That means all changeset will be executed)
+This project contains all the main code for Updatarium to run.
+It contains the changeLog/changeSet model, and the mechanism for the execution and all necessary Interface (`Action` and `PersistEngine`)   
 
-You have an entrypoint : the class `Updatarium` with these functions `executeChangelog()`.   
+To have a running project, you have a basic implementation of Action with a lambda, and a basic persist implementation (without persistence ... That means all changeSet will be executed)
+
+You have an entry point : the class `Updatarium` with these functions `executeChangeLog()`.   
+
 - ##### persist-*
-These projects contains an implementation of a `PersistEngine`.
 
-For the moment, only MongoDb is supported, but you can easily create your own `persist-XXX` project (see the CONTRIBUTING.md for more informations) 
+These projects contain an implementation of a `PersistEngine`.
+
+For the moment, only MongoDb is supported, but you can easily create your own `persist-XXX` project (see the CONTRIBUTING.md for more information) 
+
 - ##### engine-*
-These projects contains an implementation of an `Action`.
+
+These projects contain an implementation of an `Action`.
 
 For the moment : 
 - MongoDb
 - Bash
 - HttpClient
-- Kubernetes 
-are supported, but you can easily create your own `engine-XXX` project (see the CONTRIBUTING.md for more informations
+- Kubernetes
+are supported, but you can easily create your own `engine-XXX` project (see the CONTRIBUTING.md for more information
+
 - ##### samples
 
 You'll find in the sample directory some examples to use Updatarium.
 
 - ##### updatarium-cli
 
-A command line module to provide a all-in-one application a ship it into a Docker image ([saagie/updatarium](https://hub.docker.com/r/saagie/updatarium)))
+A command line module to provide an all-in-one application a ship it into a Docker image ([saagie/updatarium](https://hub.docker.com/r/saagie/updatarium)))
+
 ### Credits
 Logo : 
  - Made by [@pierreLeresteux](https://github.com/pierreLeresteux)

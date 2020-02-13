@@ -15,20 +15,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.dsl.action
+package io.saagie.updatarium.model.action
 
-import com.autodsl.annotation.AutoDsl
+import io.saagie.updatarium.engine.bash.BashEngine
+import io.saagie.updatarium.model.ChangeSetDsl
+import mu.KotlinLogging
+import java.time.Duration
 
+fun ChangeSetDsl.bashAction(
+    workingDir: String = ".",
+    timeout: Duration = Duration.ofMinutes(1),
+    block: BashActionDsl.() -> String
+) {
+    this.action {
+        val bashAction = BashActionDsl()
+        val bashEngine = BashEngine(bashAction.logger)
+        val script = bashAction.block()
 
-/**
- * Here is a simple implementation for Action.
- *
- * It will simply execute the function in parameter.
- */
-@AutoDsl
-class BasicAction(val f: BasicAction.() -> Unit) : Action() {
-
-    override fun execute() {
-        f(this)
+        bashEngine.runCommand(script, workingDir, timeout)
     }
+}
+
+class BashActionDsl {
+    val logger = KotlinLogging.logger("bashAction")
 }

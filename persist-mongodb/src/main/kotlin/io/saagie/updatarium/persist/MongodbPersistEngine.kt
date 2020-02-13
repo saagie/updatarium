@@ -18,9 +18,9 @@
 package io.saagie.updatarium.persist
 
 import com.mongodb.ConnectionString
-import io.saagie.updatarium.dsl.ChangeSet
-import io.saagie.updatarium.dsl.Status
-import io.saagie.updatarium.persist.model.MongoDbChangeset
+import io.saagie.updatarium.model.ChangeSet
+import io.saagie.updatarium.model.Status
+import io.saagie.updatarium.persist.model.MongoDbChangeSet
 import io.saagie.updatarium.persist.model.toMongoDbDocument
 import org.litote.kmongo.*
 import java.time.Instant
@@ -33,7 +33,7 @@ class MongodbPersistEngine(override val configuration: PersistConfig = PersistCo
 
     private val collection by lazy {
         with(KMongo.createClient(ConnectionString(getConnectionString()))) {
-            this.getDatabase(DATABASE).getCollection<MongoDbChangeset>(COLLECTION)
+            this.getDatabase(DATABASE).getCollection<MongoDbChangeSet>(COLLECTION)
         }
     }
 
@@ -51,7 +51,7 @@ class MongodbPersistEngine(override val configuration: PersistConfig = PersistCo
     }
 
     override fun notAlreadyExecuted(changeSetId: String): Boolean {
-        when (val doc = collection.findOne(MongoDbChangeset::changesetId eq changeSetId)) {
+        when (val doc = collection.findOne(MongoDbChangeSet::changeSetId eq changeSetId)) {
             null -> {
                 logger.info { "$changeSetId not exists" }
                 return true
@@ -84,11 +84,11 @@ class MongodbPersistEngine(override val configuration: PersistConfig = PersistCo
         logs: List<String>
     ) {
         collection.updateOne(
-            MongoDbChangeset::changesetId eq changeSet.calculateId(),
+            MongoDbChangeSet::changeSetId eq changeSet.id,
             set(
-                MongoDbChangeset::status setTo status.name,
-                MongoDbChangeset::statusDate setTo Instant.now(),
-                MongoDbChangeset::log setTo logs
+                MongoDbChangeSet::status setTo status.name,
+                MongoDbChangeSet::statusDate setTo Instant.now(),
+                MongoDbChangeSet::log setTo logs
             )
         )
         logger.info { "${changeSet.id} marked as $status" }
