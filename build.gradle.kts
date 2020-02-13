@@ -92,6 +92,12 @@ config {
                 email = "guillaume.naimi@saagie.com"
                 roles = listOf("developer")
             }
+            person {
+                id = "igor"
+                name = "Igor Laborie"
+                email = "igor.laborie@saagie.com"
+                roles = listOf("developer")
+            }
         }
 
         bintray {
