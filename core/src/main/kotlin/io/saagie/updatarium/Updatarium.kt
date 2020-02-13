@@ -19,10 +19,9 @@ package io.saagie.updatarium
  */
 import de.swirtz.ktsrunner.objectloader.KtsObjectLoader
 import io.saagie.updatarium.config.UpdatariumConfiguration
-import io.saagie.updatarium.dsl.Changelog
-import io.saagie.updatarium.dsl.UpdatariumError
+import io.saagie.updatarium.model.ChangeLog
+import io.saagie.updatarium.model.UpdatariumError
 import mu.KotlinLogging
-import java.io.File
 import java.io.Reader
 import java.nio.file.Files
 import java.nio.file.Path
@@ -38,32 +37,32 @@ class Updatarium(val configuration: UpdatariumConfiguration = UpdatariumConfigur
     private val logger = KotlinLogging.logger {}
     private val ktsLoader = KtsObjectLoader()
 
-    fun executeChangelog(reader: Reader, tags: List<String> = emptyList(), changelogId: String = "") {
-        executeScript(reader.readText(), changelogId, tags)
+    fun executeChangeLog(reader: Reader, tags: List<String> = emptyList()) {
+        executeScript(reader.readText(), tags)
     }
 
-    fun executeChangelog(script: String, tags: List<String> = emptyList(), changelogId: String = "") {
-        executeScript(script, changelogId, tags)
+    fun executeChangeLog(script: String, tags: List<String> = emptyList()) {
+        executeScript(script, tags)
     }
 
-    fun executeChangelog(reader: Reader, tag: String, changelogId: String = "") {
-        this.executeChangelog(reader, listOf(tag), changelogId)
+    fun executeChangeLog(reader: Reader, tag: String) {
+        this.executeChangeLog(reader, listOf(tag))
     }
 
-    fun executeChangelog(path: Path, tags: List<String> = emptyList()) {
-        executeChangelog(Files.newBufferedReader(path), tags, path.toAbsolutePath().toString())
+    fun executeChangeLog(path: Path, tags: List<String> = emptyList()) {
+        executeChangeLog(Files.newBufferedReader(path), tags, path.toAbsolutePath().toString())
     }
 
-    fun executeChangelog(path: Path, tag: String) {
-        executeChangelog(Files.newBufferedReader(path), listOf(tag), path.toAbsolutePath().toString())
+    fun executeChangeLog(path: Path, tag: String) {
+        executeChangeLog(Files.newBufferedReader(path), listOf(tag), path.toAbsolutePath().toString())
     }
 
-    fun executeChangelog(script: String, tag: String, changelogId: String = "") {
-        executeChangelog(script, listOf(tag), changelogId)
+    fun executeChangeLog(script: String, tag: String) {
+        executeChangeLog(script, listOf(tag))
     }
 
-    fun executeChangelogs(path: Path, pattern: String, tag: String) {
-        executeChangelogs(path, pattern, listOf(tag))
+    fun executeChangeLogs(path: Path, pattern: String, tag: String) {
+        executeChangeLogs(path, pattern, listOf(tag))
     }
 
     private data class ExecutionState(val exceptions: List<UpdatariumError.ExitError> = emptyList()) {
@@ -79,47 +78,53 @@ class Updatarium(val configuration: UpdatariumConfiguration = UpdatariumConfigur
             }
     }
 
-    fun executeChangelogs(path: Path, pattern: String, tags: List<String> = emptyList()) {
+    fun executeChangeLogs(path: Path, pattern: String, tags: List<String> = emptyList()) {
         if (!Files.isDirectory(path)) {
             logger.error { "$path is not a directory." }
             throw UpdatariumError.ExitError
         } else {
             val state =
-            path
-                .toFile()
-                .walk()
-                .maxDepth(generateMaxDepth())
-                .filter { it.name.matches(Regex(pattern)) }
-                .sorted()
-                .fold(ExecutionState()) { state, file ->
-                    state.execute(configuration.failfast) {
-                        this.executeChangelog(file.toPath(), tags)
+                path
+                    .toFile()
+                    .walk()
+                    .maxDepth(generateMaxDepth())
+                    .filter { it.name.matches(Regex(pattern)) }
+                    .sorted()
+                    .fold(ExecutionState()) { state, file ->
+                        state.execute(configuration.failFast) {
+                            this.executeChangeLog(file.toPath(), tags)
+                        }
                     }
-                }
             if (state.hasError) throw UpdatariumError.ExitError
         }
     }
 
     internal fun generateMaxDepth(): Int =
         when {
-            configuration.listFilesRecursively -> { Int.MAX_VALUE }
+            configuration.listFilesRecursively -> {
+                Int.MAX_VALUE
+            }
             else -> 1
         }
 
-    private fun executeScript(
-        script: String,
-        changelogId: String,
-        tags: List<String>
-    ) {
-        with(ktsLoader.load<Changelog>(script)) {
-            this.setId(changelogId)
-            with(this.execute(configuration, tags).changeSetException) {
-                if (this.isNotEmpty()) {
-                    this.forEach { logger.error { it } }
-                    throw UpdatariumError.ExitError
-                }
-            }
+    fun executeChangeLog(changelog: ChangeLog, tags: List<String> = emptyList()) {
+        val result = changelog.execute(configuration, tags)
+        result.changeSetExceptions.forEach { logger.error { it } }
+        if (result.changeSetExceptions.isNotEmpty()) {
+            throw UpdatariumError.ExitError
         }
+    }
+
+    private fun executeChangeLog(reader: Reader, tags: List<String>, id: String) {
+        val changeLog = ktsLoader.load<ChangeLog>(reader).let { loaded ->
+            if (loaded.id.isEmpty()) loaded.copy(id = id) else loaded
+        }
+        executeChangeLog(changeLog, tags)
+    }
+
+    private fun executeScript(script: String, tags: List<String>) {
+        val changeLog = ktsLoader.load<ChangeLog>(script)
+        executeChangeLog(changeLog, tags)
     }
 }
 

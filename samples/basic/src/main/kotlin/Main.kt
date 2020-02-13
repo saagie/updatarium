@@ -19,26 +19,19 @@ import io.saagie.updatarium.config.UpdatariumConfiguration
  * limitations under the License.
  */
 fun main() {
-    Updatarium(UpdatariumConfiguration(dryRun = true)).executeChangelog("""
-        import io.saagie.updatarium.dsl.action.BasicAction
-        import io.saagie.updatarium.dsl.changeSet
-        import io.saagie.updatarium.dsl.changelog
+    Updatarium(UpdatariumConfiguration(dryRun = true)).executeChangeLog(
+        """
+        import io.saagie.updatarium.model.changeLog
 
-        changelog {
-            changesets {
-                +changeSet {
-                    id = "ChangeSet-1"
-                    author = "Hello World"
-                    actions {
-                        +BasicAction {
-                            (1..5).forEach {
-                                logger.info {"Hello ${"$"}it!"}
-                            }
-
-                        }
+        changeLog {
+            changeSet(id = "ChangeSet-1", author = "Hello World") {
+                action {
+                    (1..5).forEach {
+                        logger.info {"Hello ${"$"}it!"}
                     }
-                }
-            }
+                 }
+             }
         }
-    """.trimIndent())
+    """.trimIndent()
+    )
 }

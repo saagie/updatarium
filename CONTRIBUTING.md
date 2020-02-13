@@ -19,20 +19,34 @@ Please note we have a code of conduct, please follow it in all your interactions
 
 ## Action creation
 
-The action creation is quite simple.  
+The action creation is quite simple.
 You need to create a new Kotlin project and just add the 
 `implementation(project("io.saagie.updatarium:core:{latest-version}"))`
 
-Now you can create your own implementation of `Action`.  
-We use `com.autodsl.annotation.AutoDsl` annotation to transform our class in a simple DSL, but you can create you own DSL without.
+Now you can create your own custom `Action` with an extension function on `ChangeSetDsl`.
+Check the bash implementation:
 
-`Action` interface contains only one function : 
+```kotlin
+fun ChangeSetDsl.bashAction(
+    workingDir: String = ".",
+    timeout: Duration = Duration.ofSeconds(60),
+    block: BashActionDsl.() -> String
+) {
+    this.action {
+        val bashAction = BashActionDsl()
+        val bashEngine = BashEngine(bashAction.logger)
+        val script = bashAction.block()
 
-```$kotlin
-abstract fun execute()
+        bashEngine.runCommand(script, workingDir, timeout)
+    }
+}
+
+class BashActionDsl() {
+    val logger = KotlinLogging.logger("bashAction")
+}
 ```
-
-in your `execute` function you can implement your own logic. You can see existing `engine-XXX` to see some examples. 
+ 
+You can see existing `engine-XXX` to see some examples. 
 
 ## Persist Engine creation
 

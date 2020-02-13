@@ -15,9 +15,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.dsl
+package io.saagie.updatarium.model.action
 
-sealed class UpdatariumError(open val e: Throwable?) : Exception() {
-    data class ChangesetError(val changeSet: ChangeSet, override val e: Throwable? = null) : UpdatariumError(e)
-    object ExitError : UpdatariumError(null)
+import io.saagie.updatarium.engine.bash.BashEngine
+import io.saagie.updatarium.model.ChangeSetDsl
+import mu.KotlinLogging
+import java.time.Duration
+
+fun ChangeSetDsl.bashAction(
+    workingDir: String = ".",
+    timeout: Duration = Duration.ofSeconds(60),
+    block: BashActionDsl.() -> String
+) {
+    this.action {
+        val bashAction = BashActionDsl()
+        val bashEngine = BashEngine(bashAction.logger)
+        val script = bashAction.block()
+
+        bashEngine.runCommand(script, workingDir, timeout)
+    }
+}
+
+class BashActionDsl() {
+    val logger = KotlinLogging.logger("bashAction")
 }

@@ -15,23 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.dsl.action
+package io.saagie.updatarium.model
 
-import com.autodsl.annotation.AutoDsl
-import io.saagie.updatarium.engine.kubernetes.KubernetesEngine
-
-@AutoDsl
-class KubernetesScriptAction(
-    val namespace: String? = null,
-    val f: KubernetesScriptAction.() -> Unit
-) : Action() {
-
-    val client = when {
-        namespace != null -> KubernetesEngine.getClient(namespace)
-        else -> KubernetesEngine.getClient()
-    }
-
-    override fun execute() {
-        f(this)
-    }
+sealed class UpdatariumError(open val e: Throwable?) : Exception() {
+    data class ChangeSetError(val changeSet: ChangeSet, override val e: Throwable? = null) : UpdatariumError(e)
+    object ExitError : UpdatariumError(null)
 }

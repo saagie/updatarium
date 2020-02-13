@@ -15,17 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.dsl.action
+package io.saagie.updatarium.model
 
-import com.autodsl.annotation.AutoDsl
-import com.github.kittinunf.fuel.core.FuelManager
-
-@AutoDsl
-class HttpScriptAction(val f: HttpScriptAction.() -> Unit) : Action() {
-
-    val restClient = FuelManager.instance
-
-    override fun execute() {
-        f(this)
-    }
+/**
+ * Represent the status of the changeset.
+ */
+enum class Status {
+    // execution in progress
+    EXECUTE,
+    // Execution is done with a correct status
+    OK,
+    // Execution is done but it has failed
+    KO
 }

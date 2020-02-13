@@ -24,7 +24,7 @@ fun main() {
     val resourcesDirectory =Paths.get(Main::class.java.getResource("changelogs").path)
     val changelog1 =Paths.get(Main::class.java.getResource("changelogs/changelog1.kts").path)
     val changelog2 =Paths.get(Main::class.java.getResource("changelogs/changelog2.kts").path)
-    Updatarium().executeChangelogs(resourcesDirectory, "changelog(.*).kts", listOf("after","before"))
-    Updatarium().executeChangelog(changelog1,listOf("never"))
-    Updatarium().executeChangelog(changelog2,listOf("before","after"))
+    Updatarium().executeChangeLogs(resourcesDirectory, "changelog(.*).kts", listOf("after","before"))
+    Updatarium().executeChangeLog(changelog1,listOf("never"))
+    Updatarium().executeChangeLog(changelog2,listOf("before","after"))
 }

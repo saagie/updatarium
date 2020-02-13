@@ -17,11 +17,8 @@
  */
 package io.saagie.updatarium.persist
 
-import io.saagie.updatarium.dsl.ChangeSet
-import io.saagie.updatarium.dsl.Status
-import io.saagie.updatarium.log.InMemoryEvent
-import org.apache.logging.log4j.Level
-import org.apache.logging.log4j.core.LogEvent
+import io.saagie.updatarium.model.ChangeSet
+import io.saagie.updatarium.model.Status
 
 class TestPersistEngine : PersistEngine(PersistConfig()){
     val changeSetTested = mutableListOf<String>()

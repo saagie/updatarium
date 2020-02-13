@@ -15,25 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import io.saagie.updatarium.dsl.action.BashScriptAction
-import io.saagie.updatarium.dsl.changeSet
-import io.saagie.updatarium.dsl.changelog
+import io.saagie.updatarium.model.action.bashAction
+import io.saagie.updatarium.model.changeLog
 
-changelog {
-    changesets {
-        +changeSet {
-            id = "ChangeSet-bash-1"
-            author = "Bash"
-            actions {
-                +BashScriptAction(
-                    script = """
-curl -I https://httpbin.org/get | grep -i Server &&\
-pwd &&\
-export | grep " PWD"
-""".trimIndent(),
-                    workingDir = "/tmp"
-                )
-            }
+changeLog {
+    changeSet(id = "ChangeSet-bash-1", author = "Bash") {
+        bashAction(workingDir = "/tmp") {
+            """
+                    curl -I https://httpbin.org/get | grep -i Server &&\
+                    pwd &&\
+                    export | grep " PWD"
+                """.trimIndent()
         }
     }
 }

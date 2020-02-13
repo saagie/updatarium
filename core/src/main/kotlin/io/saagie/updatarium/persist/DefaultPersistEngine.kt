@@ -17,8 +17,8 @@
  */
 package io.saagie.updatarium.persist
 
-import io.saagie.updatarium.dsl.ChangeSet
-import io.saagie.updatarium.dsl.Status
+import io.saagie.updatarium.model.ChangeSet
+import io.saagie.updatarium.model.Status
 
 /**
  * This is a basic implementation of the PersistEngine.

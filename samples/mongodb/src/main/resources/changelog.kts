@@ -15,51 +15,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import io.saagie.updatarium.dsl.action.MongoScriptAction
-import io.saagie.updatarium.dsl.changeSet
-import io.saagie.updatarium.dsl.changelog
+import io.saagie.updatarium.model.action.mongoAction
+import io.saagie.updatarium.model.changeLog
 import org.litote.kmongo.*
 
-changelog {
-    changesets {
-        +changeSet {
-            id = "ChangeSet-Mongodb-1"
-            author = "MongoDb"
-            actions {
-                +MongoScriptAction {
-                    logger.info { "MongoDb" }
-                    val database = "sample_mongodb"
-                    val collection = "sample"
+changeLog {
+    changeSet(id = "ChangeSet-Mongodb-1", author = "MongoDb") {
+        mongoAction {
+            logger.info { "MongoDb" }
+            val database = "sample_mongodb"
+            val collection = "sample"
 
-                    mongoClient.dropDatabase(database)
-                    logger.info { "DB $database drop OK" }
-                    with(onCollection(database, collection)) {
-                        logger.info { "Collection OK" }
-                        this.insertOne("{name:'Yoda',age:896}")
-                        this.insertOne("{name:'Luke Skywalker',age:19}")
-                        logger.info { "2 docs inserted in collection $database.$collection" }
-                        this.find()
-                            .forEach { logger.info { " name : ${it["name"]} - age : ${it["age"]}" } }
+            mongoClient.dropDatabase(database)
+            logger.info { "DB $database drop OK" }
+            with(onCollection(database, collection)) {
+                logger.info { "Collection OK" }
+                this.insertOne("{name:'Yoda',age:896}")
+                this.insertOne("{name:'Luke Skywalker',age:19}")
+                logger.info { "2 docs inserted in collection $database.$collection" }
+                this.find()
+                    .forEach { logger.info { " name : ${it["name"]} - age : ${it["age"]}" } }
+            }
+        }
 
-                    }
-                }
-                +MongoScriptAction(connectionStringEnvVar="OTHERCONNECTIONSTRING") {
-                    logger.info { "MongoDb" }
-                    val database = "sample_mongodb2"
-                    val collection = "sample"
+        mongoAction(connectionStringEnvVar = "OTHERCONNECTIONSTRING") {
+            logger.info { "MongoDb" }
+            val database = "sample_mongodb2"
+            val collection = "sample"
 
-                    mongoClient.dropDatabase(database)
-                    logger.info { "DB $database drop OK" }
-                    with(onCollection(database, collection)) {
-                        logger.info { "Collection OK" }
-                        this.insertOne("{name:'Yoda',age:896}")
-                        this.insertOne("{name:'Luke Skywalker',age:19}")
-                        logger.info { "2 docs inserted in collection $database.$collection" }
-                        this.find()
-                            .forEach { logger.info { " name : ${it["name"]} - age : ${it["age"]}" } }
+            mongoClient.dropDatabase(database)
+            logger.info { "DB $database drop OK" }
+            with(onCollection(database, collection)) {
+                logger.info { "Collection OK" }
+                this.insertOne("{name:'Yoda',age:896}")
+                this.insertOne("{name:'Luke Skywalker',age:19}")
+                logger.info { "2 docs inserted in collection $database.$collection" }
+                this.find()
+                    .forEach { logger.info { " name : ${it["name"]} - age : ${it["age"]}" } }
 
-                    }
-                }
             }
         }
     }

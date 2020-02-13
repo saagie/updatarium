@@ -15,16 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.dsl
+package io.saagie.updatarium.persist.model
 
-/**
- * Represent the status of the changeset.
- */
-enum class Status {
-    // execution in progress
-    EXECUTE,
-    // Execution is done with a correct status
-    OK,
-    // Execution is done but it has failed
-    KO
-}
+import io.saagie.updatarium.model.ChangeSet
+import io.saagie.updatarium.model.Status
+import java.time.Instant
+
+data class MongoDbChangeSet(
+    val changeSetId: String,
+    val author: String,
+    val status: String,
+    val lockDate: Instant = Instant.now(),
+    val statusDate: Instant? = null,
+    val log: List<String>
+)
+
+fun ChangeSet.toMongoDbDocument(): MongoDbChangeSet = MongoDbChangeSet(
+    changeSetId = this.calculateId(),
+    author = this.author,
+    status = Status.EXECUTE.name,
+    log = mutableListOf()
+)

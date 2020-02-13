@@ -17,59 +17,47 @@
  */
 import com.github.kittinunf.result.Result.Failure
 import com.github.kittinunf.result.Result.Success
-import io.saagie.updatarium.dsl.action.HttpScriptAction
-import io.saagie.updatarium.dsl.changeSet
-import io.saagie.updatarium.dsl.changelog
+import io.saagie.updatarium.model.action.httpAction
+import io.saagie.updatarium.model.changeLog
 import me.lazmaid.kraph.Kraph
 
-changelog {
-    changesets {
-        +changeSet {
-            id = "ChangeSet-Http-1"
-            author = "Postman"
-            actions {
-                +HttpScriptAction {
-                    val (_, _, result) = restClient
-                        .get("https://httpbin.org/get")
-                        .responseString()
-                    logger.info { result.get() }
-                }
-            }
+changeLog {
+    changeSet("ChangeSet-Http-1", "Postman") {
+        httpAction {
+            val (_, _, result) = restClient
+                .get("https://httpbin.org/get")
+                .responseString()
+            logger.info { result.get() }
         }
-        +changeSet {
-            id = "ChangeSet-Http-2"
-            author = "GraphQL"
-            actions {
-                +HttpScriptAction {
-                    val query = Kraph {
-                        query {
-                            cursorConnection("allFilms", first = 10) {
-                                edges {
-                                    node {
-                                        field("title")
-                                    }
-                                }
+    }
+
+    changeSet("ChangeSet-Http-2", "GraphQL") {
+        httpAction {
+            val query = Kraph {
+                query {
+                    cursorConnection("allFilms", first = 10) {
+                        edges {
+                            node {
+                                field("title")
                             }
                         }
                     }
+                }
+            }
+            val (_, _, result) = restClient
+                .post("https://swapi-graphql.netlify.com/.netlify/functions/index")
+                .header("content-type" to "application/json", "Accept" to "application/json")
+                .body(query.toRequestString())
+                .responseString()
 
-                    val (_, _, result) = restClient
-                        .post("https://swapi-graphql.netlify.com/.netlify/functions/index")
-                        .header("content-type" to "application/json", "Accept" to "application/json")
-                        .body(query.toRequestString())
-                        .responseString()
-
-                    when (result) {
-                        is Failure -> {
-                            val ex = result.getException()
-                            println(ex)
-                        }
-                        is Success -> {
-                            val data = result.get()
-                            println(data)
-                        }
-                    }
-
+            when (result) {
+                is Failure -> {
+                    val ex = result.getException()
+                    println(ex)
+                }
+                is Success -> {
+                    val data = result.get()
+                    println(data)
                 }
             }
         }

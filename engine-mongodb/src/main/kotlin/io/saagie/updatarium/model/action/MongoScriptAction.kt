@@ -15,29 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.dsl.action
+package io.saagie.updatarium.model.action
 
-import com.autodsl.annotation.AutoDsl
 import io.saagie.updatarium.engine.mongo.MongoEngine
+import io.saagie.updatarium.model.ChangeSetDsl
+import mu.KotlinLogging
 
 const val MONGODB_CONNECTIONSTRING = "MONGODB_CONNECTIONSTRING"
 
-@AutoDsl
-class MongoScriptAction(
+fun ChangeSetDsl.mongoAction(
     connectionStringEnvVar: String = MONGODB_CONNECTIONSTRING,
-    val f: MongoScriptAction.() -> Unit
-) : Action() {
+    block: MongoScriptActionDsl.() -> Unit
+) {
+    this.action { MongoScriptActionDsl(connectionStringEnvVar).block() }
+}
 
+class MongoScriptActionDsl(connectionStringEnvVar: String = MONGODB_CONNECTIONSTRING) {
+    val logger = KotlinLogging.logger("mongoAction")
     val mongoEngine = MongoEngine(connectionStringEnvVar)
     val mongoClient = mongoEngine.mongoClient
 
-    override fun execute() {
-        f(this)
-    }
-
     fun onCollection(databaseName: String, collectionName: String) =
         mongoClient.getDatabase(databaseName).getCollection(collectionName)
-
 
     fun onCollections(databaseNameRegex: Regex, collectionName: String) =
         mongoClient.listDatabaseNames().filter { it.matches(databaseNameRegex) }.map {

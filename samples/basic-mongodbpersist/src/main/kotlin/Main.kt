@@ -21,27 +21,19 @@ import io.saagie.updatarium.persist.MongodbPersistEngine
 import io.saagie.updatarium.persist.PersistConfig
 import org.apache.logging.log4j.Level
 
+
 fun main() {
     val persistConfig = PersistConfig(level = Level.INFO, onSuccessStoreLogs = true, onErrorStoreLogs = true)
-    Updatarium(UpdatariumConfiguration(persistEngine = MongodbPersistEngine(persistConfig))).executeChangelog(
+    Updatarium(UpdatariumConfiguration(persistEngine = MongodbPersistEngine(persistConfig))).executeChangeLog(
         """
-        import io.saagie.updatarium.dsl.action.BasicAction
-        import io.saagie.updatarium.dsl.changeSet
-        import io.saagie.updatarium.dsl.changelog
+        import io.saagie.updatarium.model.changeLog
 
-        changelog {
-            changesets {
-                +changeSet {
-                    id = "ChangeSet-2"
-                    author = "Hello World"
-                    actions {
-                        +BasicAction {
-                            (1..5).forEach {
-                                logger.info {"Hello ${"$"}it!"}
-                                Thread.sleep(300)
-                            }
-
-                        }
+        changeLog {
+            changeSet(id = "ChangeSet-2", author = "Hello World") {
+                action {
+                    (1..5).forEach {
+                        logger.info {"Hello ${"$"}it!"}
+                        Thread.sleep(300)
                     }
                 }
             }
