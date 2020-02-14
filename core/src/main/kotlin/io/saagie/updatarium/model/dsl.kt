@@ -21,58 +21,8 @@ import mu.KotlinLogging
 
 typealias Tag = String
 
-/**
- * A ChangeLog typesafe builder
- *
- * @param id the changeLog id
- */
-class ChangeLogDsl(val id: String) {
-    private var changeSetsDsl: MutableList<ChangeSetDsl> = mutableListOf()
-
-    fun changeSet(id: String, author: String, block: ChangeSetDsl.() -> Unit) =
-        this.changeSetsDsl.add(ChangeSetDsl(id, author).apply(block))
-
-    internal fun build(): ChangeLog =
-        ChangeLog(id, this.changeSetsDsl.map(ChangeSetDsl::build))
-}
-
-/**
- * A ChangeSet typesafe builder
- *
- * @param id the changeSet id
- * @param author the changeSet author
- */
-class ChangeSetDsl(val id: String, val author: String) {
-    private var actions: MutableList<ActionDsl> = mutableListOf()
-
-    var tags: List<Tag> = emptyList()
-
-    fun action(name: String = "basicAction", block: ActionDsl.() -> Unit) =
-        this.actions.add(ActionDsl(name, block))
-
-    internal fun build(): ChangeSet =
-        ChangeSet(
-            id = id,
-            author = author,
-            tags = tags,
-            actions = actions.map(ActionDsl::build)
-        )
-}
-
-/**
- * An Action typesafe builder
- * Just provide a `logger`
- *
- * @param name the action name, used by the logger
- * @param block the code to run in the action
- */
-class ActionDsl(val name: String, val block: ActionDsl.() -> Unit) {
-    val logger = KotlinLogging.logger(name)
-
-    internal fun build(): Action = Action {
-        block()
-    }
-}
+@DslMarker
+annotation class ChangelogDslMarker
 
 /**
  * Allow [ChangeLog] creation with a typesafe builder
@@ -98,3 +48,71 @@ fun changeLog(id: String = "", block: ChangeLogDsl.() -> Unit): ChangeLog =
     ChangeLogDsl(id)
         .apply(block)
         .build()
+
+/**
+ * A ChangeLog typesafe builder
+ *
+ * @param id the changeLog id
+ */
+@ChangelogDslMarker
+class ChangeLogDsl(val id: String) {
+    private var changeSetsDsl: MutableList<ChangeSetDsl> = mutableListOf()
+
+    fun changeSet(id: String, author: String, block: ChangeSetDsl.() -> Unit) =
+        this.changeSetsDsl.add(ChangeSetDsl(id, author).apply(block))
+
+    @Deprecated(
+        "Cannot be used in changeLog block.", level = DeprecationLevel.ERROR,
+        replaceWith = ReplaceWith("changeSet(\"...\")")
+    )
+    fun changeLog(id: String = "", block: ChangeLogDsl.() -> Unit): Nothing = error("...")
+
+    internal fun build(): ChangeLog =
+        ChangeLog(id, this.changeSetsDsl.map(ChangeSetDsl::build))
+}
+
+/**
+ * A ChangeSet typesafe builder
+ *
+ * @param id the changeSet id
+ * @param author the changeSet author
+ */
+@ChangelogDslMarker
+class ChangeSetDsl(val id: String, val author: String) {
+    private var actions: MutableList<ActionDsl> = mutableListOf()
+
+    var tags: List<Tag> = emptyList()
+
+    fun action(name: String = "basicAction", block: ActionDsl.() -> Unit) =
+        this.actions.add(ActionDsl(name, block))
+
+    @Deprecated(
+        "Cannot be used in changeSet block.", level = DeprecationLevel.ERROR,
+        replaceWith = ReplaceWith("action(\"...\")")
+    )
+    fun changeLog(id: String = "", block: ChangeLogDsl.() -> Unit): Nothing = error("...")
+
+    internal fun build(): ChangeSet =
+        ChangeSet(
+            id = id,
+            author = author,
+            tags = tags,
+            actions = actions.map(ActionDsl::build)
+        )
+}
+
+/**
+ * An Action typesafe builder
+ * Just provide a `logger`
+ *
+ * @param name the action name, used by the logger
+ * @param block the code to run in the action
+ */
+@ChangelogDslMarker
+class ActionDsl(val name: String, val block: ActionDsl.() -> Unit) {
+    val logger = KotlinLogging.logger(name)
+
+    internal fun build(): Action = Action {
+        block()
+    }
+}
