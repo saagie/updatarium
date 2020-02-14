@@ -84,7 +84,7 @@ class MongodbPersistEngine(override val configuration: PersistConfig = PersistCo
         logs: List<String>
     ) {
         collection.updateOne(
-            MongoDbChangeset::changesetId eq changeSet.id,
+            MongoDbChangeset::changesetId eq changeSet.calculateId(),
             set(
                 MongoDbChangeset::status setTo status.name,
                 MongoDbChangeset::statusDate setTo Instant.now(),
