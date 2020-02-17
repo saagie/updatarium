@@ -44,17 +44,16 @@ data class Changelog(var changesets: List<ChangeSet> = mutableListOf()) : KLogga
         configuration: UpdatariumConfiguration,
         tags: List<String> = emptyList()
     ): ChangelogReport {
-        val exceptions: MutableList<ChangesetError> = mutableListOf()
         configuration.persistEngine.checkConnection()
         InMemoryAppenderManager.setup(persistConfig = configuration.persistEngine.configuration)
-        matchedChangesets(tags).forEach {
-            exceptions.addAll(it.setChangelogId(id).execute(configuration))
-            if (configuration.failfast && exceptions.isNotEmpty()) {
-                return ChangelogReport(exceptions)
+
+        val state = matchedChangesets(tags).fold(ChangelogExecutionState()) { state, changeSet ->
+            state.execute(configuration.failfast) {
+                changeSet.setChangelogId(id).execute(configuration)
             }
         }
         InMemoryAppenderManager.tearDown()
-        return ChangelogReport(exceptions)
+        return state.report
     }
 
     /**
