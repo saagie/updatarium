@@ -21,6 +21,7 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.extracting
 import assertk.assertions.hasSize
+import assertk.assertions.isEqualTo
 import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.dsl.UpdatariumError
 import io.saagie.updatarium.persist.TestPersistEngine
@@ -40,7 +41,11 @@ class UpdatariumITest {
     val failedChangelogPath =
         Paths.get(UpdatariumITest::class.java.getResource("/changelogs/failed_changelog.kts").path)
 
-    fun getConfig() = UpdatariumConfiguration(dryRun = false, persistEngine = TestPersistEngine())
+    fun getConfig() = UpdatariumConfiguration(
+        dryRun = false,
+        persistEngine = TestPersistEngine(),
+        listFilesRecursively = true
+    )
 
     @Test
     fun `should correctly execute a very simple changelog`() {
@@ -371,6 +376,64 @@ class UpdatariumITest {
                         .containsExactly("ChangeSet-1-OK", "ChangeSet-2-KO", "ChangeSet-3-OK")
                 }
             }
+        }
+    }
+
+    @Nested
+    inner class ListFilesRecursivelyTests {
+
+        val resourcesPath01 = Paths.get(UpdatariumITest::class.java.getResource("/01").path)
+        val changelogPath01 = Paths.get(UpdatariumITest::class.java.getResource("/01/01-changelog.kts").path)
+        val changelogWithTagPath02 =
+            Paths.get(UpdatariumITest::class.java.getResource("/01/02/02-changelog_with_tags.kts").path)
+
+
+        @Test
+        fun `should use the correct way to list files`() {
+            // with listFilesRecursively
+            with(getConfig()) {
+                Updatarium(this).executeChangelogs(
+                    resourcesPath01,
+                    "0(.*)-changelog(.*).kts"
+                )
+                assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
+                assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
+                    .containsExactly(
+                        "${changelogPath01.toAbsolutePath().toString()}_ChangeSet-1",
+                        "${changelogWithTagPath02.toAbsolutePath().toString()}_ChangeSet-2"
+                    )
+                assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
+                    .extracting { it.first.id }
+                    .containsExactly("ChangeSet-1", "ChangeSet-2")
+            }
+
+            // Not listFilesRecursively
+            with(getConfig().copy(listFilesRecursively = false)) {
+                Updatarium(this).executeChangelogs(
+                    resourcesPath01,
+                    "0(.*)-changelog(.*).kts"
+                )
+                assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(1)
+                assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
+                    .containsExactly(
+                        "${changelogPath01.toAbsolutePath().toString()}_ChangeSet-1"
+                    )
+                assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
+                    .extracting { it.first.id }
+                    .containsExactly("ChangeSet-1")
+            }
+        }
+
+        @Test
+        fun `should return 1 if configuration_listFilesRecursively is set at false`() {
+            val maxDepth = Updatarium(getConfig().copy(listFilesRecursively = false)).generateMaxDepth()
+            assertThat(maxDepth).isEqualTo(1)
+        }
+
+        @Test
+        fun `should return Int_MAX_VALUE if configuration_listFilesRecursively is set at true`() {
+            val maxDepth = Updatarium(getConfig().copy(listFilesRecursively = true)).generateMaxDepth()
+            assertThat(maxDepth).isEqualTo(Int.MAX_VALUE)
         }
     }
 }

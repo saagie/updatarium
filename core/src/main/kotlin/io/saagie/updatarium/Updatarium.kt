@@ -22,6 +22,7 @@ import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.dsl.Changelog
 import io.saagie.updatarium.dsl.UpdatariumError
 import mu.KotlinLogging
+import java.io.File
 import java.io.Reader
 import java.nio.file.Files
 import java.nio.file.Path
@@ -83,9 +84,11 @@ class Updatarium(val configuration: UpdatariumConfiguration = UpdatariumConfigur
             logger.error { "$path is not a directory." }
             throw UpdatariumError.ExitError
         } else {
-            val state = path
+            val state =
+            path
                 .toFile()
                 .walk()
+                .maxDepth(generateMaxDepth())
                 .filter { it.name.matches(Regex(pattern)) }
                 .sorted()
                 .fold(ExecutionState()) { state, file ->
@@ -93,10 +96,15 @@ class Updatarium(val configuration: UpdatariumConfiguration = UpdatariumConfigur
                         this.executeChangelog(file.toPath(), tags)
                     }
                 }
-
             if (state.hasError) throw UpdatariumError.ExitError
         }
     }
+
+    internal fun generateMaxDepth(): Int =
+        when {
+            configuration.listFilesRecursively -> { Int.MAX_VALUE }
+            else -> 1
+        }
 
     private fun executeScript(
         script: String,
