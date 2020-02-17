@@ -53,12 +53,23 @@ class Standalone : CliktCommand(printHelpOnEmptyArgs = true) {
         help = "Changelogs pattern regex (if --changelog is a directory) : `changelog(.*).kts` by default",
         envvar = "UPDATARIUM_CHANGELOGS_PATTERN"
     ).default("changelog(.*).kts")
-    val dryrun by option("--dryrun", "-d",
-        help = "dryRun = when activated, no execution and no lock, just logs")
+    val dryrun by option(
+        "--dryrun", "-d",
+        help = "dryRun = when activated, no execution and no lock, just logs"
+    )
         .flag()
-    val failfast by option("--failfast", "-f",
-        help = "failfast (activated by default) = when activated, stop at the first error")
+    val failfast by option(
+        "--failfast", "-f",
+        help = "failfast (activated by default) = when activated, stop at the first error"
+    )
         .flag("--no-failfast", default = true)
+
+    val listFileRecursively by option(
+        "--recursive", "-R",
+        help = "recursive : list all files traversing directory children"
+    )
+        .flag("--no-recursive", default = true)
+
 
     // PersistEngine options
     val persitEngine by option(help = "Choose the PersitEngine", envvar = "UPDATARIUM_PERSIST_ENGINE").choice(
@@ -103,7 +114,8 @@ class Standalone : CliktCommand(printHelpOnEmptyArgs = true) {
                 persistEngine = when (persitEngine) {
                     MONGODB.name -> MongodbPersistEngine(config)
                     else -> DefaultPersistEngine(config)
-                }
+                },
+                listFilesRecursively = listFileRecursively
             )
 
         )

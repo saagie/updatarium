@@ -50,7 +50,7 @@ class ChangelogTest {
                 )
             }
 
-            val config = UpdatariumConfiguration(persistEngine = TestPersistEngine())
+            val config = UpdatariumConfiguration(persistEngine = TestPersistEngine(), listFilesRecursively = true)
             changelog.execute(config)
 
             assertThat((config.persistEngine as TestPersistEngine).changeSetTested).containsExactly(
@@ -87,7 +87,11 @@ class ChangelogTest {
                 )
             }
 
-            val config = UpdatariumConfiguration(failfast = false, persistEngine = TestPersistEngine())
+            val config = UpdatariumConfiguration(
+                failfast = false,
+                persistEngine = TestPersistEngine(),
+                listFilesRecursively = true
+            )
             changelog.execute(config)
 
             assertThat((config.persistEngine as TestPersistEngine).changeSetTested).containsExactly(
@@ -126,7 +130,11 @@ class ChangelogTest {
             )
         }
 
-        val config = UpdatariumConfiguration(failfast = true, persistEngine = TestPersistEngine())
+        val config = UpdatariumConfiguration(
+            failfast = true,
+            persistEngine = TestPersistEngine(),
+            listFilesRecursively = true
+        )
         val changelogReport = changelog.execute(config)
         assertThat(changelogReport.changeSetException).hasSize(1)
         with(changelogReport.changeSetException.first()) {

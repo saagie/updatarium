@@ -42,7 +42,7 @@ class ChangeSetTest {
                 BasicAction { actionRecord.add("action4") }
             )
         )
-        val config = UpdatariumConfiguration(persistEngine = TestPersistEngine())
+        val config = UpdatariumConfiguration(persistEngine = TestPersistEngine(), listFilesRecursively = true)
         changeset.execute(config)
 
         assertThat(actionRecord)
@@ -66,7 +66,11 @@ class ChangeSetTest {
                 BasicAction { actionRecord.add("action4") }
             )
         )
-        val config = UpdatariumConfiguration(failfast = false,persistEngine = TestPersistEngine())
+        val config = UpdatariumConfiguration(
+            failfast = false,
+            persistEngine = TestPersistEngine(),
+            listFilesRecursively =true
+        )
         changeset.execute(config)
 
         assertThat(actionRecord)
@@ -120,7 +124,7 @@ class ChangeSetTest {
                 BasicAction { actionRecord.add("action4") }
             )
         )
-        val config = UpdatariumConfiguration(dryRun = true, persistEngine = TestPersistEngine())
+        val config = UpdatariumConfiguration(dryRun = true, persistEngine = TestPersistEngine(), listFilesRecursively =true)
         changeset.execute(config)
 
         assertThat(actionRecord).isEmpty()
