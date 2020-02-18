@@ -22,7 +22,7 @@ import io.saagie.updatarium.persist.PersistEngine
 
 data class UpdatariumConfiguration(
     val dryRun: Boolean = false,
-    val failfast: Boolean = true,
+    val failFast: Boolean = true,
     val persistEngine: PersistEngine = DefaultPersistEngine(),
     val listFilesRecursively: Boolean = true
 )

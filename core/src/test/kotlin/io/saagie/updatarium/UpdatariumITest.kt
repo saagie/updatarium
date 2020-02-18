@@ -23,7 +23,8 @@ import assertk.assertions.extracting
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import io.saagie.updatarium.config.UpdatariumConfiguration
-import io.saagie.updatarium.dsl.UpdatariumError
+import io.saagie.updatarium.model.UpdatariumError
+import io.saagie.updatarium.model.changeLog
 import io.saagie.updatarium.persist.TestPersistEngine
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -51,22 +52,13 @@ class UpdatariumITest {
     fun `should correctly execute a very simple changelog`() {
         with(getConfig()) {
             Updatarium(this)
-                .executeChangelog(
+                .executeChangeLog(
                     """
-        import io.saagie.updatarium.dsl.action.BasicAction
-        import io.saagie.updatarium.dsl.changeSet
-        import io.saagie.updatarium.dsl.changelog
+        import io.saagie.updatarium.model.changeLog
 
-        changelog {
-            changesets {
-                +changeSet {
-                    id = "ChangeSet-1"
-                    author = "Hello World"
-                    actions {
-                        +BasicAction {logger.info {"Hello world"}
-                        }
-                    }
-                }
+        changeLog {
+            changeSet(id = "ChangeSet-1", author = "Hello World") {
+                action { logger.info {"Hello world"} }
             }
         }
     """.trimIndent()
@@ -83,26 +75,15 @@ class UpdatariumITest {
 
         with(getConfig()) {
             Updatarium(this)
-                .executeChangelog(
+                .executeChangeLog(
                     """
-        import io.saagie.updatarium.dsl.action.BasicAction
-        import io.saagie.updatarium.dsl.changeSet
-        import io.saagie.updatarium.dsl.changelog
+        import io.saagie.updatarium.model.changeLog
 
-        changelog {
-            changesets {
-                +changeSet {
-                    id = "ChangeSet-1"
-                    author = "Hello World"
-                    actions {
-                        +BasicAction {logger.info {"0"}
-                        }
-                        +BasicAction {logger.info {"1"}
-                        }
-                        +BasicAction {logger.info {"2"}
-                        }
-                    }
-                }
+        changeLog {
+            changeSet(id = "ChangeSet-1", author = "Hello World") {
+                action { logger.info { "0" } }
+                action { logger.info { "1" } }
+                action { logger.info { "2" } }
             }
         }
     """.trimIndent()
@@ -119,32 +100,17 @@ class UpdatariumITest {
 
         with(getConfig()) {
             Updatarium(this)
-                .executeChangelog(
+                .executeChangeLog(
                     """
-        import io.saagie.updatarium.dsl.action.BasicAction
-        import io.saagie.updatarium.dsl.changeSet
-        import io.saagie.updatarium.dsl.changelog
+        import io.saagie.updatarium.model.changeLog
 
-        changelog {
-            changesets {
-                +changeSet {
-                    id = "ChangeSet-1"
-                    author = "Hello 0"
-                    actions {
-                        +BasicAction { logger.info {"0"}
-                        }
-                    }
-                }
-                +changeSet {
-                    id = "ChangeSet-2"
-                    author = "Hello 1"
-                    actions {
-                        +BasicAction { logger.info {"1"}
-                        }
-                        +BasicAction { logger.info {"2"}
-                        }
-                    }
-                }
+        changeLog {
+            changeSet(id = "ChangeSet-1", author = "Hello 0") {    
+                action { logger.info {"0"} }
+            }
+            changeSet(id = "ChangeSet-2", author = "Hello 1") {
+                action { logger.info {"1"} }
+                action { logger.info {"2"} }
             }
         }
     """.trimIndent()
@@ -161,14 +127,14 @@ class UpdatariumITest {
 
         // No tags supplied
         with(getConfig()) {
-            Updatarium(this).executeChangelog(changelogPath)
-            Updatarium(this).executeChangelog(changelogWithTagPath)
+            Updatarium(this).executeChangeLog(changelogPath)
+            Updatarium(this).executeChangeLog(changelogWithTagPath)
 
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                 .containsExactly(
-                    "${changelogPath.toAbsolutePath().toString()}_ChangeSet-1",
-                    "${changelogWithTagPath.toAbsolutePath().toString()}_ChangeSet-2"
+                    "${changelogPath.toAbsolutePath()}_ChangeSet-1",
+                    "${changelogWithTagPath.toAbsolutePath()}_ChangeSet-2"
                 )
             assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.first.id }
@@ -178,18 +144,18 @@ class UpdatariumITest {
         // With tags supplied
         with(getConfig()) {
             Updatarium(this)
-                .executeChangelog(
+                .executeChangeLog(
                     changelogPath,
                     "hello"
                 )
             Updatarium(this)
-                .executeChangelog(
+                .executeChangeLog(
                     changelogWithTagPath,
                     "hello"
                 )
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(1)
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested).containsExactly(
-                "${changelogWithTagPath.toAbsolutePath().toString()}_ChangeSet-2"
+                "${changelogWithTagPath.toAbsolutePath()}_ChangeSet-2"
             )
             assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.first.id }
@@ -202,7 +168,7 @@ class UpdatariumITest {
 
         // No tags supplied
         with(getConfig()) {
-            Updatarium(this).executeChangelog(
+            Updatarium(this).executeChangeLog(
                 Files.newBufferedReader(
                     Paths.get(
                         UpdatariumITest::class.java.getResource(
@@ -211,7 +177,7 @@ class UpdatariumITest {
                     )
                 )
             )
-            Updatarium(this).executeChangelog(
+            Updatarium(this).executeChangeLog(
                 Files.newBufferedReader(
                     Paths.get(
                         UpdatariumITest::class.java.getResource("/changelogs/changelog_with_tags.kts").path
@@ -226,7 +192,7 @@ class UpdatariumITest {
 
         // With tags supplied
         with(getConfig()) {
-            Updatarium(this).executeChangelog(
+            Updatarium(this).executeChangeLog(
                 Files.newBufferedReader(
                     Paths.get(
                         UpdatariumITest::class.java.getResource(
@@ -236,7 +202,7 @@ class UpdatariumITest {
                 ),
                 "hello"
             )
-            Updatarium(this).executeChangelog(
+            Updatarium(this).executeChangeLog(
                 Files.newBufferedReader(
                     Paths.get(
                         UpdatariumITest::class.java.getResource(
@@ -258,15 +224,15 @@ class UpdatariumITest {
 
         // No tags supplied
         with(getConfig()) {
-            Updatarium(this).executeChangelogs(
+            Updatarium(this).executeChangeLogs(
                 resourcesPath,
                 "changelog(.*).kts"
             )
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                 .containsExactly(
-                    "${changelogPath.toAbsolutePath().toString()}_ChangeSet-1",
-                    "${changelogWithTagPath.toAbsolutePath().toString()}_ChangeSet-2"
+                    "${changelogPath.toAbsolutePath()}_ChangeSet-1",
+                    "${changelogWithTagPath.toAbsolutePath()}_ChangeSet-2"
                 )
             assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.first.id }
@@ -274,7 +240,7 @@ class UpdatariumITest {
         }
         // With tags supplied
         with(getConfig()) {
-            Updatarium(this).executeChangelogs(
+            Updatarium(this).executeChangeLogs(
                 resourcesPath,
                 "changelog(.*).kts",
                 "hello"
@@ -283,11 +249,41 @@ class UpdatariumITest {
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(1)
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                 .containsExactly(
-                    "${changelogWithTagPath.toAbsolutePath().toString()}_ChangeSet-2"
+                    "${changelogWithTagPath.toAbsolutePath()}_ChangeSet-2"
                 )
             assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.first.id }
                 .containsExactly("ChangeSet-2")
+        }
+    }
+
+    @Test
+    fun `should correctly execute a changelog from DSL`() {
+        with(getConfig()) {
+            Updatarium(this)
+                .executeChangeLog(
+                    changeLog(id = "Plop") {
+                        changeSet(id = "ChangeSet-1", author = "Hello World") {
+                            action { logger.info { "0" } }
+                            action { logger.info { "1" } }
+                            action { logger.info { "2" } }
+                        }
+                        changeSet(id = "ChangeSet-2", author = "Toto") {
+                            action { logger.info { "0" } }
+                            action { logger.info { "1" } }
+                            action { logger.info { "2" } }
+                        }
+                    }
+                )
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
+                .containsExactly(
+                    "Plop_ChangeSet-1",
+                    "Plop_ChangeSet-2"
+                )
+            assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
+                .extracting { it.first.id }
+                .containsExactly("ChangeSet-1", "ChangeSet-2")
         }
     }
 
@@ -298,7 +294,7 @@ class UpdatariumITest {
         fun should_exit_when_one_changelog_fail_and_failfast() {
             with(getConfig()) {
                 try {
-                    Updatarium(this).executeChangelogs(
+                    Updatarium(this).executeChangeLogs(
                         resourcesPath,
                         "failed(.*).kts"
                     )
@@ -306,8 +302,8 @@ class UpdatariumITest {
                     assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
                     assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                         .containsExactly(
-                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-1",
-                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-2"
+                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-1",
+                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2"
                         )
                     assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                         .extracting { "${it.first.id}-${it.second.name}" }
@@ -318,9 +314,9 @@ class UpdatariumITest {
 
         @Test
         fun should_exit_when_one_changelog_fail_and_no_failfast() {
-            with(getConfig().copy(failfast = false)) {
+            with(getConfig().copy(failFast = false)) {
                 try {
-                    Updatarium(this).executeChangelogs(
+                    Updatarium(this).executeChangeLogs(
                         resourcesPath,
                         "failed(.*).kts"
                     )
@@ -328,9 +324,9 @@ class UpdatariumITest {
                     assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(3)
                     assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                         .containsExactly(
-                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-1",
-                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-2",
-                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-3"
+                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-1",
+                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2",
+                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-3"
                         )
                     assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                         .extracting { "${it.first.id}-${it.second.name}" }
@@ -343,13 +339,13 @@ class UpdatariumITest {
         fun should_exit_when_a_changelog_fail_and_failfast() {
             with(getConfig()) {
                 try {
-                    Updatarium(this).executeChangelog(failedChangelogPath)
+                    Updatarium(this).executeChangeLog(failedChangelogPath)
                 } catch (exitError: UpdatariumError.ExitError) {
                     assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
                     assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                         .containsExactly(
-                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-1",
-                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-2"
+                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-1",
+                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2"
                         )
                     assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                         .extracting { "${it.first.id}-${it.second.name}" }
@@ -360,16 +356,16 @@ class UpdatariumITest {
 
         @Test
         fun should_exit_when_a_changelog_fail_and_no_failfast() {
-            with(getConfig().copy(failfast = false)) {
+            with(getConfig().copy(failFast = false)) {
                 try {
-                    Updatarium(this).executeChangelog(failedChangelogPath)
+                    Updatarium(this).executeChangeLog(failedChangelogPath)
                 } catch (exitError: UpdatariumError.ExitError) {
                     assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(3)
                     assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                         .containsExactly(
-                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-1",
-                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-2",
-                            "${failedChangelogPath.toAbsolutePath().toString()}_ChangeSet-3"
+                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-1",
+                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2",
+                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-3"
                         )
                     assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                         .extracting { "${it.first.id}-${it.second.name}" }
@@ -392,7 +388,7 @@ class UpdatariumITest {
         fun `should use the correct way to list files`() {
             // with listFilesRecursively
             with(getConfig()) {
-                Updatarium(this).executeChangelogs(
+                Updatarium(this).executeChangeLogs(
                     resourcesPath01,
                     "0(.*)-changelog(.*).kts"
                 )
@@ -409,7 +405,7 @@ class UpdatariumITest {
 
             // Not listFilesRecursively
             with(getConfig().copy(listFilesRecursively = false)) {
-                Updatarium(this).executeChangelogs(
+                Updatarium(this).executeChangeLogs(
                     resourcesPath01,
                     "0(.*)-changelog(.*).kts"
                 )

@@ -15,22 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import io.saagie.updatarium.dsl.action.KubernetesScriptAction
-import io.saagie.updatarium.dsl.changeSet
-import io.saagie.updatarium.dsl.changelog
+import io.saagie.updatarium.model.action.kubernetesAction
+import io.saagie.updatarium.model.changeLog
 
-changelog {
-    changesets {
-        +changeSet {
-            id = "ChangeSet-Kubernetes-1"
-            author = "k8s"
-            actions {
-                +KubernetesScriptAction {
-                    logger.warn { "Need to be connected to a cluster" }
-                    client.version.data
-                        .forEach { (key, value) -> logger.info { "$key = $value" } }
-                }
-            }
+changeLog {
+    changeSet(id = "ChangeSet-Kubernetes-1", author = "k8s") {
+        kubernetesAction {
+            logger.warn { "Need to be connected to a cluster" }
+            client.version.data
+                .forEach { (key, value) -> logger.info { "$key = $value" } }
         }
     }
 }

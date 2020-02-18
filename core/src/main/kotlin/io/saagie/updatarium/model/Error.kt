@@ -15,16 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.dsl
+package io.saagie.updatarium.model
 
-/**
- * Represent the status of the changeset.
- */
-enum class Status {
-    // execution in progress
-    EXECUTE,
-    // Execution is done with a correct status
-    OK,
-    // Execution is done but it has failed
-    KO
+sealed class UpdatariumError(open val e: Throwable?) : Exception() {
+    data class ChangeSetError(val changeSet: ChangeSet, override val e: Throwable? = null) : UpdatariumError(e)
+    object ExitError : UpdatariumError(null)
 }

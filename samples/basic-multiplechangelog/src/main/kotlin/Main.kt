@@ -22,5 +22,5 @@ class Main
 
 fun main() {
     val resourcesDirectory =Paths.get(Main::class.java.getResource("changelogs").path)
-    Updatarium().executeChangelogs(resourcesDirectory, "changelog(.*).kts")
+    Updatarium().executeChangeLogs(resourcesDirectory, "changelog(.*).kts")
 }

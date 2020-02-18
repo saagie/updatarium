@@ -20,6 +20,5 @@ import io.saagie.updatarium.Updatarium
 class Main
 
 fun main() {
-    Updatarium().executeChangelog(Main::class.java.getResource("changelog.kts").readText())
-
+    Updatarium().executeChangeLog(Main::class.java.getResource("changelog.kts").readText())
 }

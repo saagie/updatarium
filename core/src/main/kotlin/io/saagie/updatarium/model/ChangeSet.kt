@@ -15,24 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.dsl
+package io.saagie.updatarium.model
 
-import com.autodsl.annotation.AutoDsl
 import io.saagie.updatarium.config.UpdatariumConfiguration
-import io.saagie.updatarium.dsl.Status.KO
-import io.saagie.updatarium.dsl.Status.OK
-import io.saagie.updatarium.dsl.UpdatariumError.ChangesetError
-import io.saagie.updatarium.dsl.action.Action
 import io.saagie.updatarium.log.InMemoryAppenderAccess
 import io.saagie.updatarium.log.InMemoryAppenderManager
+import io.saagie.updatarium.model.Status.KO
+import io.saagie.updatarium.model.Status.OK
+import io.saagie.updatarium.model.UpdatariumError.ChangeSetError
 import mu.KLoggable
 
-@AutoDsl
 data class ChangeSet(
     val id: String,
     val author: String,
-    val tags: List<String>? = mutableListOf(),
-    val actions: List<Action> = mutableListOf()
+    val tags: List<String> = emptyList(),
+    val actions: List<Action> = emptyList()
 ) : KLoggable {
     override val logger = logger()
 
@@ -54,16 +51,16 @@ data class ChangeSet(
     fun calculateId() = "$changelogId$id"
 
     /**
-     * The changeset execution :
-     * - check if the changeset has already been execution (OK or KO)
+     * The changeSet execution :
+     * - check if the changeSet has already been executed (OK or KO)
      * - if not :
-     *      - lock the changeset
-     *      - execute each action sequientially.
-     *      - unlock the changeset (with the correct status)
-     *  Status => OK if all actions was OK, KO otherwise ...
+     *      - lock the changeSet
+     *      - execute each action sequentially.
+     *      - unlock the changeSet (with the correct status)
+     *  Status => OK if all actions were OK, KO otherwise ...
      */
-    fun execute(configuration: UpdatariumConfiguration = UpdatariumConfiguration()): List<ChangesetError> {
-        val exceptions: MutableList<ChangesetError> = mutableListOf()
+    fun execute(configuration: UpdatariumConfiguration = UpdatariumConfiguration()): List<ChangeSetError> {
+        val exceptions: MutableList<ChangeSetError> = mutableListOf()
         val persistEngine = configuration.persistEngine
         if (!persistEngine.notAlreadyExecuted(calculateId())) {
             logger.info { "$id already executed" }
@@ -94,9 +91,9 @@ data class ChangeSet(
                         .getEvents(persistConfig = persistEngine.configuration, success = false)
                 )
                 logger.info { "$id marked as $KO" }
-                with(ChangesetError(this, e)) {
+                with(ChangeSetError(this, e)) {
                     exceptions.add(this)
-                    if (configuration.failfast) {
+                    if (configuration.failFast) {
                         return exceptions.toList()
                     }
                 }
@@ -105,7 +102,7 @@ data class ChangeSet(
         return exceptions.toList()
     }
 
-    private fun ChangeSet.sendUnlockToPersistEngine(
+    private fun sendUnlockToPersistEngine(
         configuration: UpdatariumConfiguration,
         status: Status,
         events: List<String>

@@ -15,17 +15,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.dsl.action
+package io.saagie.updatarium.model.action
 
-import com.autodsl.annotation.AutoDsl
-import com.github.kittinunf.fuel.core.FuelManager
+import io.saagie.updatarium.engine.kubernetes.KubernetesEngine
+import io.saagie.updatarium.model.ChangeSetDsl
+import mu.KotlinLogging
 
-@AutoDsl
-class HttpScriptAction(val f: HttpScriptAction.() -> Unit) : Action() {
 
-    val restClient = FuelManager.instance
+fun ChangeSetDsl.kubernetesAction(
+    namespace: String? = null,
+    block: KubernetesScriptActionDsl.() -> Unit
+) {
+    this.action {
+        KubernetesScriptActionDsl(namespace).block()
+    }
+}
 
-    override fun execute() {
-        f(this)
+class KubernetesScriptActionDsl(namespace: String? = null) {
+    val logger = KotlinLogging.logger("kubernetesAction")
+
+    val client = when {
+        namespace != null -> KubernetesEngine.getClient(namespace)
+        else -> KubernetesEngine.getClient()
     }
 }

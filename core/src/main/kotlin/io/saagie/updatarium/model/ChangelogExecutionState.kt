@@ -15,23 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.dsl
+package io.saagie.updatarium.model
 
-import io.saagie.updatarium.dsl.UpdatariumError.ChangesetError
-
-internal data class ChangelogExecutionState(val exceptions: List<ChangesetError> = emptyList()) {
+internal data class ChangelogExecutionState(val exceptions: List<UpdatariumError.ChangeSetError> = emptyList()) {
     internal val hasError: Boolean = exceptions.isNotEmpty()
 
-    val report: ChangelogReport by lazy {
-        ChangelogReport(exceptions)
+    val report: ChangeLogReport by lazy {
+        ChangeLogReport(exceptions)
     }
 
-    fun execute(failFast: Boolean, block: () -> List<ChangesetError>): ChangelogExecutionState =
+    fun execute(failFast: Boolean, block: () -> List<UpdatariumError.ChangeSetError>): ChangelogExecutionState =
         if (hasError && failFast) this // fail fast and already failed => do nothing
         else try {
             val stepErrors = block()
             copy(exceptions = exceptions + stepErrors)
-        } catch (e: ChangesetError) {
+        } catch (e: UpdatariumError.ChangeSetError) {
             copy(exceptions = exceptions + e)
         }
 }

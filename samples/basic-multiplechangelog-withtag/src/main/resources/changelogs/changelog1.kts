@@ -15,36 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import io.saagie.updatarium.dsl.action.BasicAction
-import io.saagie.updatarium.dsl.changeSet
-import io.saagie.updatarium.dsl.changelog
+import io.saagie.updatarium.model.changeLog
 
-changelog {
-    changesets {
-        +changeSet {
-            id = "ChangeSet-bash-1-1"
-            author = "Bash"
-            tags = listOf("before")
-            actions {
-                +BasicAction {
-                    (1..5).forEach {
-                        logger.info { "Hello $it!" }
-                    }
-
-                }
+changeLog {
+    changeSet(id = "ChangeSet-bash-1-1", author = "Bash") {
+        tags = listOf("before")
+        action {
+            (1..5).forEach {
+                logger.info { "Hello $it!" }
             }
         }
-        +changeSet {
-            id = "ChangeSet-bash-1-2"
-            author = "Bash"
-            tags = listOf("after")
-            actions {
-                +BasicAction {
-                    (6..10).forEach {
-                        logger.info { "Hello $it!" }
-                    }
-
-                }
+    }
+    changeSet(id = "ChangeSet-bash-1-2", author = "Bash") {
+        tags = listOf("after")
+        action {
+            (6..10).forEach {
+                logger.info { "Hello $it!" }
             }
         }
     }

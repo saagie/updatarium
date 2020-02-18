@@ -110,7 +110,7 @@ class Standalone : CliktCommand(printHelpOnEmptyArgs = true) {
         val updatarium = Updatarium(
             UpdatariumConfiguration(
                 dryRun = dryrun,
-                failfast = failfast,
+                failFast = failfast,
                 persistEngine = when (persitEngine) {
                     MONGODB.name -> MongodbPersistEngine(config)
                     else -> DefaultPersistEngine(config)
@@ -121,8 +121,8 @@ class Standalone : CliktCommand(printHelpOnEmptyArgs = true) {
         )
 
         when {
-            Files.isDirectory(changelog) -> updatarium.executeChangelogs(changelog, changelogsPattern, tags)
-            else -> updatarium.executeChangelog(changelog, tags)
+            Files.isDirectory(changelog) -> updatarium.executeChangeLogs(changelog, changelogsPattern, tags)
+            else -> updatarium.executeChangeLog(changelog, tags)
         }
     }
 }
