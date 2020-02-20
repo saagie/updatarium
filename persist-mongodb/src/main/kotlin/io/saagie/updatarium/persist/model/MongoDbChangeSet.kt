@@ -30,8 +30,8 @@ data class MongoDbChangeSet(
     val log: List<String>
 )
 
-fun ChangeSet.toMongoDbDocument(): MongoDbChangeSet = MongoDbChangeSet(
-    changeSetId = this.calculateId(),
+fun ChangeSet.toMongoDbDocument(executionId: String): MongoDbChangeSet = MongoDbChangeSet(
+    changeSetId = executionId,
     author = this.author,
     status = Status.EXECUTE.name,
     log = mutableListOf()

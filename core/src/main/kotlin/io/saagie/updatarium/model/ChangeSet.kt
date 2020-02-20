@@ -18,37 +18,23 @@
 package io.saagie.updatarium.model
 
 import io.saagie.updatarium.config.UpdatariumConfiguration
-import io.saagie.updatarium.log.InMemoryAppenderAccess
-import io.saagie.updatarium.log.InMemoryAppenderManager
-import io.saagie.updatarium.model.Status.KO
-import io.saagie.updatarium.model.Status.OK
 import io.saagie.updatarium.model.UpdatariumError.ChangeSetError
 import mu.KLoggable
 
 data class ChangeSet(
-    val id: String,
+    private val id: String,
     val author: String,
     val tags: List<String> = emptyList(),
     val actions: List<Action> = emptyList()
 ) : KLoggable {
     override val logger = logger()
 
-    private var changelogId = ""
-
-    /**
-     * Set the changelogId is not empty
-     */
-    fun setChangelogId(id: String): ChangeSet {
-        if (id.isNotEmpty()) {
-            this.changelogId = "${id}_"
-        }
-        return this
-    }
-
     /**
      * Generate an ID (changelogId id)
      */
-    fun calculateId() = "$changelogId$id"
+    private fun computeId(changeLogId: String): String =
+        if (changeLogId.isNotEmpty()) "${changeLogId}_$id"
+        else id
 
     /**
      * The changeSet execution :
@@ -59,56 +45,30 @@ data class ChangeSet(
      *      - unlock the changeSet (with the correct status)
      *  Status => OK if all actions were OK, KO otherwise ...
      */
-    fun execute(configuration: UpdatariumConfiguration = UpdatariumConfiguration()): List<ChangeSetError> {
-        val exceptions: MutableList<ChangeSetError> = mutableListOf()
-        val persistEngine = configuration.persistEngine
-        if (!persistEngine.notAlreadyExecuted(calculateId())) {
-            logger.info { "$id already executed" }
+    fun execute(
+        changeLogId: String,
+        configuration: UpdatariumConfiguration = UpdatariumConfiguration()
+    ): List<ChangeSetError> {
+        val executionId = computeId(changeLogId)
+        return if (!configuration.persistEngine.notAlreadyExecuted(executionId)) {
+            logger.info { "$executionId already executed" }
+            emptyList()
         } else {
-            logger.info { "$id will be executed" }
-            if (!(configuration.dryRun)) {
-                persistEngine.lock(this)
-            }
-            try {
-                InMemoryAppenderManager.startRecord()
-                this.actions.forEach {
-                    if (configuration.dryRun) {
-                        logger.warn { "DryRun => don't run it" }
-                    } else {
-                        it.execute()
-                    }
-                }
-                InMemoryAppenderManager.stopRecord()
-                this.sendUnlockToPersistEngine(
-                    configuration, OK, InMemoryAppenderAccess
-                        .getEvents(persistConfig = persistEngine.configuration, success = true)
-                )
-                logger.info { "$id marked as $OK" }
-            } catch (e: Exception) {
-                logger.error(e) { "Error during apply update" }
-                this.sendUnlockToPersistEngine(
-                    configuration, KO, InMemoryAppenderAccess
-                        .getEvents(persistConfig = persistEngine.configuration, success = false)
-                )
-                logger.info { "$id marked as $KO" }
-                with(ChangeSetError(this, e)) {
-                    exceptions.add(this)
-                    if (configuration.failFast) {
-                        return exceptions.toList()
+            logger.info { "$executionId will be executed" }
+            val maybeError = with(configuration.persistEngine) {
+                runWithPersistEngine(executionId, lock = !configuration.dryRun) {
+                    this.actions.forEach {
+                        if (configuration.dryRun) {
+                            logger.warn { "DryRun => don't run it" }
+                        } else {
+                            it.execute()
+                        }
                     }
                 }
             }
-        }
-        return exceptions.toList()
-    }
-
-    private fun sendUnlockToPersistEngine(
-        configuration: UpdatariumConfiguration,
-        status: Status,
-        events: List<String>
-    ) {
-        if (!(configuration.dryRun)) {
-            configuration.persistEngine.unlock(this, status, events)
+            maybeError?.let { error ->
+                listOf(ChangeSetError(this, error))
+            } ?: emptyList()
         }
     }
 }

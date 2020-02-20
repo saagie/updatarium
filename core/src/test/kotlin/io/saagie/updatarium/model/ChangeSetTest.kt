@@ -28,11 +28,13 @@ import org.junit.jupiter.api.Test
 
 class ChangeSetTest {
 
+    private val executionId = "parentId"
+
     @Test
     fun should_execute_all_actions_if_no_error() {
         val actionRecord = mutableListOf<String>()
-        val changeset = ChangeSet(
-            id = "changeset1",
+        val changeSet = ChangeSet(
+            id = "changeSet1",
             author = "test",
             actions = listOf(
                 Action { actionRecord.add("action1") },
@@ -42,21 +44,22 @@ class ChangeSetTest {
             )
         )
         val config = UpdatariumConfiguration(persistEngine = TestPersistEngine(), listFilesRecursively = true)
-        changeset.execute(config)
+        changeSet.execute(executionId, config)
 
         assertThat(actionRecord)
             .hasSize(4)
         assertThat(actionRecord)
             .containsExactly("action1", "action2", "action3", "action4")
-        assertThat((config.persistEngine as TestPersistEngine).changeSetUnLocked.filter { it.first == changeset }
-            .first().second).isEqualTo(Status.OK)
+        val changeSetUnLocked = (config.persistEngine as TestPersistEngine).changeSetUnLocked
+        val status = changeSetUnLocked.first { it.changeSet == changeSet }.status
+        assertThat(status).isEqualTo(Status.OK)
     }
 
     @Test
     fun should_stop_action_if_error() {
         val actionRecord = mutableListOf<String>()
-        val changeset = ChangeSet(
-            id = "changeset1",
+        val changeSet = ChangeSet(
+            id = "changeSet1",
             author = "test",
             actions = listOf(
                 Action { actionRecord.add("action1") },
@@ -70,21 +73,20 @@ class ChangeSetTest {
             persistEngine = TestPersistEngine(),
             listFilesRecursively = true
         )
-        changeset.execute(config)
+        changeSet.execute(executionId, config)
 
         assertThat(actionRecord)
-            .hasSize(2)
-        assertThat(actionRecord)
             .containsExactly("action1", "action2")
-        assertThat((config.persistEngine as TestPersistEngine).changeSetUnLocked.filter { it.first == changeset }
-            .first().second).isEqualTo(Status.KO)
+        val changeSetUnLocked = (config.persistEngine as TestPersistEngine).changeSetUnLocked
+        val status = changeSetUnLocked.first { it.changeSet == changeSet }.status
+        assertThat(status).isEqualTo(Status.KO)
     }
 
     @Test
     fun should_run_nothing_when_dryrun_is_activated() {
         val actionRecord = mutableListOf<String>()
-        val changeset = ChangeSet(
-            id = "changeset1",
+        val changeSet = ChangeSet(
+            id = "changeSet1",
             author = "test",
             actions = listOf(
                 Action { actionRecord.add("action1") },
@@ -95,10 +97,9 @@ class ChangeSetTest {
         )
         val config =
             UpdatariumConfiguration(dryRun = true, persistEngine = TestPersistEngine(), listFilesRecursively = true)
-        changeset.execute(config)
+        changeSet.execute(executionId, config)
 
         assertThat(actionRecord).isEmpty()
         assertThat((config.persistEngine as TestPersistEngine).changeSetUnLocked).isEmpty()
     }
-
 }

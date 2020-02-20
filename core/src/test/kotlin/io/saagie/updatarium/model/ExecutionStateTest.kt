@@ -15,15 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.saagie.updatarium.dsl
+package io.saagie.updatarium.model
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
-import io.saagie.updatarium.model.ChangeSet
-import io.saagie.updatarium.model.ChangelogExecutionState
-import io.saagie.updatarium.model.UpdatariumError
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.util.concurrent.atomic.AtomicInteger
@@ -33,7 +30,7 @@ class ChangelogExecutionStateTest {
     @Nested
     inner class ExecuteTest {
         private val count = 10
-        private val oops = UpdatariumError.ChangeSetError(ChangeSet(id="plaf", author = "foo"))
+        private val oops = UpdatariumError.ChangeSetError(ChangeSet(id = "plaf", author = "foo"))
 
         @Test
         fun `should run without issue with fail fast`() {

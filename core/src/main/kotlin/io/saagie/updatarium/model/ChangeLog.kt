@@ -38,7 +38,7 @@ data class ChangeLog(val id: String = "", val changeSets: List<ChangeSet> = empt
 
         val state = matchedChangeSets(tags).fold(ChangelogExecutionState()) { state, changeSet ->
             state.execute(configuration.failFast) {
-                changeSet.setChangelogId(id).execute(configuration)
+                changeSet.execute(id, configuration)
             }
         }
         InMemoryAppenderManager.tearDown()

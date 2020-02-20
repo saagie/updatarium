@@ -20,10 +20,12 @@ package io.saagie.updatarium.persist
 import io.saagie.updatarium.model.ChangeSet
 import io.saagie.updatarium.model.Status
 
-class TestPersistEngine : PersistEngine(PersistConfig()){
+class TestPersistEngine : PersistEngine(PersistConfig()) {
+    data class ChangeSetUnLocked(val executionId: String, val changeSet: ChangeSet, val status: Status)
+
     val changeSetTested = mutableListOf<String>()
     val changeSetLocked = mutableListOf<ChangeSet>()
-    val changeSetUnLocked = mutableListOf<Pair<ChangeSet, Status>>()
+    val changeSetUnLocked = mutableListOf<ChangeSetUnLocked>()
 
     override fun checkConnection() {
     }
@@ -33,11 +35,11 @@ class TestPersistEngine : PersistEngine(PersistConfig()){
         return true
     }
 
-    override fun lock(changeSet: ChangeSet) {
+    override fun lock(executionId: String, changeSet: ChangeSet) {
         changeSetLocked.add(changeSet)
     }
 
-    override fun unlock(changeSet: ChangeSet, status: Status, logs: List<String>) {
-        changeSetUnLocked.add(Pair(changeSet, status))
+    override fun unlock(executionId: String, changeSet: ChangeSet, status: Status, logs: List<String>) {
+        changeSetUnLocked.add(ChangeSetUnLocked(executionId, changeSet, status))
     }
 }

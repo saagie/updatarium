@@ -27,8 +27,6 @@ import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.persist.TestPersistEngine
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.jvm.isAccessible
 
 class ChangeLogTest {
 
@@ -49,16 +47,14 @@ class ChangeLogTest {
             val config = UpdatariumConfiguration(persistEngine = TestPersistEngine())
             changelog.execute(config)
 
-            assertThat((config.persistEngine as TestPersistEngine).changeSetTested).containsExactly(
-                "changeSet1",
-                "changeSet2"
-            )
+            assertThat((config.persistEngine as TestPersistEngine).changeSetTested)
+                .containsExactly("changeSet1", "changeSet2")
             assertThat(
                 (config.persistEngine as TestPersistEngine).changeSetUnLocked
-                    .map { it.first.id }).containsExactly("changeSet1", "changeSet2")
+                    .map { it.executionId }).containsExactly("changeSet1", "changeSet2")
             assertThat(
                 (config.persistEngine as TestPersistEngine).changeSetUnLocked
-                    .map { "${it.first.id}-${it.second}" }).containsExactly(
+                    .map { "${it.executionId}-${it.status}" }).containsExactly(
                 "changeSet1-OK",
                 "changeSet2-OK"
             )
@@ -92,13 +88,13 @@ class ChangeLogTest {
                 "changeSet2"
             )
             assertThat(
-                (config.persistEngine as TestPersistEngine).changeSetUnLocked.map { it.first.id }).containsExactly(
+                (config.persistEngine as TestPersistEngine).changeSetUnLocked.map { it.executionId }).containsExactly(
                 "changeSet1",
                 "changeSet2"
             )
             assertThat(
                 (config.persistEngine as TestPersistEngine).changeSetUnLocked
-                    .map { "${it.first.id}-${it.second}" }).containsExactly(
+                    .map { "${it.executionId}-${it.status}" }).containsExactly(
                 "changeSet1-KO",
                 "changeSet2-OK"
             )
@@ -107,40 +103,32 @@ class ChangeLogTest {
 
     @Test
     fun should_stop_when_an_action_throws_an_exception_and_failfast() {
-        val changelog = ChangeLog(
-            changeSets = listOf(
-                ChangeSet(
-                    id = "changeSet1",
-                    author = "test",
-                    actions = listOf(
-                        noop,
-                        Action { throw IllegalStateException("Fail in action") }
-                    )
-                ),
-                ChangeSet(
-                    id = "changeSet2",
-                    author = "test",
-                    actions = listOf(noop)
-                )
-            )
-        )
+        val changelog = changeLog {
+            changeSet(id = "changeSet1", author = "test") {
+                action { }
+                action { throw IllegalStateException("Fail in action") }
+            }
+            changeSet(id = "changeSet2", author = "test") {
+                action { }
+            }
+        }
 
         val config = UpdatariumConfiguration(failFast = true, persistEngine = TestPersistEngine())
         val changelogReport = changelog.execute(config)
         assertThat(changelogReport.changeSetExceptions).hasSize(1)
         with(changelogReport.changeSetExceptions.first()) {
             assertThat(this.changeSet).isEqualTo(changelog.changeSets.first())
-            assertThat(this.e!!).hasMessage("Fail in action")
+            assertThat(this.e?:throw IllegalStateException()).hasMessage("Fail in action")
             assertThat((config.persistEngine as TestPersistEngine).changeSetTested).containsExactly(
                 "changeSet1"
             )
             assertThat(
-                (config.persistEngine as TestPersistEngine).changeSetUnLocked.map { it.first.id }).containsExactly(
+                (config.persistEngine as TestPersistEngine).changeSetUnLocked.map { it.executionId }).containsExactly(
                 "changeSet1"
             )
             assertThat(
                 (config.persistEngine as TestPersistEngine).changeSetUnLocked
-                    .map { "${it.first.id}-${it.second}" }).containsExactly("changeSet1-KO")
+                    .map { "${it.executionId}-${it.status}" }).containsExactly("changeSet1-KO")
         }
     }
 
@@ -149,79 +137,91 @@ class ChangeLogTest {
 
         @Test
         fun should_returns_all_changeSets_when_no_tag_supplied_and_no_tag_in_changelog() {
-            val matchedChangeSets = changelogWithtags(Pair(emptyList(), emptyList())).matchedChangeSets()
+            val changeSet1 =
+                ChangeSet(id = "changeSet1", author = "test", actions = listOf(noop, noop), tags = emptyList())
+            val changeSet2 = ChangeSet(id = "changeSet2", author = "test", actions = listOf(noop), tags = emptyList())
+            val changeLog = ChangeLog(changeSets = listOf(changeSet1, changeSet2))
 
-            assertThat(matchedChangeSets).hasSize(2)
-            assertThat(matchedChangeSets.map { it.id }).containsExactly("changeSet1", "changeSet2")
+            val matchedChangeSets = changeLog.matchedChangeSets(targetTags = emptyList())
+
+            assertThat(matchedChangeSets).containsExactly(changeSet1, changeSet2)
         }
 
         @Test
         fun should_returns_all_changeSets_when_no_tag_supplied_and_tags_set_in_changelog() {
-            val matchedChangeSets = changelogWithtags(Pair(listOf("before"), listOf("after")))
-                .matchedChangeSets()
+            val changeSet1 =
+                ChangeSet(id = "changeSet1", author = "test", actions = listOf(noop, noop), tags = listOf("before"))
+            val changeSet2 =
+                ChangeSet(id = "changeSet2", author = "test", actions = listOf(noop), tags = listOf("after"))
+            val changeLog = ChangeLog(changeSets = listOf(changeSet1, changeSet2))
 
-            assertThat(matchedChangeSets).hasSize(2)
-            assertThat(matchedChangeSets.map { it.id }).containsExactly("changeSet1", "changeSet2")
+            val matchedChangeSets = changeLog.matchedChangeSets(targetTags = emptyList())
+
+            assertThat(matchedChangeSets).containsExactly(changeSet1, changeSet2)
         }
 
         @Test
         fun should_returns_no_changeSet_when_tag_are_supplied_and_no_tag_in_changelog() {
-            val matchedChangeSets = changelogWithtags(Pair(emptyList(), emptyList()))
-                .matchedChangeSets(listOf("after"))
+            val changeSet1 =
+                ChangeSet(id = "changeSet1", author = "test", actions = listOf(noop, noop), tags = emptyList())
+            val changeSet2 = ChangeSet(id = "changeSet2", author = "test", actions = listOf(noop), tags = emptyList())
+            val changeLog = ChangeLog(changeSets = listOf(changeSet1, changeSet2))
+
+            val matchedChangeSets = changeLog.matchedChangeSets(targetTags = listOf("after"))
 
             assertThat(matchedChangeSets).isEmpty()
         }
 
         @Test
         fun should_returns_no_changeSet_when_tag_are_supplied_and_tag_in_changelog_but_not_matched() {
-            val matchedChangeSets = changelogWithtags(Pair(listOf("one"), listOf("two")))
-                .matchedChangeSets(listOf("three"))
+            val changeSet1 =
+                ChangeSet(id = "changeSet1", author = "test", actions = listOf(noop, noop), tags = listOf("before"))
+            val changeSet2 =
+                ChangeSet(id = "changeSet2", author = "test", actions = listOf(noop), tags = listOf("after"))
+            val changeLog = ChangeLog(changeSets = listOf(changeSet1, changeSet2))
+
+            val matchedChangeSets = changeLog.matchedChangeSets(targetTags = listOf("plop"))
 
             assertThat(matchedChangeSets).isEmpty()
         }
 
         @Test
         fun should_returns_changeSet1_when_tag_are_supplied_and_tag_in_changeSet1_matched() {
-            val matchedChangeSets = changelogWithtags(Pair(listOf("before"), listOf("after")))
-                .matchedChangeSets(listOf("before"))
+            val changeSet1 =
+                ChangeSet(id = "changeSet1", author = "test", actions = listOf(noop, noop), tags = listOf("before"))
+            val changeSet2 =
+                ChangeSet(id = "changeSet2", author = "test", actions = listOf(noop), tags = listOf("after"))
+            val changeLog = ChangeLog(changeSets = listOf(changeSet1, changeSet2))
 
-            assertThat(matchedChangeSets).hasSize(1)
-            assertThat(matchedChangeSets.map { it.id }).containsExactly("changeSet1")
+            val matchedChangeSets = changeLog.matchedChangeSets(targetTags = listOf("before"))
+
+            assertThat(matchedChangeSets).containsExactly(changeSet1)
         }
 
         @Test
         fun should_returns_all_changeSets_when_all_tags_matched() {
-            val matchedChangeSets = changelogWithtags(Pair(listOf("before"), listOf("after")))
-                .matchedChangeSets(listOf("before", "after"))
+            val changeSet1 =
+                ChangeSet(id = "changeSet1", author = "test", actions = listOf(noop, noop), tags = listOf("before"))
+            val changeSet2 =
+                ChangeSet(id = "changeSet2", author = "test", actions = listOf(noop), tags = listOf("after"))
+            val changeLog = ChangeLog(changeSets = listOf(changeSet1, changeSet2))
 
-            assertThat(matchedChangeSets).hasSize(2)
-            assertThat(matchedChangeSets.map { it.id }).containsExactly("changeSet1", "changeSet2")
+            val matchedChangeSets = changeLog.matchedChangeSets(targetTags = listOf("before", "after"))
+
+            assertThat(matchedChangeSets).containsExactly(changeSet1, changeSet2)
         }
 
         @Test
         fun should_returns_all_changeSets_with_a_list_of_tags_when_all_tags_matched() {
-            val matchedChangeSets = changelogWithtags(Pair(listOf("before"), listOf("before", "after")))
-                .matchedChangeSets(listOf("before"))
+            val changeSet1 =
+                ChangeSet(id = "changeSet1", author = "test", actions = listOf(noop, noop), tags = listOf("before"))
+            val changeSet2 =
+                ChangeSet(id = "changeSet2", author = "test", actions = listOf(noop), tags = listOf("before", "after"))
+            val changeLog = ChangeLog(changeSets = listOf(changeSet1, changeSet2))
 
-            assertThat(matchedChangeSets).hasSize(2)
-            assertThat(matchedChangeSets.map { it.id }).containsExactly("changeSet1", "changeSet2")
+            val matchedChangeSets = changeLog.matchedChangeSets(targetTags = listOf("before"))
+
+            assertThat(matchedChangeSets).containsExactly(changeSet1, changeSet2)
         }
     }
-
-    fun changelogWithtags(tags: Pair<List<String>, List<String>>) = ChangeLog(
-        changeSets = listOf(
-            ChangeSet(
-                id = "changeSet1",
-                author = "test",
-                tags = tags.first,
-                actions = listOf(noop, noop)
-            ),
-            ChangeSet(
-                id = "changeSet2",
-                author = "test",
-                tags = tags.second,
-                actions = listOf(noop)
-            )
-        )
-    )
 }
