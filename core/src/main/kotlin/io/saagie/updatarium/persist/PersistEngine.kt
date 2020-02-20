@@ -17,6 +17,7 @@
  */
 package io.saagie.updatarium.persist
 
+import io.saagie.updatarium.model.ChangeLog
 import io.saagie.updatarium.model.ChangeSet
 import io.saagie.updatarium.model.Status
 import mu.KLoggable
@@ -39,6 +40,18 @@ abstract class PersistEngine(open val configuration: PersistConfig) : KLoggable 
      * Return true if the changeset has never be ran, false otherwise.
      */
     abstract fun notAlreadyExecuted(changeSetId: String): Boolean
+
+    /**
+     * This function will check if a changset should be executed based on the property "force" and the method [notAlreadyExecuted].
+     * Return true if should execute, false otherwise.
+     */
+    fun shouldExecute(changeSet: ChangeSet): Boolean =
+        if (changeSet.force) {
+            logger.warn { "${changeSet.id} is marked as forced, will be executed !" }
+            true
+        } else {
+            notAlreadyExecuted(changeSet.calculateId())
+        }
 
     /**
      * This function is here to "lock" the changeset, that's mean store a reference thant the changeset in parameter will be execute.

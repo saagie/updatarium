@@ -166,6 +166,45 @@ In this example, `ChangeSet-bash-1-1` will not be executed.
 Updatarium().executeChangeLog(changeLog,listOf("after")) 
 ```
 
+#### Force execution of changeSet
+
+By default, a changeSet can not be re-executed because of the same ID, like this :
+
+```kotlin
+changeLog {
+    changeSet(id = "ChangeSet-bash-1", author = "Bash") {
+        action {
+            logger.info { "Hello $it!" }
+        }
+    }
+    // Not be executed again
+    changeSet(id = "ChangeSet-bash-1", author = "Bash") {
+        action {
+            logger.info { "Not be executed again" }
+        }
+    }
+}
+```
+
+Because it's run with the `force` option, you can override this behavior like this :
+ 
+```kotlin
+changeLog {
+    changeSet(id = "ChangeSet-bash-1", author = "Bash") {
+        action {
+            logger.info { "Hello $it!" }
+        }
+    }
+    // Will be executed again
+    changeSet(id = "ChangeSet-bash-1", author = "Bash") {
+        force = true
+        action {
+            logger.info { "Will be executed again" }
+        }
+    }
+}
+```
+
 #### PersistConfiguration
 
 You can configure the persistEngine, using a `PersitConfiguration` like this : 

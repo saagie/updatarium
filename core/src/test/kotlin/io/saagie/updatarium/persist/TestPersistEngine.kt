@@ -20,17 +20,21 @@ package io.saagie.updatarium.persist
 import io.saagie.updatarium.model.ChangeSet
 import io.saagie.updatarium.model.Status
 
-class TestPersistEngine : PersistEngine(PersistConfig()){
+class TestPersistEngine : PersistEngine(PersistConfig()) {
     val changeSetTested = mutableListOf<String>()
-    val changeSetLocked = mutableListOf<ChangeSet>()
+    private val changeSetLocked = mutableListOf<ChangeSet>()
     val changeSetUnLocked = mutableListOf<Pair<ChangeSet, Status>>()
 
     override fun checkConnection() {
     }
 
     override fun notAlreadyExecuted(changeSetId: String): Boolean {
-        changeSetTested.add(changeSetId)
-        return true
+        return if (!changeSetTested.contains(changeSetId)) {
+            changeSetTested.add(changeSetId)
+            true
+        } else {
+            false
+        }
     }
 
     override fun lock(changeSet: ChangeSet) {

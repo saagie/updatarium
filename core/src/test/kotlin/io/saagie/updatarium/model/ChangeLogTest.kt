@@ -208,6 +208,60 @@ class ChangeLogTest {
         }
     }
 
+    @Nested
+    inner class ForceChangeSetsTest {
+
+        @Test
+        fun should_execute_forced_changeSet(){
+            val changelog = ChangeLog(
+                changeSets = listOf(
+                    ChangeSet(id = "changeSet1", author = "test", actions = listOf(noop, noop), force = true)
+                )
+            )
+
+            val config = UpdatariumConfiguration(persistEngine = TestPersistEngine())
+            changelog.execute(config)
+
+            //if force true then not present in changeSetTested
+            assertThat((config.persistEngine as TestPersistEngine).changeSetTested).isEmpty()
+            assertThat(
+                (config.persistEngine as TestPersistEngine).changeSetUnLocked
+                    .map { it.first.id }).containsExactly("changeSet1")
+            assertThat(
+                (config.persistEngine as TestPersistEngine).changeSetUnLocked
+                    .map { "${it.first.id}-${it.second}" }).containsExactly(
+                "changeSet1-OK"
+            )
+        }
+
+        @Test
+        fun should_execute_again_if_a_changeSet_is_forced(){
+            val changelog = ChangeLog(
+                changeSets = listOf(
+                    ChangeSet(id = "changeSet1", author = "test", actions = listOf(noop, noop)),
+                    ChangeSet(id = "changeSet1", author = "test", actions = listOf(noop, noop), force = true)
+                )
+            )
+
+            val config = UpdatariumConfiguration(persistEngine = TestPersistEngine())
+            changelog.execute(config)
+
+            //if force true then not present in changeSetTested
+            assertThat((config.persistEngine as TestPersistEngine).changeSetTested).containsExactly(
+                "changeSet1"
+            )
+            assertThat(
+                (config.persistEngine as TestPersistEngine).changeSetUnLocked
+                    .map { it.first.id }).containsExactly("changeSet1", "changeSet1")
+            assertThat(
+                (config.persistEngine as TestPersistEngine).changeSetUnLocked
+                    .map { "${it.first.id}-${it.second}" }).containsExactly(
+                "changeSet1-OK", "changeSet1-OK"
+            )
+        }
+
+    }
+
     fun changelogWithtags(tags: Pair<List<String>, List<String>>) = ChangeLog(
         changeSets = listOf(
             ChangeSet(
