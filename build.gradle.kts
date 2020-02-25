@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.util.*
 
 val bintrayUsername: String by project
 val bintrayApiKey: String by project

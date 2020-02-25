@@ -38,7 +38,7 @@ class DefaultPersistEngine(
 
     override fun notAlreadyExecuted(changeSetId: String): Boolean = true
 
-    override fun lock(executionId:String, changeSet: ChangeSet) {
+    override fun lock(executionId: String, changeSet: ChangeSet) {
         logger.info { "$executionId marked as ${Status.EXECUTE}" }
     }
 

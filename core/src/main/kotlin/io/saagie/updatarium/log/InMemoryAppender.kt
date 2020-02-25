@@ -17,8 +17,9 @@
  */
 package io.saagie.updatarium.log
 
-
 import io.saagie.updatarium.persist.PersistConfig
+import java.time.Instant
+import java.util.concurrent.ConcurrentLinkedQueue
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.Appender
 import org.apache.logging.log4j.core.Core
@@ -26,8 +27,6 @@ import org.apache.logging.log4j.core.LogEvent
 import org.apache.logging.log4j.core.appender.AbstractAppender
 import org.apache.logging.log4j.core.config.plugins.Plugin
 import org.apache.logging.log4j.core.layout.PatternLayout
-import java.time.Instant
-import java.util.concurrent.ConcurrentLinkedQueue
 
 /**
  * Logs event in a shared queue.

@@ -20,7 +20,7 @@ plugins {
 }
 
 config {
-    bintray    { enabled = true }
+    bintray { enabled = true }
     publishing { enabled = true }
 }
 

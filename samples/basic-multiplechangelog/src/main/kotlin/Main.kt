@@ -21,6 +21,6 @@ import java.nio.file.Paths
 class Main
 
 fun main() {
-    val resourcesDirectory =Paths.get(Main::class.java.getResource("changelogs").path)
+    val resourcesDirectory = Paths.get(Main::class.java.getResource("changelogs").path)
     Updatarium().executeChangeLogs(resourcesDirectory, "changelog(.*).kts")
 }

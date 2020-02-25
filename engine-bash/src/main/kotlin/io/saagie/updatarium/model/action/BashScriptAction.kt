@@ -19,8 +19,8 @@ package io.saagie.updatarium.model.action
 
 import io.saagie.updatarium.engine.bash.BashEngine
 import io.saagie.updatarium.model.ChangeSetDsl
-import mu.KotlinLogging
 import java.time.Duration
+import mu.KotlinLogging
 
 fun ChangeSetDsl.bashAction(
     workingDir: String = ".",

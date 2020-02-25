@@ -118,7 +118,7 @@ class ChangeLogTest {
         assertThat(changelogReport.changeSetExceptions).hasSize(1)
         with(changelogReport.changeSetExceptions.first()) {
             assertThat(this.changeSet).isEqualTo(changelog.changeSets.first())
-            assertThat(this.e?:throw IllegalStateException()).hasMessage("Fail in action")
+            assertThat(this.e ?: throw IllegalStateException()).hasMessage("Fail in action")
             assertThat((config.persistEngine as TestPersistEngine).changeSetTested).containsExactly(
                 "changeSet1"
             )

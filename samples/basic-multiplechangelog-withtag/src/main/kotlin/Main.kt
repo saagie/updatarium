@@ -21,10 +21,10 @@ import java.nio.file.Paths
 class Main
 
 fun main() {
-    val resourcesDirectory =Paths.get(Main::class.java.getResource("changelogs").path)
-    val changelog1 =Paths.get(Main::class.java.getResource("changelogs/changelog1.kts").path)
-    val changelog2 =Paths.get(Main::class.java.getResource("changelogs/changelog2.kts").path)
-    Updatarium().executeChangeLogs(resourcesDirectory, "changelog(.*).kts", listOf("after","before"))
-    Updatarium().executeChangeLog(changelog1,listOf("never"))
-    Updatarium().executeChangeLog(changelog2,listOf("before","after"))
+    val resourcesDirectory = Paths.get(Main::class.java.getResource("changelogs").path)
+    val changelog1 = Paths.get(Main::class.java.getResource("changelogs/changelog1.kts").path)
+    val changelog2 = Paths.get(Main::class.java.getResource("changelogs/changelog2.kts").path)
+    Updatarium().executeChangeLogs(resourcesDirectory, "changelog(.*).kts", listOf("after", "before"))
+    Updatarium().executeChangeLog(changelog1, listOf("never"))
+    Updatarium().executeChangeLog(changelog2, listOf("before", "after"))
 }

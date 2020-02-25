@@ -28,7 +28,6 @@ changeLog {
             (6..10).forEach {
                 logger.info { "Hello $it!" }
             }
-
         }
     }
 }

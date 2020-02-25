@@ -26,11 +26,11 @@ import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.model.UpdatariumError
 import io.saagie.updatarium.model.changeLog
 import io.saagie.updatarium.persist.TestPersistEngine
+import java.nio.file.Files
+import java.nio.file.Paths
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import java.nio.file.Files
-import java.nio.file.Paths
 
 @DisplayName("Updatarium Integration Tests")
 class UpdatariumITest {

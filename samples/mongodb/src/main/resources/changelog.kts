@@ -17,7 +17,7 @@
  */
 import io.saagie.updatarium.model.action.mongoAction
 import io.saagie.updatarium.model.changeLog
-import org.litote.kmongo.*
+import org.litote.kmongo.insertOne
 
 changeLog {
     changeSet(id = "ChangeSet-Mongodb-1", author = "MongoDb") {
@@ -52,7 +52,6 @@ changeLog {
                 logger.info { "2 docs inserted in collection $database.$collection" }
                 this.find()
                     .forEach { logger.info { " name : ${it["name"]} - age : ${it["age"]}" } }
-
             }
         }
     }

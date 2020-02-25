@@ -18,9 +18,9 @@
 package io.saagie.updatarium.log
 
 import io.saagie.updatarium.persist.PersistConfig
+import java.util.concurrent.ConcurrentLinkedQueue
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.LogEvent
-import java.util.concurrent.ConcurrentLinkedQueue
 
 /**
  * Singleton instance of the Queue of [InMemoryEvent]

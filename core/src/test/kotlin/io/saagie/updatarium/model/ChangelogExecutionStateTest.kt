@@ -21,9 +21,9 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
+import java.util.concurrent.atomic.AtomicInteger
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import java.util.concurrent.atomic.AtomicInteger
 
 class ChangelogExecutionStateTest {
 

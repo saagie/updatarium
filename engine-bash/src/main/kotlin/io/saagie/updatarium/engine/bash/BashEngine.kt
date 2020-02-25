@@ -17,11 +17,11 @@
  */
 package io.saagie.updatarium.engine.bash
 
-import mu.KLogger
 import java.io.File
 import java.lang.ProcessBuilder.Redirect
 import java.time.Duration
 import java.util.concurrent.TimeUnit.MILLISECONDS
+import mu.KLogger
 
 class BashEngine(private val logger: KLogger) {
     fun runCommand(

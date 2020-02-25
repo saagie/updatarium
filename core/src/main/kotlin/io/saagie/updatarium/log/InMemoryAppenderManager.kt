@@ -57,4 +57,3 @@ object InMemoryAppenderManager {
             inMemoryAppender.disableRecording()
         }
 }
-
