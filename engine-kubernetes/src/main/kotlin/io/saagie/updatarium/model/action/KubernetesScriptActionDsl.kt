@@ -21,7 +21,6 @@ import io.saagie.updatarium.engine.kubernetes.KubernetesEngine
 import io.saagie.updatarium.model.ChangeSetDsl
 import mu.KotlinLogging
 
-
 fun ChangeSetDsl.kubernetesAction(
     namespace: String? = null,
     block: KubernetesScriptActionDsl.() -> Unit

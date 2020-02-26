@@ -19,7 +19,7 @@ plugins {
     kotlin("jvm")
 }
 config {
-    bintray    { enabled = true }
+    bintray { enabled = true }
     publishing { enabled = true }
 }
 

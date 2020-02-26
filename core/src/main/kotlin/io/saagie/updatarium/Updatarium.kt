@@ -21,10 +21,10 @@ import de.swirtz.ktsrunner.objectloader.KtsObjectLoader
 import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.model.ChangeLog
 import io.saagie.updatarium.model.UpdatariumError
-import mu.KotlinLogging
 import java.io.Reader
 import java.nio.file.Files
 import java.nio.file.Path
+import mu.KotlinLogging
 
 /**
  * Main class of Updatarium.
@@ -127,4 +127,3 @@ class Updatarium(val configuration: UpdatariumConfiguration = UpdatariumConfigur
         executeChangeLog(changeLog, tags)
     }
 }
-

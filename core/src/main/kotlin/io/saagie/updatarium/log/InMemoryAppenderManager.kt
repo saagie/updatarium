@@ -20,7 +20,6 @@ package io.saagie.updatarium.log
 import io.saagie.updatarium.persist.PersistConfig
 import org.apache.logging.log4j.LogManager.getContext
 import org.apache.logging.log4j.core.LoggerContext
-import org.apache.logging.log4j.core.layout.PatternLayout.DEFAULT_CONVERSION_PATTERN
 
 /**
  * Manage the lifecycle of the [InMemoryAppender]: setup and teardown
@@ -50,13 +49,11 @@ object InMemoryAppenderManager {
         (getContext(false) as LoggerContext).reconfigure()
     }
 
-    fun startRecord() {
-        inMemoryAppender.enableRecording()
-    }
-
-    fun stopRecord() {
-        inMemoryAppender.disableRecording()
-    }
-
+    fun <T> record(runnable: () -> T): T =
+        try {
+            inMemoryAppender.enableRecording()
+            runnable()
+        } finally {
+            inMemoryAppender.disableRecording()
+        }
 }
-

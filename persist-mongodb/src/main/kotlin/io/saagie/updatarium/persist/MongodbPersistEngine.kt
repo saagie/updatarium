@@ -22,8 +22,13 @@ import io.saagie.updatarium.model.ChangeSet
 import io.saagie.updatarium.model.Status
 import io.saagie.updatarium.persist.model.MongoDbChangeSet
 import io.saagie.updatarium.persist.model.toMongoDbDocument
-import org.litote.kmongo.*
 import java.time.Instant
+import org.litote.kmongo.KMongo
+import org.litote.kmongo.eq
+import org.litote.kmongo.findOne
+import org.litote.kmongo.getCollection
+import org.litote.kmongo.set
+import org.litote.kmongo.setTo
 
 const val MONGODB_PERSIST_CONNECTIONSTRING = "MONGODB_PERSIST_CONNECTIONSTRING"
 const val DATABASE = "Updatarium"
@@ -73,24 +78,20 @@ class MongodbPersistEngine(override val configuration: PersistConfig = PersistCo
         }
     }
 
-    override fun lock(changeSet: ChangeSet) {
-        collection.insertOne(changeSet.toMongoDbDocument())
-        logger.info { "${changeSet.id} marked as ${Status.EXECUTE}" }
+    override fun lock(executionId: String, changeSet: ChangeSet) {
+        collection.insertOne(changeSet.toMongoDbDocument(executionId))
+        logger.info { "$executionId marked as ${Status.EXECUTE}" }
     }
 
-    override fun unlock(
-        changeSet: ChangeSet,
-        status: Status,
-        logs: List<String>
-    ) {
+    override fun unlock(executionId: String, changeSet: ChangeSet, status: Status, logs: List<String>) {
         collection.updateOne(
-            MongoDbChangeSet::changeSetId eq changeSet.id,
+            MongoDbChangeSet::changeSetId eq executionId,
             set(
                 MongoDbChangeSet::status setTo status.name,
                 MongoDbChangeSet::statusDate setTo Instant.now(),
                 MongoDbChangeSet::log setTo logs
             )
         )
-        logger.info { "${changeSet.id} marked as $status" }
+        logger.info { "$executionId marked as $status" }
     }
 }

@@ -22,9 +22,9 @@ import io.saagie.updatarium.model.Status
 
 /**
  * This is a basic implementation of the PersistEngine.
- * It will store nothing and just let you execute the changeset.
+ * It will store nothing and just let you execute the changeSet.
  *
- * :warning: please do not use this in production if you don't want to replay all changesets.
+ * :warning: please do not use this in production if you don't want to replay all changeSets.
  */
 class DefaultPersistEngine(
     configuration: PersistConfig =
@@ -37,12 +37,13 @@ class DefaultPersistEngine(
     }
 
     override fun notAlreadyExecuted(changeSetId: String): Boolean = true
-    override fun lock(changeSet: ChangeSet) {
-        logger.info { "${changeSet.id} marked as ${Status.EXECUTE}" }
+
+    override fun lock(executionId: String, changeSet: ChangeSet) {
+        logger.info { "$executionId marked as ${Status.EXECUTE}" }
     }
 
-    override fun unlock(changeSet: ChangeSet, status: Status, logs: List<String>) {
-        logger.info { "${changeSet.id} marked as $status" }
+    override fun unlock(executionId: String, changeSet: ChangeSet, status: Status, logs: List<String>) {
+        logger.info { "$executionId marked as $status" }
         logger.info { logs }
     }
 }

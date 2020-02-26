@@ -32,8 +32,8 @@ import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.persist.DefaultPersistEngine
 import io.saagie.updatarium.persist.MongodbPersistEngine
 import io.saagie.updatarium.persist.PersistConfig
-import org.slf4j.event.Level
 import java.nio.file.Files
+import org.slf4j.event.Level
 
 enum class PersitEngine {
     NONE,
@@ -70,12 +70,10 @@ class Standalone : CliktCommand(printHelpOnEmptyArgs = true) {
     )
         .flag("--no-recursive", default = true)
 
-
     // PersistEngine options
     val persitEngine by option(help = "Choose the PersitEngine", envvar = "UPDATARIUM_PERSIST_ENGINE").choice(
         NONE.name,
-        MONGODB.name
-        , ignoreCase = true
+        MONGODB.name, ignoreCase = true
     ).default(NONE.name)
 
     // PersistEngineConfig

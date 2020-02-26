@@ -22,15 +22,14 @@ import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import io.saagie.updatarium.persist.PersistConfig
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.jvm.isAccessible
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.time.MutableInstant
 import org.apache.logging.log4j.message.FormattedMessage
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.jvm.isAccessible
-
 
 internal class InMemoryAppenderTest {
     val inMemoryAppender = InMemoryAppender("testAppender")
@@ -95,7 +94,6 @@ internal class InMemoryAppenderTest {
             assertThat(queue.isEmpty()).isEqualTo(false)
             assertThat(queue.element().message).isEqualTo(logEvent.message.formattedMessage)
         }
-
     }
 
     @Nested
@@ -106,7 +104,7 @@ internal class InMemoryAppenderTest {
             level = Level.INFO,
             onSuccessStoreLogs = true,
             onErrorStoreLogs = true
-        ) { event -> event.message!! }
+        ) { event -> event.message ?: throw IllegalStateException() }
 
         @Test
         fun should_store_all_logs() {
@@ -115,7 +113,7 @@ internal class InMemoryAppenderTest {
             // Then
             val logs = InMemoryAppenderAccess.getEvents()
             assertThat(logs).hasSize(2)
-            assertThat(logs.map { it.message!! }).isEqualTo(
+            assertThat(logs.mapNotNull { it.message }).isEqualTo(
                 logEvents.map { it.message.formattedMessage }
             )
 

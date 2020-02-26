@@ -21,7 +21,6 @@ import io.saagie.updatarium.persist.MongodbPersistEngine
 import io.saagie.updatarium.persist.PersistConfig
 import org.apache.logging.log4j.Level
 
-
 fun main() {
     val persistConfig = PersistConfig(level = Level.INFO, onSuccessStoreLogs = true, onErrorStoreLogs = true)
     Updatarium(UpdatariumConfiguration(persistEngine = MongodbPersistEngine(persistConfig))).executeChangeLog(
