@@ -25,6 +25,7 @@ data class ChangeSet(
     private val id: String,
     val author: String,
     val tags: List<String> = emptyList(),
+    val force: Boolean = false,
     val actions: List<Action> = emptyList()
 ) : KLoggable {
     override val logger = logger()
@@ -50,10 +51,7 @@ data class ChangeSet(
         configuration: UpdatariumConfiguration = UpdatariumConfiguration()
     ): List<ChangeSetError> {
         val executionId = computeId(changeLogId)
-        return if (!configuration.persistEngine.notAlreadyExecuted(executionId)) {
-            logger.info { "$executionId already executed" }
-            emptyList()
-        } else {
+        return if (mustRun(executionId, configuration)) {
             logger.info { "$executionId will be executed" }
             val maybeError = with(configuration.persistEngine) {
                 runWithPersistEngine(executionId, lock = !configuration.dryRun) {
@@ -69,6 +67,21 @@ data class ChangeSet(
             maybeError?.let { error ->
                 listOf(ChangeSetError(this, error))
             } ?: emptyList()
+        } else {
+            logger.info { "$executionId already executed" }
+            emptyList()
         }
     }
+
+    /**
+     * Check if the change set must be run, either because it is mark as 'force' through its parameters or
+     * because it has not been already executed.
+     **/
+    private fun mustRun(executionId: String, configuration: UpdatariumConfiguration): Boolean =
+        if (force) {
+            logger.warn { "$executionId marked as forced. Will be executed" }
+            true
+        } else {
+            configuration.persistEngine.notAlreadyExecuted(executionId)
+        }
 }

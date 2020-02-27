@@ -27,6 +27,7 @@ data class MongoDbChangeSet(
     val status: String,
     val lockDate: Instant = Instant.now(),
     val statusDate: Instant? = null,
+    val force: Boolean = false,
     val log: List<String>
 )
 
@@ -34,5 +35,6 @@ fun ChangeSet.toMongoDbDocument(executionId: String): MongoDbChangeSet = MongoDb
     changeSetId = executionId,
     author = this.author,
     status = Status.EXECUTE.name,
+    force = this.force,
     log = mutableListOf()
 )

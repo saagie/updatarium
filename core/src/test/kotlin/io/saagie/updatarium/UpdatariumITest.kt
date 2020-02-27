@@ -290,6 +290,48 @@ class UpdatariumITest {
         }
     }
 
+    @Test
+    fun `should correctly execute a list of changelog that contains forced changeSets`() {
+        with(getConfig()) {
+            Updatarium(this)
+                .executeChangeLog(
+                    changeLog(id = "Plop") {
+                        changeSet(id = "ChangeSet-1", author = "Hello World") {
+                            action { logger.info { "0" } }
+                            action { logger.info { "1" } }
+                            action { logger.info { "2" } }
+                        }
+                    }
+                )
+            // Must not be run (already executed)
+            Updatarium(this)
+                .executeChangeLog(
+                    changeLog(id = "Plop") {
+                        changeSet(id = "ChangeSet-1", author = "Hello World") {
+                            force = false // by default
+                            action { logger.info { "This ChangeSet-1 must not be run as it is already run and not forced" } }
+                        }
+                    }
+                )
+            // Must be run (forced)
+            Updatarium(this)
+                .executeChangeLog(
+                    changeLog(id = "Plop") {
+                        changeSet(id = "ChangeSet-1", author = "Hello World") {
+                            force = true
+                            action { logger.info { "ChangeSet-1 already run but forced to run again" } }
+                        }
+                    }
+                )
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2) // Third time is not tested (forced)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
+                .containsExactly("Plop_ChangeSet-1", "Plop_ChangeSet-1")
+            assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
+                .extracting { it.executionId }
+                .containsExactly("Plop_ChangeSet-1", "Plop_ChangeSet-1")
+        }
+    }
+
     @Nested
     inner class ExitCode {
 

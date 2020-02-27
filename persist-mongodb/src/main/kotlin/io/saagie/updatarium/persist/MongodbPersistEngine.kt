@@ -92,12 +92,11 @@ class MongodbPersistEngine(override val configuration: PersistConfig = PersistCo
     }
 
     override fun unlock(executionId: String, changeSet: ChangeSet, status: Status, logs: List<String>) {
-        collection.updateOne(
-            MongoDbChangeSet::changeSetId eq executionId,
-            set(
-                MongoDbChangeSet::status setTo status.name,
-                MongoDbChangeSet::statusDate setTo Instant.now(),
-                MongoDbChangeSet::log setTo logs
+        collection.insertOne(
+            changeSet.toMongoDbDocument(executionId).copy(
+                status = status.name,
+                statusDate = Instant.now(),
+                log = logs
             )
         )
         logger.info { "$executionId marked as $status" }

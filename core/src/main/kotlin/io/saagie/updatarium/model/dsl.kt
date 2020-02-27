@@ -82,6 +82,7 @@ class ChangeSetDsl(val id: String, val author: String) {
     private var actions: MutableList<ActionDsl> = mutableListOf()
 
     var tags: List<Tag> = emptyList()
+    var force: Boolean = false
 
     fun action(name: String = "basicAction", block: ActionDsl.() -> Unit) =
         this.actions.add(ActionDsl(name, block))
@@ -97,7 +98,8 @@ class ChangeSetDsl(val id: String, val author: String) {
             id = id,
             author = author,
             tags = tags,
-            actions = actions.map(ActionDsl::build)
+            actions = actions.map(ActionDsl::build),
+            force = force
         )
 }
 
