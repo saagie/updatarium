@@ -75,7 +75,7 @@ Let's see in details each function :
 
 - `lock(changeSet: ChangeSet)` is called just before execute the changeset actions. You have to record the changeset execution in your persistence engine (with a `Status.EXECUTE` status).
 
-- `unlock(changeSet: ChangeSet,status: Status, logs: List<String>)` is called a the end of the actions execution for a changeset. You have the correct status (`Status.OK` or `Status.KO`) and an ordered list containing all LogEvent captured during the execution of the changeset, and you can update this new status to the changeset record and store logs (if PersitConfig is set to not store logs, the list is empty)
+- `unlock(changeSet: ChangeSet,status: Status, logs: List<String>)` is called a the end of the actions execution for a changeset. You have the correct status (`Status.OK` or `Status.KO`) and an ordered list containing all LogEvent captured during the execution of the changeset, and you can update this new status to the changeset record and store logs (if PersistConfig is set to not store logs, the list is empty)
 
 ## Code of Conduct
 
