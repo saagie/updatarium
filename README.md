@@ -168,7 +168,7 @@ Updatarium().executeChangeLog(changeLog,listOf("after"))
 
 #### PersistConfiguration
 
-You can configure the persistEngine, using a `PersitConfiguration` like this : 
+You can configure the persistEngine, using a `PersistConfiguration` like this : 
 
 ```kotlin
 val config = PersistConfig(

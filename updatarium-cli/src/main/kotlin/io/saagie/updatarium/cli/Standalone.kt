@@ -26,8 +26,8 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.path
 import io.saagie.updatarium.Updatarium
-import io.saagie.updatarium.cli.PersitEngine.MONGODB
-import io.saagie.updatarium.cli.PersitEngine.NONE
+import io.saagie.updatarium.cli.PersistEngine.MONGODB
+import io.saagie.updatarium.cli.PersistEngine.NONE
 import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.persist.DefaultPersistEngine
 import io.saagie.updatarium.persist.MongodbPersistEngine
@@ -35,7 +35,7 @@ import io.saagie.updatarium.persist.PersistConfig
 import java.nio.file.Files
 import org.slf4j.event.Level
 
-enum class PersitEngine {
+enum class PersistEngine {
     NONE,
     MONGODB
 }
@@ -71,7 +71,7 @@ class Standalone : CliktCommand(printHelpOnEmptyArgs = true) {
         .flag("--no-recursive", default = true)
 
     // PersistEngine options
-    val persitEngine by option(help = "Choose the PersitEngine", envvar = "UPDATARIUM_PERSIST_ENGINE").choice(
+    val persistEngine by option(help = "Choose the PersistEngine", envvar = "UPDATARIUM_PERSIST_ENGINE").choice(
         NONE.name,
         MONGODB.name, ignoreCase = true
     ).default(NONE.name)
@@ -109,7 +109,7 @@ class Standalone : CliktCommand(printHelpOnEmptyArgs = true) {
             UpdatariumConfiguration(
                 dryRun = dryrun,
                 failFast = failfast,
-                persistEngine = when (persitEngine) {
+                persistEngine = when (persistEngine) {
                     MONGODB.name -> MongodbPersistEngine(config)
                     else -> DefaultPersistEngine(config)
                 },
