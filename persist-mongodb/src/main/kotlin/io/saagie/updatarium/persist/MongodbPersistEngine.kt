@@ -18,10 +18,13 @@
 package io.saagie.updatarium.persist
 
 import com.mongodb.ConnectionString
+import com.mongodb.client.model.IndexOptions
+import com.mongodb.client.model.Indexes
 import io.saagie.updatarium.model.ChangeSet
 import io.saagie.updatarium.model.Status
 import io.saagie.updatarium.persist.model.MongoDbChangeSet
 import io.saagie.updatarium.persist.model.toMongoDbDocument
+import org.bson.BsonDocument
 import java.time.Instant
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.eq
@@ -38,7 +41,12 @@ class MongodbPersistEngine(override val configuration: PersistConfig = PersistCo
 
     private val collection by lazy {
         with(KMongo.createClient(ConnectionString(getConnectionString()))) {
-            this.getDatabase(DATABASE).getCollection<MongoDbChangeSet>(COLLECTION)
+            this.getDatabase(DATABASE).getCollection<MongoDbChangeSet>(COLLECTION).apply {
+                this.createIndex(
+                    Indexes.ascending("changeSetId"),
+                    IndexOptions().name("changeSetId_1")
+                )
+            }
         }
     }
 
