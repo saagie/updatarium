@@ -166,6 +166,46 @@ In this example, `ChangeSet-bash-1-1` will not be executed.
 Updatarium().executeChangeLog(changeLog,listOf("after")) 
 ```
 
+#### For the execution of a change set
+By default, a changeSet can not be re-executed if it has already been run, based on the changeSet id.
+
+```kotlin
+changeLog {
+    changeSet(id = "ChangeSet-1", author = "author") {
+        action {
+            logger.info { "Hello world!" }
+        }
+    }
+
+    // The following changeSet will not be executed again
+    changeSet(id = "ChangeSet-1", author = "author") {
+        action {
+            logger.info { "Will not be executed" }
+        }
+    }
+}
+```
+
+However, it is possible to override this default behaviour by using the force parameter on a specific changeSet:
+
+```kotlin
+changeLog {
+    changeSet(id = "ChangeSet-1", author = "author") {
+        action {
+            logger.info { "Hello world!" }
+        }
+    }
+
+    // The following changeSet will be executed again
+    changeSet(id = "ChangeSet-1", author = "author") {
+        force = true
+        action {
+            logger.info { "Hello world again!" }
+        }
+    }
+}
+```
+
 #### PersistConfiguration
 
 You can configure the persistEngine, using a `PersistConfiguration` like this : 

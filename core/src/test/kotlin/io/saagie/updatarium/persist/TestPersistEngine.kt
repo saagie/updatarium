@@ -31,8 +31,9 @@ class TestPersistEngine : PersistEngine(PersistConfig()) {
     }
 
     override fun notAlreadyExecuted(changeSetId: String): Boolean {
+        val notAlreadyExecuted = changeSetId !in changeSetTested
         changeSetTested.add(changeSetId)
-        return true
+        return notAlreadyExecuted
     }
 
     override fun lock(executionId: String, changeSet: ChangeSet) {

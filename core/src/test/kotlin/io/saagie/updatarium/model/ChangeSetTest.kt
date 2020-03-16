@@ -102,4 +102,54 @@ class ChangeSetTest {
         assertThat(actionRecord).isEmpty()
         assertThat((config.persistEngine as TestPersistEngine).changeSetUnLocked).isEmpty()
     }
+
+    @Test
+    fun should_execute_all_actions_when_marked_as_force_run_even_if_already_executed() {
+        val actionRecord = mutableListOf<String>()
+        val actionRecordForced = mutableListOf<String>()
+
+        val changeSet = ChangeSet(
+            id = "changeSet1",
+            author = "test",
+            actions = listOf(
+                Action { actionRecord.add("action1") },
+                Action { actionRecord.add("action2") },
+                Action { actionRecord.add("action3") },
+                Action { actionRecord.add("action4") }
+            )
+        )
+
+        val changeSetForced = ChangeSet(
+            id = "changeSetForceRun",
+            author = "test",
+            force = true,
+            actions = listOf(
+                Action { actionRecordForced.add("action1") },
+                Action { actionRecordForced.add("action2") },
+                Action { actionRecordForced.add("action3") },
+                Action { actionRecordForced.add("action4") }
+            )
+        )
+        val config =
+            UpdatariumConfiguration(persistEngine = TestPersistEngine(), listFilesRecursively = true)
+
+        fun executeTwice(changeSet: ChangeSet) =  changeSet.run {
+            execute(executionId, config)
+            execute(executionId, config)
+        }
+
+        // Trying to execute both changeSets twice
+        executeTwice(changeSet)
+        executeTwice(changeSetForced)
+
+        val changeSetsUnLocked = (config.persistEngine as TestPersistEngine).changeSetUnLocked
+        val changeSetUnLocked = changeSetsUnLocked.first { it.changeSet == changeSet }
+        val changedSetForcedUnlocked = changeSetsUnLocked.first { it.changeSet == changeSetForced }
+
+        assertThat(changeSetUnLocked.status).isEqualTo(Status.OK)
+        assertThat(changedSetForcedUnlocked.status).isEqualTo(Status.OK)
+
+        assertThat(changeSetsUnLocked.count { it.changeSet == changeSet }).isEqualTo(1) // Run once
+        assertThat(changeSetsUnLocked.count { it.changeSet == changeSetForced }).isEqualTo(2) // Run twice as it is forced
+    }
 }
