@@ -19,6 +19,8 @@ package io.saagie.updatarium.persist
 
 import io.saagie.updatarium.model.ChangeSet
 import io.saagie.updatarium.model.Status
+import io.saagie.updatarium.model.Status.NOT_EXECUTED
+import io.saagie.updatarium.model.Status.OK
 
 class TestPersistEngine : PersistEngine(PersistConfig()) {
     data class ChangeSetUnLocked(val executionId: String, val changeSet: ChangeSet, val status: Status)
@@ -30,10 +32,13 @@ class TestPersistEngine : PersistEngine(PersistConfig()) {
     override fun checkConnection() {
     }
 
-    override fun notAlreadyExecuted(changeSetId: String): Boolean {
+    override fun notAlreadyExecuted(changeSetId: String): Status {
         val notAlreadyExecuted = changeSetId !in changeSetTested
         changeSetTested.add(changeSetId)
-        return notAlreadyExecuted
+        if (notAlreadyExecuted) {
+            return NOT_EXECUTED
+        }
+        return OK
     }
 
     override fun lock(executionId: String, changeSet: ChangeSet) {

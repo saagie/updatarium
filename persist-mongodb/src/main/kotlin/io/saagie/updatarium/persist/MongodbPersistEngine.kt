@@ -22,16 +22,14 @@ import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
 import io.saagie.updatarium.model.ChangeSet
 import io.saagie.updatarium.model.Status
+import io.saagie.updatarium.model.Status.NOT_EXECUTED
 import io.saagie.updatarium.persist.model.MongoDbChangeSet
 import io.saagie.updatarium.persist.model.toMongoDbDocument
-import org.bson.BsonDocument
-import java.time.Instant
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.set
-import org.litote.kmongo.setTo
+import java.time.Instant
 
 const val MONGODB_PERSIST_CONNECTIONSTRING = "MONGODB_PERSIST_CONNECTIONSTRING"
 const val DATABASE = "Updatarium"
@@ -63,11 +61,11 @@ class MongodbPersistEngine(override val configuration: PersistConfig = PersistCo
         logger.info { "Connection to mongodb instance : successful" }
     }
 
-    override fun notAlreadyExecuted(changeSetId: String): Boolean {
+    override fun notAlreadyExecuted(changeSetId: String): Status {
         when (val doc = collection.findOne(MongoDbChangeSet::changeSetId eq changeSetId)) {
             null -> {
                 logger.info { "$changeSetId not exists" }
-                return true
+                return NOT_EXECUTED
             }
             else -> {
                 when (doc.status) {
@@ -81,7 +79,7 @@ class MongodbPersistEngine(override val configuration: PersistConfig = PersistCo
                         logger.warn { "$changeSetId was already executed in error" }
                     }
                 }
-                return false
+                return Status.valueOf(doc.status)
             }
         }
     }

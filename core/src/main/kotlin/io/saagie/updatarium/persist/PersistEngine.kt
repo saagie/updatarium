@@ -41,7 +41,7 @@ abstract class PersistEngine(open val configuration: PersistConfig) {
      * This function will check that the changeSet (by its ID) have never been run.
      * Return true if the changeSet has never been run, false otherwise.
      */
-    abstract fun notAlreadyExecuted(changeSetId: String): Boolean
+    abstract fun notAlreadyExecuted(changeSetId: String): Status
 
     /**
      * This function is here to "lock" the changeSet, that's mean store a reference thant the changeSet in the parameter will be executed.

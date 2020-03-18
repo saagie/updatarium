@@ -18,6 +18,7 @@
 package io.saagie.updatarium.model
 
 import io.saagie.updatarium.config.UpdatariumConfiguration
+import io.saagie.updatarium.model.Status.NOT_EXECUTED
 import io.saagie.updatarium.model.UpdatariumError.ChangeSetError
 import mu.KLoggable
 
@@ -82,6 +83,6 @@ data class ChangeSet(
             logger.warn { "$executionId marked as forced. Will be executed" }
             true
         } else {
-            configuration.persistEngine.notAlreadyExecuted(executionId)
+            configuration.persistEngine.notAlreadyExecuted(executionId) == NOT_EXECUTED
         }
 }
