@@ -21,14 +21,11 @@ import com.mongodb.ConnectionString
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
 import io.saagie.updatarium.model.ChangeSet
-import io.saagie.updatarium.model.Status
-import io.saagie.updatarium.model.Status.NOT_EXECUTED
+import io.saagie.updatarium.model.ExecutionStatus
+import io.saagie.updatarium.model.ExecutionStatus.NOT_EXECUTED
 import io.saagie.updatarium.persist.model.MongoDbChangeSet
 import io.saagie.updatarium.persist.model.toMongoDbDocument
-import org.litote.kmongo.KMongo
-import org.litote.kmongo.eq
-import org.litote.kmongo.findOne
-import org.litote.kmongo.getCollection
+import org.litote.kmongo.*
 import java.time.Instant
 
 const val MONGODB_PERSIST_CONNECTIONSTRING = "MONGODB_PERSIST_CONNECTIONSTRING"
@@ -61,35 +58,43 @@ class MongodbPersistEngine(override val configuration: PersistConfig = PersistCo
         logger.info { "Connection to mongodb instance : successful" }
     }
 
-    override fun notAlreadyExecuted(changeSetId: String): Status {
-        when (val doc = collection.findOne(MongoDbChangeSet::changeSetId eq changeSetId)) {
+    override fun findLatestExecutionStatus(changeSetId: String): ExecutionStatus =
+        when (val doc = getLastRecordedChangeSet(changeSetId)) {
             null -> {
                 logger.info { "$changeSetId not exists" }
-                return NOT_EXECUTED
+                NOT_EXECUTED
             }
             else -> {
-                when (doc.status) {
-                    Status.OK.name -> {
-                        logger.info { "$changeSetId already executed : OK" }
-                    }
-                    Status.EXECUTE.name -> {
-                        logger.info { "$changeSetId already in progress ?" }
-                    }
-                    else -> {
-                        logger.warn { "$changeSetId was already executed in error" }
-                    }
-                }
-                return Status.valueOf(doc.status)
+                logStatus(changeSetId, doc.status)
+                ExecutionStatus.valueOf(doc.status)
+            }
+        }
+
+    private fun logStatus(changeSetId: String, status: String) {
+        when (status) {
+            ExecutionStatus.OK.name -> {
+                logger.info { "$changeSetId already executed : OK" }
+            }
+            ExecutionStatus.EXECUTE.name -> {
+                logger.info { "$changeSetId already in progress ?" }
+            }
+            else -> {
+                logger.warn { "$changeSetId was already executed in error" }
             }
         }
     }
 
+    private fun getLastRecordedChangeSet(changeSetId: String) : MongoDbChangeSet? =
+        collection.find(MongoDbChangeSet::changeSetId eq changeSetId)
+            .sort(descending(MongoDbChangeSet::statusDate))
+            .first()
+
     override fun lock(executionId: String, changeSet: ChangeSet) {
         collection.insertOne(changeSet.toMongoDbDocument(executionId))
-        logger.info { "$executionId marked as ${Status.EXECUTE}" }
+        logger.info { "$executionId marked as ${ExecutionStatus.EXECUTE}" }
     }
 
-    override fun unlock(executionId: String, changeSet: ChangeSet, status: Status, logs: List<String>) {
+    override fun unlock(executionId: String, changeSet: ChangeSet, status: ExecutionStatus, logs: List<String>) {
         collection.insertOne(
             changeSet.toMongoDbDocument(executionId).copy(
                 status = status.name,

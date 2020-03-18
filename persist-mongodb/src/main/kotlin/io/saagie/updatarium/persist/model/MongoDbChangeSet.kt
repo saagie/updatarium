@@ -18,7 +18,7 @@
 package io.saagie.updatarium.persist.model
 
 import io.saagie.updatarium.model.ChangeSet
-import io.saagie.updatarium.model.Status
+import io.saagie.updatarium.model.ExecutionStatus
 import java.time.Instant
 
 data class MongoDbChangeSet(
@@ -34,7 +34,7 @@ data class MongoDbChangeSet(
 fun ChangeSet.toMongoDbDocument(executionId: String): MongoDbChangeSet = MongoDbChangeSet(
     changeSetId = executionId,
     author = this.author,
-    status = Status.EXECUTE.name,
+    status = ExecutionStatus.EXECUTE.name,
     force = this.force,
     log = mutableListOf()
 )

@@ -62,20 +62,20 @@ Now you can create your own implementation of `PersistEngine`.
 
 ```$kotlin
    abstract fun checkConnection()
-   abstract fun notAlreadyExecuted(changeSetId: String): Boolean
+   abstract fun findLatestExecutionStatus(changeSetId: String): ExecutionStatus
    abstract fun lock(changeSet: ChangeSet)
-   abstract fun unlock(changeSet: ChangeSet, status: Status, logs: List<String>)
+   abstract fun unlock(changeSet: ChangeSet, status: ExecutionStatus, logs: List<String>)
 ```
 
 Let's see in details each function : 
 
 - `checkConnection()` is called before starting the changelog execution to check that the persistence is ready (checking a database connection for example). This function returns nothing, you have to throw an exception is the persistence is not ready and it will stop the process.
 
-- `notAlreadyExecuted(changeSetId: String)` is called at the changeset execution beginning. You have to check in your persistence engine (database ? file ? memory ? ) if you have previously executed this changesetId. Return true to allow this changeset execution, false otherwise.
+- `notAlreadyExecuted(changeSetId: String)` is called at the changeSet execution beginning. You have to check in your persistence engine (database ? file ? memory ? ) if you have previously executed this changeSetId. Return `ExecutionStatus.NOT_EXECUTED` to allow this changeSet execution, the persisted execution status otherwise.
 
-- `lock(changeSet: ChangeSet)` is called just before execute the changeset actions. You have to record the changeset execution in your persistence engine (with a `Status.EXECUTE` status).
+- `lock(changeSet: ChangeSet)` is called just before execute the changeSet actions. You have to record the changeSet execution in your persistence engine (with an `ExecutionStatus.EXECUTE` status).
 
-- `unlock(changeSet: ChangeSet,status: Status, logs: List<String>)` is called a the end of the actions execution for a changeset. You have the correct status (`Status.OK` or `Status.KO`) and an ordered list containing all LogEvent captured during the execution of the changeset, and you can update this new status to the changeset record and store logs (if PersistConfig is set to not store logs, the list is empty)
+- `unlock(changeSet: ChangeSet, status: ExecutionStatus, logs: List<String>)` is called at the end of actions execution for a changeSet. You have the correct status (`ExecutionStatus.OK` or `ExecutionStatus.FAIL`) and an ordered list containing all LogEvent captured during the execution of the changeSet, and you can update this new status to the changeSet record and store logs (if PersistConfig is set to not store logs, the list is empty)
 
 ## Code of Conduct
 

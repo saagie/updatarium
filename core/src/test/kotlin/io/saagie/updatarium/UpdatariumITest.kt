@@ -354,7 +354,7 @@ class UpdatariumITest {
                         .extracting { "${it.executionId}-${it.status.name}" }
                         .containsExactly(
                             "${failedChangelogPath.toAbsolutePath()}_ChangeSet-1-OK",
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2-KO"
+                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2-FAIL"
                         )
                 }
             }
@@ -380,7 +380,7 @@ class UpdatariumITest {
                         .extracting { "${it.executionId}-${it.status.name}" }
                         .containsExactly(
                             "${failedChangelogPath.toAbsolutePath()}_ChangeSet-1-OK",
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2-KO",
+                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2-FAIL",
                             "${failedChangelogPath.toAbsolutePath()}_ChangeSet-3-OK"
                         )
                 }
@@ -403,7 +403,7 @@ class UpdatariumITest {
                         .extracting { "${it.executionId}-${it.status.name}" }
                         .containsExactly(
                             "${failedChangelogPath.toAbsolutePath()}_ChangeSet-1-OK",
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2-KO"
+                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2-FAIL"
                         )
                 }
             }
@@ -426,7 +426,7 @@ class UpdatariumITest {
                         .extracting { "${it.executionId}-${it.status.name}" }
                         .containsExactly(
                             "${failedChangelogPath.toAbsolutePath()}_ChangeSet-1-OK",
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2-KO",
+                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2-FAIL",
                             "${failedChangelogPath.toAbsolutePath()}_ChangeSet-3-OK"
                         )
                 }

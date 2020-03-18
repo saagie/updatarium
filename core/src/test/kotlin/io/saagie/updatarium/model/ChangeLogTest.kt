@@ -95,7 +95,7 @@ class ChangeLogTest {
             assertThat(
                 (config.persistEngine as TestPersistEngine).changeSetUnLocked
                     .map { "${it.executionId}-${it.status}" }).containsExactly(
-                "changeSet1-KO",
+                "changeSet1-FAIL",
                 "changeSet2-OK"
             )
         }
@@ -128,7 +128,7 @@ class ChangeLogTest {
             )
             assertThat(
                 (config.persistEngine as TestPersistEngine).changeSetUnLocked
-                    .map { "${it.executionId}-${it.status}" }).containsExactly("changeSet1-KO")
+                    .map { "${it.executionId}-${it.status}" }).containsExactly("changeSet1-FAIL")
         }
     }
 

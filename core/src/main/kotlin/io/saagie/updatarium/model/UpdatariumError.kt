@@ -19,5 +19,6 @@ package io.saagie.updatarium.model
 
 sealed class UpdatariumError(open val e: Throwable?) : Exception() {
     data class ChangeSetError(val changeSet: ChangeSet, override val e: Throwable? = null) : UpdatariumError(e)
+    data class AlreadyExecutedAndInError(val executionId: String) : UpdatariumError(null)
     object ExitError : UpdatariumError(null)
 }
