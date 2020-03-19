@@ -18,10 +18,11 @@
 package io.saagie.updatarium.persist
 
 import io.saagie.updatarium.model.ChangeSet
-import io.saagie.updatarium.model.Status
+import io.saagie.updatarium.model.ExecutionStatus
+import io.saagie.updatarium.model.ExecutionStatus.NOT_EXECUTED
 
 class TestPersistEngine : PersistEngine(PersistConfig()) {
-    data class ChangeSetUnLocked(val executionId: String, val changeSet: ChangeSet, val status: Status)
+    data class ChangeSetUnLocked(val executionId: String, val changeSet: ChangeSet, val status: ExecutionStatus)
 
     val changeSetTested = mutableListOf<String>()
     val changeSetLocked = mutableListOf<ChangeSet>()
@@ -30,17 +31,20 @@ class TestPersistEngine : PersistEngine(PersistConfig()) {
     override fun checkConnection() {
     }
 
-    override fun notAlreadyExecuted(changeSetId: String): Boolean {
+    override fun findLatestExecutionStatus(changeSetId: String): ExecutionStatus {
         val notAlreadyExecuted = changeSetId !in changeSetTested
         changeSetTested.add(changeSetId)
-        return notAlreadyExecuted
+        if (notAlreadyExecuted) {
+            return NOT_EXECUTED
+        }
+        return changeSetUnLocked.first { it.executionId == changeSetId }.status
     }
 
     override fun lock(executionId: String, changeSet: ChangeSet) {
         changeSetLocked.add(changeSet)
     }
 
-    override fun unlock(executionId: String, changeSet: ChangeSet, status: Status, logs: List<String>) {
+    override fun unlock(executionId: String, changeSet: ChangeSet, status: ExecutionStatus, logs: List<String>) {
         changeSetUnLocked.add(ChangeSetUnLocked(executionId, changeSet, status))
     }
 }

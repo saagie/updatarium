@@ -18,13 +18,15 @@
 package io.saagie.updatarium.model
 
 /**
- * Represent the status of the changeset.
+ * Represent the status of the changeSet.
  */
-enum class Status {
+enum class ExecutionStatus {
+    // never executed
+    NOT_EXECUTED,
     // execution in progress
     EXECUTE,
     // Execution is done with a correct status
     OK,
     // Execution is done but it has failed
-    KO
+    FAIL
 }

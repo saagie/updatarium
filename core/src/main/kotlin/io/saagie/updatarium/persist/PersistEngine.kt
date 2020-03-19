@@ -20,7 +20,7 @@ package io.saagie.updatarium.persist
 import io.saagie.updatarium.log.InMemoryAppenderAccess
 import io.saagie.updatarium.log.InMemoryAppenderManager
 import io.saagie.updatarium.model.ChangeSet
-import io.saagie.updatarium.model.Status
+import io.saagie.updatarium.model.ExecutionStatus
 import mu.KotlinLogging
 
 /**
@@ -38,10 +38,10 @@ abstract class PersistEngine(open val configuration: PersistConfig) {
     abstract fun checkConnection()
 
     /**
-     * This function will check that the changeSet (by its ID) have never been run.
-     * Return true if the changeSet has never been run, false otherwise.
+     * This function will return the latest changeSet execution status (by its ID).
+     * Return Status.NOT_EXECUTED if the changeSet has never been run, the persisted Status otherwise.
      */
-    abstract fun notAlreadyExecuted(changeSetId: String): Boolean
+    abstract fun findLatestExecutionStatus(changeSetId: String): ExecutionStatus
 
     /**
      * This function is here to "lock" the changeSet, that's mean store a reference thant the changeSet in the parameter will be executed.
@@ -53,7 +53,7 @@ abstract class PersistEngine(open val configuration: PersistConfig) {
     /**
      * This function is called after the changeSet execution, so you can now update the changeSet status (in the parameter) and store the logs.
      */
-    protected abstract fun unlock(executionId: String, changeSet: ChangeSet, status: Status, logs: List<String>)
+    protected abstract fun unlock(executionId: String, changeSet: ChangeSet, status: ExecutionStatus, logs: List<String>)
 
     /**
      * Run changeSet code, and possibly lock the changeSet before
@@ -71,18 +71,18 @@ abstract class PersistEngine(open val configuration: PersistConfig) {
                 lock(executionId, this)
             }
             InMemoryAppenderManager.record { block() }
-            logger.info { "$executionId marked as ${Status.OK}" }
+            logger.info { "$executionId marked as ${ExecutionStatus.OK}" }
             if (lock) {
                 val logs = InMemoryAppenderAccess.getEvents(persistConfig = configuration, success = true)
-                unlock(executionId, this, Status.OK, logs)
+                unlock(executionId, this, ExecutionStatus.OK, logs)
             }
             null
         } catch (e: Exception) {
             logger.error(e) { "Error during apply update" }
-            logger.info { "$executionId marked as ${Status.KO}" }
+            logger.info { "$executionId marked as ${ExecutionStatus.FAIL}" }
             if (lock) {
                 val logs = InMemoryAppenderAccess.getEvents(persistConfig = configuration, success = false)
-                unlock(executionId, this, Status.KO, logs)
+                unlock(executionId, this, ExecutionStatus.FAIL, logs)
             }
             e
         }

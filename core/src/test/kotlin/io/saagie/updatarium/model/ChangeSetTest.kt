@@ -25,6 +25,7 @@ import assertk.assertions.isEqualTo
 import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.persist.TestPersistEngine
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.fail
 
 class ChangeSetTest {
 
@@ -52,7 +53,7 @@ class ChangeSetTest {
             .containsExactly("action1", "action2", "action3", "action4")
         val changeSetUnLocked = (config.persistEngine as TestPersistEngine).changeSetUnLocked
         val status = changeSetUnLocked.first { it.changeSet == changeSet }.status
-        assertThat(status).isEqualTo(Status.OK)
+        assertThat(status).isEqualTo(ExecutionStatus.OK)
     }
 
     @Test
@@ -79,7 +80,7 @@ class ChangeSetTest {
             .containsExactly("action1", "action2")
         val changeSetUnLocked = (config.persistEngine as TestPersistEngine).changeSetUnLocked
         val status = changeSetUnLocked.first { it.changeSet == changeSet }.status
-        assertThat(status).isEqualTo(Status.KO)
+        assertThat(status).isEqualTo(ExecutionStatus.FAIL)
     }
 
     @Test
@@ -133,7 +134,7 @@ class ChangeSetTest {
         val config =
             UpdatariumConfiguration(persistEngine = TestPersistEngine(), listFilesRecursively = true)
 
-        fun executeTwice(changeSet: ChangeSet) =  changeSet.run {
+        fun executeTwice(changeSet: ChangeSet) = changeSet.run {
             execute(executionId, config)
             execute(executionId, config)
         }
@@ -146,10 +147,38 @@ class ChangeSetTest {
         val changeSetUnLocked = changeSetsUnLocked.first { it.changeSet == changeSet }
         val changedSetForcedUnlocked = changeSetsUnLocked.first { it.changeSet == changeSetForced }
 
-        assertThat(changeSetUnLocked.status).isEqualTo(Status.OK)
-        assertThat(changedSetForcedUnlocked.status).isEqualTo(Status.OK)
+        assertThat(changeSetUnLocked.status).isEqualTo(ExecutionStatus.OK)
+        assertThat(changedSetForcedUnlocked.status).isEqualTo(ExecutionStatus.OK)
 
         assertThat(changeSetsUnLocked.count { it.changeSet == changeSet }).isEqualTo(1) // Run once
         assertThat(changeSetsUnLocked.count { it.changeSet == changeSetForced }).isEqualTo(2) // Run twice as it is forced
+    }
+
+    @Test
+    fun should_stop_if_the_changeSet_has_already_been_executed_and_in_error() {
+        val actionRecord = mutableListOf<String>()
+        val changeSet = ChangeSet(
+            id = "changeSet1",
+            author = "test",
+            actions = listOf(
+                Action { actionRecord.add("action1") },
+                Action { throw IllegalStateException("W00T an error here") }
+            )
+        )
+        val config = UpdatariumConfiguration(persistEngine = TestPersistEngine(), listFilesRecursively = true)
+        changeSet.execute(executionId, config)
+
+        assertThat(actionRecord).hasSize(1)
+        assertThat(actionRecord).containsExactly("action1")
+        val changeSetUnLocked = (config.persistEngine as TestPersistEngine).changeSetUnLocked
+        val status = changeSetUnLocked.first { it.changeSet == changeSet }.status
+        assertThat(status).isEqualTo(ExecutionStatus.FAIL)
+
+        try {
+            changeSet.execute(executionId, config)
+            fail("Should return an AlreadyExecutedAndInError")
+        } catch (alreadyExecutedAndInError: UpdatariumError.AlreadyExecutedAndInError) {
+            assertThat(alreadyExecutedAndInError.executionId).isEqualTo("${executionId}_changeSet1")
+        }
     }
 }

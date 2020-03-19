@@ -18,7 +18,8 @@
 package io.saagie.updatarium.persist
 
 import io.saagie.updatarium.model.ChangeSet
-import io.saagie.updatarium.model.Status
+import io.saagie.updatarium.model.ExecutionStatus
+import io.saagie.updatarium.model.ExecutionStatus.NOT_EXECUTED
 
 /**
  * This is a basic implementation of the PersistEngine.
@@ -36,13 +37,13 @@ class DefaultPersistEngine(
         logger.warn { "***********************" }
     }
 
-    override fun notAlreadyExecuted(changeSetId: String): Boolean = true
+    override fun findLatestExecutionStatus(changeSetId: String): ExecutionStatus = NOT_EXECUTED
 
     override fun lock(executionId: String, changeSet: ChangeSet) {
-        logger.info { "$executionId marked as ${Status.EXECUTE}" }
+        logger.info { "$executionId marked as ${ExecutionStatus.EXECUTE}" }
     }
 
-    override fun unlock(executionId: String, changeSet: ChangeSet, status: Status, logs: List<String>) {
+    override fun unlock(executionId: String, changeSet: ChangeSet, status: ExecutionStatus, logs: List<String>) {
         logger.info { "$executionId marked as $status" }
         logger.info { logs }
     }

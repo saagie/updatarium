@@ -98,6 +98,18 @@ config {
                 email = "igor.laborie@saagie.com"
                 roles = listOf("developer")
             }
+            person {
+                id = "antoine"
+                name = "Antoine Carton"
+                email = "antoine.carton@saagie.com"
+                roles = listOf("developer")
+            }
+            person {
+                id = "y-henry"
+                name = "Yohann Henry"
+                email = "yohann.henry@saagie.com"
+                roles = listOf("developer")
+            }
         }
 
         bintray {
