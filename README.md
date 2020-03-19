@@ -166,7 +166,7 @@ In this example, `ChangeSet-bash-1-1` will not be executed.
 Updatarium().executeChangeLog(changeLog,listOf("after")) 
 ```
 
-#### For the execution of a change set
+#### Force the execution of a change set
 By default, a changeSet can not be re-executed if it has already been run, based on the changeSet id.
 
 ```kotlin
