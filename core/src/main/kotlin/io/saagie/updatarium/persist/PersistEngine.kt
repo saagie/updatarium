@@ -20,7 +20,9 @@ package io.saagie.updatarium.persist
 import io.saagie.updatarium.log.InMemoryAppenderAccess
 import io.saagie.updatarium.log.InMemoryAppenderManager
 import io.saagie.updatarium.model.ChangeSet
+import io.saagie.updatarium.model.ExecutionReport
 import io.saagie.updatarium.model.ExecutionStatus
+import io.saagie.updatarium.persist.model.PageRequest
 import mu.KotlinLogging
 
 /**
@@ -42,6 +44,21 @@ abstract class PersistEngine(open val configuration: PersistConfig) {
      * Return Status.NOT_EXECUTED if the changeSet has never been run, the persisted Status otherwise.
      */
     abstract fun findLatestExecutionStatus(changeSetId: String): ExecutionStatus
+
+    /**
+     * This function will return the executions filtered by status and optionally by change set.
+     * The result is paginated depending of the page argument.
+     */
+    abstract fun findExecutions(
+        page: PageRequest = PageRequest(),
+        filterStatus: Set<ExecutionStatus> = ExecutionStatus.values().toSet(),
+        filterChangeSetId: String? = null
+    ): List<ExecutionReport>
+
+    /**
+     * This function returns the count of changeSet executions.
+     */
+    abstract fun executionCount(): Int
 
     /**
      * This function is here to "lock" the changeSet, that's mean store a reference thant the changeSet in the parameter will be executed.

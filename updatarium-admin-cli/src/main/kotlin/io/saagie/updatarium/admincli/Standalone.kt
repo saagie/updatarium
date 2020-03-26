@@ -15,20 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-rootProject.name = "updatarium"
-include(":core")
-include(":persist-mongodb")
-include(":engine-bash")
-include(":engine-mongodb")
-include(":engine-kubernetes")
-include(":engine-httpclient")
-include(":samples:basic")
-include(":samples:basic-mongodbpersist")
-include(":samples:basic-multiplechangelog")
-include(":samples:basic-multiplechangelog-withtag")
-include(":samples:http")
-include(":samples:bash")
-include(":samples:mongodb")
-include(":samples:kubernetes")
-include(":updatarium-cli")
-include(":updatarium-admin-cli")
+package io.saagie.updatarium.admincli
+
+import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.subcommands
+
+
+class Standalone : CliktCommand(name = "updatarium-admin-cli", printHelpOnEmptyArgs = true) {
+    override fun run() {}
+}
+
+
+fun main(args: Array<String>) = Standalone()
+    .subcommands(
+        ListCommand()
+    )
+    .main(args)

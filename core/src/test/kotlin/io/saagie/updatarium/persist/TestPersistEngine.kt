@@ -18,8 +18,10 @@
 package io.saagie.updatarium.persist
 
 import io.saagie.updatarium.model.ChangeSet
+import io.saagie.updatarium.model.ExecutionReport
 import io.saagie.updatarium.model.ExecutionStatus
 import io.saagie.updatarium.model.ExecutionStatus.NOT_EXECUTED
+import io.saagie.updatarium.persist.model.PageRequest
 
 class TestPersistEngine : PersistEngine(PersistConfig()) {
     data class ChangeSetUnLocked(val executionId: String, val changeSet: ChangeSet, val status: ExecutionStatus)
@@ -39,6 +41,14 @@ class TestPersistEngine : PersistEngine(PersistConfig()) {
         }
         return changeSetUnLocked.first { it.executionId == changeSetId }.status
     }
+
+    override fun findExecutions(
+        page: PageRequest,
+        filterStatus: Set<ExecutionStatus>,
+        filterChangeSetId: String?
+    ): List<ExecutionReport> = emptyList()
+
+    override fun executionCount(): Int = changeSetTested.size
 
     override fun lock(executionId: String, changeSet: ChangeSet) {
         changeSetLocked.add(changeSet)

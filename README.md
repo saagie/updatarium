@@ -293,6 +293,10 @@ You'll find in the sample directory some examples to use Updatarium.
 
 A command line module to provide an all-in-one application a ship it into a Docker image ([saagie/updatarium](https://hub.docker.com/r/saagie/updatarium)))
 
+- ##### updatarium-admin-cli
+
+A command line module to help to administrate the persist engine. It can display the execution historics.
+
 ### Credits
 Logo : 
  - Made by [@pierreLeresteux](https://github.com/pierreLeresteux)

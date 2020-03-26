@@ -18,12 +18,16 @@
 package io.saagie.updatarium.persist
 
 import com.mongodb.ConnectionString
+import com.mongodb.client.model.Filters
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
 import io.saagie.updatarium.model.ChangeSet
+import io.saagie.updatarium.model.ExecutionReport
 import io.saagie.updatarium.model.ExecutionStatus
 import io.saagie.updatarium.model.ExecutionStatus.NOT_EXECUTED
 import io.saagie.updatarium.persist.model.MongoDbChangeSet
+import io.saagie.updatarium.persist.model.PageRequest
+import io.saagie.updatarium.persist.model.Sort
 import io.saagie.updatarium.persist.model.toMongoDbDocument
 import org.litote.kmongo.*
 import java.time.Instant
@@ -72,6 +76,36 @@ class MongodbPersistEngine(override val configuration: PersistConfig = PersistCo
                 ExecutionStatus.valueOf(doc.status)
             }
         }
+
+    override fun findExecutions(
+        page: PageRequest,
+        filterStatus: Set<ExecutionStatus>,
+        filterChangeSetId: String?
+    ): List<ExecutionReport> =
+        collection.find()
+            .filter (
+                if (filterChangeSetId == null)
+                    Filters.`in`("status", filterStatus)
+                else
+                    Filters.and(
+                        Filters.`in`("status", filterStatus),
+                        Filters.eq("changeSetId", filterChangeSetId)
+                    )
+            )
+            .sort(page.toSort())
+            .skip(page.skip)
+            .limit(page.size)
+            .mapTo(mutableListOf(), MongoDbChangeSet::toExecutionState)
+
+
+    private fun PageRequest.toSort() = when (this.order) {
+        Sort.ASC -> ascending(MongoDbChangeSet::statusDate)
+        Sort.DESC -> descending(MongoDbChangeSet::statusDate)
+    }
+
+    override fun executionCount(): Int =
+        collection.countDocuments().toInt()
+
 
     private fun logStatus(changeSetId: String, status: String) {
         when (status) {

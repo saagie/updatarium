@@ -18,8 +18,10 @@
 package io.saagie.updatarium.persist
 
 import io.saagie.updatarium.model.ChangeSet
+import io.saagie.updatarium.model.ExecutionReport
 import io.saagie.updatarium.model.ExecutionStatus
 import io.saagie.updatarium.model.ExecutionStatus.NOT_EXECUTED
+import io.saagie.updatarium.persist.model.PageRequest
 
 /**
  * This is a basic implementation of the PersistEngine.
@@ -38,6 +40,13 @@ class DefaultPersistEngine(
     }
 
     override fun findLatestExecutionStatus(changeSetId: String): ExecutionStatus = NOT_EXECUTED
+    override fun findExecutions(
+        page: PageRequest,
+        filterStatus: Set<ExecutionStatus>,
+        filterChangeSetId: String?
+    ): List<ExecutionReport> = emptyList()
+
+    override fun executionCount(): Int = 0
 
     override fun lock(executionId: String, changeSet: ChangeSet) {
         logger.info { "$executionId marked as ${ExecutionStatus.EXECUTE}" }

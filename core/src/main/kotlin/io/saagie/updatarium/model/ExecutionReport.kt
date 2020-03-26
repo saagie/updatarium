@@ -15,20 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-rootProject.name = "updatarium"
-include(":core")
-include(":persist-mongodb")
-include(":engine-bash")
-include(":engine-mongodb")
-include(":engine-kubernetes")
-include(":engine-httpclient")
-include(":samples:basic")
-include(":samples:basic-mongodbpersist")
-include(":samples:basic-multiplechangelog")
-include(":samples:basic-multiplechangelog-withtag")
-include(":samples:http")
-include(":samples:bash")
-include(":samples:mongodb")
-include(":samples:kubernetes")
-include(":updatarium-cli")
-include(":updatarium-admin-cli")
+package io.saagie.updatarium.model
+
+import java.time.Instant
+
+data class ExecutionReport(
+    val executionId: String,
+    val changeSetId: String,
+    val author: String,
+    val status: ExecutionStatus,
+    val statusDate: Instant,
+    val forced: Boolean = false
+)

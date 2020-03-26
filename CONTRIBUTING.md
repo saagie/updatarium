@@ -58,13 +58,19 @@ You need to create a new Kotlin project and just add the
 Now you can create your own implementation of `PersistEngine`.  
 
 
-`PersistEngine` interface contains four functions : 
+`PersistEngine` interface contains some functions : 
 
 ```$kotlin
    abstract fun checkConnection()
    abstract fun findLatestExecutionStatus(changeSetId: String): ExecutionStatus
    abstract fun lock(changeSet: ChangeSet)
    abstract fun unlock(changeSet: ChangeSet, status: ExecutionStatus, logs: List<String>)
+   abstract fun findExecutions(
+       page: PageRequest = PageRequest(),
+       filterStatus: Set<ExecutionStatus> = ExecutionStatus.values().toSet(),
+       filterChangeSetId: String? = null
+   ): List<ExecutionReport>
+   abstract fun executionCount(): Int
 ```
 
 Let's see in details each function : 
@@ -76,6 +82,11 @@ Let's see in details each function :
 - `lock(changeSet: ChangeSet)` is called just before execute the changeSet actions. You have to record the changeSet execution in your persistence engine (with an `ExecutionStatus.EXECUTE` status).
 
 - `unlock(changeSet: ChangeSet, status: ExecutionStatus, logs: List<String>)` is called at the end of actions execution for a changeSet. You have the correct status (`ExecutionStatus.OK` or `ExecutionStatus.FAIL`) and an ordered list containing all LogEvent captured during the execution of the changeSet, and you can update this new status to the changeSet record and store logs (if PersistConfig is set to not store logs, the list is empty)
+
+- `findExecutions(page: PageRequest, filterStatus: Set<ExecutionStatus>, filterChangeSetId: String)` 
+allows the administration cli to get the execution information to display them.
+
+- `executionCount()` is for the cli to administrate the change set executions.
 
 ## Code of Conduct
 

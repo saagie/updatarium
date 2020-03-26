@@ -18,10 +18,12 @@
 package io.saagie.updatarium.persist.model
 
 import io.saagie.updatarium.model.ChangeSet
+import io.saagie.updatarium.model.ExecutionReport
 import io.saagie.updatarium.model.ExecutionStatus
 import java.time.Instant
 
 data class MongoDbChangeSet(
+    val _id: String? = null,
     val changeSetId: String,
     val author: String,
     val status: String,
@@ -29,7 +31,21 @@ data class MongoDbChangeSet(
     val statusDate: Instant? = null,
     val force: Boolean = false,
     val log: List<String>
-)
+) {
+    fun toExecutionState() : ExecutionReport {
+        require(_id != null) {
+            "Id can't be null to be convert into execution state"
+        }
+        return ExecutionReport(
+            executionId = _id,
+            changeSetId = changeSetId,
+            author = author,
+            status = ExecutionStatus.valueOf(status),
+            forced = force,
+            statusDate = statusDate ?: lockDate
+        )
+    }
+}
 
 fun ChangeSet.toMongoDbDocument(executionId: String): MongoDbChangeSet = MongoDbChangeSet(
     changeSetId = executionId,
