@@ -133,14 +133,14 @@ class UpdatariumITest {
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                 .containsExactly(
-                    "${changelogPath.toAbsolutePath()}_ChangeSet-1",
-                    "${changelogWithTagPath.toAbsolutePath()}_ChangeSet-2"
+                    "${changelogPath.fileName}_ChangeSet-1",
+                    "${changelogWithTagPath.fileName}_ChangeSet-2"
                 )
             assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.executionId }
                 .containsExactly(
-                    "${changelogPath.toAbsolutePath()}_ChangeSet-1",
-                    "${changelogWithTagPath.toAbsolutePath()}_ChangeSet-2"
+                    "${changelogPath.fileName}_ChangeSet-1",
+                    "${changelogWithTagPath.fileName}_ChangeSet-2"
                 )
         }
 
@@ -158,11 +158,11 @@ class UpdatariumITest {
                 )
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(1)
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested).containsExactly(
-                "${changelogWithTagPath.toAbsolutePath()}_ChangeSet-2"
+                "${changelogWithTagPath.fileName}_ChangeSet-2"
             )
             assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.executionId }
-                .containsExactly("${changelogWithTagPath.toAbsolutePath()}_ChangeSet-2")
+                .containsExactly("${changelogWithTagPath.fileName}_ChangeSet-2")
         }
     }
 
@@ -234,14 +234,14 @@ class UpdatariumITest {
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                 .containsExactly(
-                    "${changelogPath.toAbsolutePath()}_ChangeSet-1",
-                    "${changelogWithTagPath.toAbsolutePath()}_ChangeSet-2"
+                    "${changelogPath.fileName}_ChangeSet-1",
+                    "${changelogWithTagPath.fileName}_ChangeSet-2"
                 )
             assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.executionId }
                 .containsExactly(
-                    "${changelogPath.toAbsolutePath()}_ChangeSet-1",
-                    "${changelogWithTagPath.toAbsolutePath()}_ChangeSet-2"
+                    "${changelogPath.fileName}_ChangeSet-1",
+                    "${changelogWithTagPath.fileName}_ChangeSet-2"
                 )
         }
         // With tags supplied
@@ -255,11 +255,11 @@ class UpdatariumITest {
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(1)
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                 .containsExactly(
-                    "${changelogWithTagPath.toAbsolutePath()}_ChangeSet-2"
+                    "${changelogWithTagPath.fileName}_ChangeSet-2"
                 )
             assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                 .extracting { it.executionId }
-                .containsExactly("${changelogWithTagPath.toAbsolutePath()}_ChangeSet-2")
+                .containsExactly("${changelogWithTagPath.fileName}_ChangeSet-2")
         }
     }
 
@@ -347,14 +347,14 @@ class UpdatariumITest {
                     assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
                     assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                         .containsExactly(
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-1",
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2"
+                            "${failedChangelogPath.fileName}_ChangeSet-1",
+                            "${failedChangelogPath.fileName}_ChangeSet-2"
                         )
                     assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                         .extracting { "${it.executionId}-${it.status.name}" }
                         .containsExactly(
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-1-OK",
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2-FAIL"
+                            "${failedChangelogPath.fileName}_ChangeSet-1-OK",
+                            "${failedChangelogPath.fileName}_ChangeSet-2-FAIL"
                         )
                 }
             }
@@ -372,16 +372,16 @@ class UpdatariumITest {
                     assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(3)
                     assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                         .containsExactly(
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-1",
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2",
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-3"
+                            "${failedChangelogPath.fileName}_ChangeSet-1",
+                            "${failedChangelogPath.fileName}_ChangeSet-2",
+                            "${failedChangelogPath.fileName}_ChangeSet-3"
                         )
                     assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                         .extracting { "${it.executionId}-${it.status.name}" }
                         .containsExactly(
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-1-OK",
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2-FAIL",
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-3-OK"
+                            "${failedChangelogPath.fileName}_ChangeSet-1-OK",
+                            "${failedChangelogPath.fileName}_ChangeSet-2-FAIL",
+                            "${failedChangelogPath.fileName}_ChangeSet-3-OK"
                         )
                 }
             }
@@ -396,14 +396,14 @@ class UpdatariumITest {
                     assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
                     assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                         .containsExactly(
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-1",
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2"
+                            "${failedChangelogPath.fileName}_ChangeSet-1",
+                            "${failedChangelogPath.fileName}_ChangeSet-2"
                         )
                     assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                         .extracting { "${it.executionId}-${it.status.name}" }
                         .containsExactly(
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-1-OK",
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2-FAIL"
+                            "${failedChangelogPath.fileName}_ChangeSet-1-OK",
+                            "${failedChangelogPath.fileName}_ChangeSet-2-FAIL"
                         )
                 }
             }
@@ -418,16 +418,16 @@ class UpdatariumITest {
                     assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(3)
                     assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                         .containsExactly(
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-1",
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2",
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-3"
+                            "${failedChangelogPath.fileName}_ChangeSet-1",
+                            "${failedChangelogPath.fileName}_ChangeSet-2",
+                            "${failedChangelogPath.fileName}_ChangeSet-3"
                         )
                     assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                         .extracting { "${it.executionId}-${it.status.name}" }
                         .containsExactly(
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-1-OK",
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-2-FAIL",
-                            "${failedChangelogPath.toAbsolutePath()}_ChangeSet-3-OK"
+                            "${failedChangelogPath.fileName}_ChangeSet-1-OK",
+                            "${failedChangelogPath.fileName}_ChangeSet-2-FAIL",
+                            "${failedChangelogPath.fileName}_ChangeSet-3-OK"
                         )
                 }
             }
@@ -453,13 +453,13 @@ class UpdatariumITest {
                 assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2)
                 assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                     .containsExactly(
-                        "${changelogPath01.toAbsolutePath()}_ChangeSet-1",
-                        "${changelogWithTagPath02.toAbsolutePath()}_ChangeSet-2"
+                        "${changelogPath01.fileName}_ChangeSet-1",
+                        "${changelogWithTagPath02.fileName}_ChangeSet-2"
                     )
                 assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked.map { it.executionId })
                     .containsExactly(
-                        "${changelogPath01.toAbsolutePath()}_ChangeSet-1",
-                        "${changelogWithTagPath02.toAbsolutePath()}_ChangeSet-2"
+                        "${changelogPath01.fileName}_ChangeSet-1",
+                        "${changelogWithTagPath02.fileName}_ChangeSet-2"
                     )
             }
 
@@ -472,11 +472,11 @@ class UpdatariumITest {
                 assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(1)
                 assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                     .containsExactly(
-                        "${changelogPath01.toAbsolutePath()}_ChangeSet-1"
+                        "${changelogPath01.fileName}_ChangeSet-1"
                     )
                 assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
                     .extracting { it.executionId }
-                    .containsExactly("${changelogPath01.toAbsolutePath()}_ChangeSet-1")
+                    .containsExactly("${changelogPath01.fileName}_ChangeSet-1")
             }
         }
 

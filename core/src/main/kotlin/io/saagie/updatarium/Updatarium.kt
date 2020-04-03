@@ -50,11 +50,11 @@ class Updatarium(val configuration: UpdatariumConfiguration = UpdatariumConfigur
     }
 
     fun executeChangeLog(path: Path, tags: List<String> = emptyList()) {
-        executeChangeLog(Files.newBufferedReader(path), tags, path.toAbsolutePath().toString())
+        executeChangeLog(Files.newBufferedReader(path), tags, path.fileName.toString())
     }
 
     fun executeChangeLog(path: Path, tag: String) {
-        executeChangeLog(Files.newBufferedReader(path), listOf(tag), path.toAbsolutePath().toString())
+        executeChangeLog(Files.newBufferedReader(path), listOf(tag), path.fileName.toString())
     }
 
     fun executeChangeLog(script: String, tag: String) {

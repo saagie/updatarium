@@ -30,7 +30,7 @@ application {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("com.github.ajalt:clikt:2.4.0")
+    implementation("com.github.ajalt:clikt:2.6.0")
     // Updatarium deps
     implementation(project(":core"))
     implementation(project(":persist-mongodb"))
@@ -39,6 +39,6 @@ dependencies {
     implementation(project(":engine-kubernetes"))
     implementation(project(":engine-httpclient"))
     // Logs
-    implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.13.0")
-    implementation("org.apache.logging.log4j:log4j-core:2.13.0")
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.13.1")
+    implementation("org.apache.logging.log4j:log4j-core:2.13.1")
 }
