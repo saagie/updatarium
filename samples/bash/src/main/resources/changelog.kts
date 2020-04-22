@@ -30,6 +30,6 @@ changeLog {
                     export | grep " PWD"
                 """.trimIndent()
         }
-        bashAction(workingDir = "/tmp", file = File(Main::class.java.getResource("pwet.sh").toURI()))
+        bashAction(File(Main::class.java.getResource("pwet.sh").toURI()))
     }
 }

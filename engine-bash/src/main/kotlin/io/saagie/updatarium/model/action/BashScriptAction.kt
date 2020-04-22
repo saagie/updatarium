@@ -38,9 +38,9 @@ fun ChangeSetDsl.bashAction(
 }
 
 fun ChangeSetDsl.bashAction(
+    file: File,
     workingDir: String = ".",
-    timeout: Duration = Duration.ofMinutes(1),
-    file: File
+    timeout: Duration = Duration.ofMinutes(1)
 ) {
     bashAction(workingDir, timeout) { file.readText() }
 }
