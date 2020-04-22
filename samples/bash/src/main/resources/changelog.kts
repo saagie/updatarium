@@ -18,8 +18,6 @@
 import io.saagie.updatarium.model.action.bashAction
 import io.saagie.updatarium.model.changeLog
 import java.io.File
-import java.nio.file.Paths
-import kotlin.script.experimental.jvm.impl.getResourcePathForClass
 
 changeLog {
     changeSet(id = "ChangeSet-bash-1", author = "Bash") {
