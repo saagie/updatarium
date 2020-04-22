@@ -28,6 +28,6 @@ changeLog {
                     export | grep " PWD"
                 """.trimIndent()
         }
-        bashAction(File(Main::class.java.getResource("pwet.sh").toURI()))
+        bashAction(File(Main::class.java.getResource("pwet.sh").file))
     }
 }
