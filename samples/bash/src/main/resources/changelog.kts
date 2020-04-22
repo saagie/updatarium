@@ -17,6 +17,9 @@
  */
 import io.saagie.updatarium.model.action.bashAction
 import io.saagie.updatarium.model.changeLog
+import java.io.File
+import java.nio.file.Paths
+import kotlin.script.experimental.jvm.impl.getResourcePathForClass
 
 changeLog {
     changeSet(id = "ChangeSet-bash-1", author = "Bash") {
@@ -27,5 +30,6 @@ changeLog {
                     export | grep " PWD"
                 """.trimIndent()
         }
+        bashAction(workingDir = "/tmp", file = File(Main::class.java.getResource("pwet.sh").toURI()))
     }
 }

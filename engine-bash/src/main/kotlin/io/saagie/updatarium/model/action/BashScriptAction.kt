@@ -19,8 +19,9 @@ package io.saagie.updatarium.model.action
 
 import io.saagie.updatarium.engine.bash.BashEngine
 import io.saagie.updatarium.model.ChangeSetDsl
-import java.time.Duration
 import mu.KotlinLogging
+import java.io.File
+import java.time.Duration
 
 fun ChangeSetDsl.bashAction(
     workingDir: String = ".",
@@ -34,6 +35,14 @@ fun ChangeSetDsl.bashAction(
 
         bashEngine.runCommand(script, workingDir, timeout)
     }
+}
+
+fun ChangeSetDsl.bashAction(
+    workingDir: String = ".",
+    timeout: Duration = Duration.ofMinutes(1),
+    file: File
+) {
+    bashAction(workingDir, timeout) { file.readText() }
 }
 
 class BashActionDsl {
