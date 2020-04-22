@@ -29,6 +29,8 @@ import org.litote.kmongo.*
 import java.time.Instant
 
 const val MONGODB_PERSIST_CONNECTIONSTRING = "MONGODB_PERSIST_CONNECTIONSTRING"
+const val MONGODB_PERSIST_DATABASE = "MONGODB_PERSIST_DATABASE"
+const val MONGODB_PERSIST_CHANGESET_COLLECTION = "MONGODB_PERSIST_CHANGESET_COLLECTION"
 const val DATABASE = "Updatarium"
 const val COLLECTION = "changeset"
 
@@ -36,21 +38,22 @@ class MongodbPersistEngine(override val configuration: PersistConfig = PersistCo
 
     private val collection by lazy {
         with(KMongo.createClient(ConnectionString(getConnectionString()))) {
-            this.getDatabase(DATABASE).getCollection<MongoDbChangeSet>(COLLECTION).apply {
-                this.createIndex(
-                    Indexes.ascending("changeSetId"),
-                    IndexOptions().name("changeSetId_1")
+            this.getDatabase(System.getenv().getOrDefault(MONGODB_PERSIST_DATABASE, DATABASE))
+                .getCollection<MongoDbChangeSet>(
+                    System.getenv().getOrDefault(MONGODB_PERSIST_CHANGESET_COLLECTION, COLLECTION)
                 )
-            }
+                .apply {
+                    this.createIndex(
+                        Indexes.ascending("changeSetId"),
+                        IndexOptions().name("changeSetId_1")
+                    )
+                }
         }
     }
 
-    private fun getConnectionString(): String {
-        if (System.getenv().containsKey(MONGODB_PERSIST_CONNECTIONSTRING)) {
-            return System.getenv(MONGODB_PERSIST_CONNECTIONSTRING)
-        }
-        throw IllegalArgumentException("$MONGODB_PERSIST_CONNECTIONSTRING is missing (environment variable)")
-    }
+    private fun getConnectionString(): String =
+        System.getenv(MONGODB_PERSIST_CONNECTIONSTRING)
+            ?: throw IllegalArgumentException("$MONGODB_PERSIST_CONNECTIONSTRING is missing (environment variable)")
 
     override fun checkConnection() {
         logger.info { "CheckConnection ... " }
@@ -84,7 +87,7 @@ class MongodbPersistEngine(override val configuration: PersistConfig = PersistCo
         }
     }
 
-    private fun getLastRecordedChangeSet(changeSetId: String) : MongoDbChangeSet? =
+    private fun getLastRecordedChangeSet(changeSetId: String): MongoDbChangeSet? =
         collection.find(MongoDbChangeSet::changeSetId eq changeSetId)
             .sort(descending(MongoDbChangeSet::statusDate))
             .first()
