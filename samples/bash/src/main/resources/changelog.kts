@@ -17,6 +17,7 @@
  */
 import io.saagie.updatarium.model.action.bashAction
 import io.saagie.updatarium.model.changeLog
+import java.io.File
 
 changeLog {
     changeSet(id = "ChangeSet-bash-1", author = "Bash") {
@@ -27,5 +28,6 @@ changeLog {
                     export | grep " PWD"
                 """.trimIndent()
         }
+        bashAction(File(Main::class.java.getResource("pwet.sh").file))
     }
 }
