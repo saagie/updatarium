@@ -151,7 +151,8 @@ class ChangeSetTest {
         assertThat(changedSetForcedUnlocked.status).isEqualTo(ExecutionStatus.OK)
 
         assertThat(changeSetsUnLocked.count { it.changeSet == changeSet }).isEqualTo(1) // Run once
-        assertThat(changeSetsUnLocked.count { it.changeSet == changeSetForced }).isEqualTo(2) // Run twice as it is forced
+        assertThat(changeSetsUnLocked.count { it.changeSet == changeSetForced })
+            .isEqualTo(2) // Run twice as it is forced
     }
 
     @Test

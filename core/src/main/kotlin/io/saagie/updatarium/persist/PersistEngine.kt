@@ -70,7 +70,12 @@ abstract class PersistEngine(open val configuration: PersistConfig) {
     /**
      * This function is called after the changeSet execution, so you can now update the changeSet status (in the parameter) and store the logs.
      */
-    protected abstract fun unlock(executionId: String, changeSet: ChangeSet, status: ExecutionStatus, logs: List<String>)
+    protected abstract fun unlock(
+        executionId: String,
+        changeSet: ChangeSet,
+        status: ExecutionStatus,
+        logs: List<String>
+    )
 
     /**
      * Run changeSet code, and possibly lock the changeSet before

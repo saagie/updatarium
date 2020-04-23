@@ -309,7 +309,11 @@ class UpdatariumITest {
                     changeLog(id = "Plop") {
                         changeSet(id = "ChangeSet-1", author = "Hello World") {
                             force = false // by default
-                            action { logger.info { "This ChangeSet-1 must not be run as it is already run and not forced" } }
+                            action {
+                                logger.info {
+                                    "This ChangeSet-1 must not be run as it is already run and not forced"
+                                }
+                            }
                         }
                     }
                 )
@@ -323,7 +327,8 @@ class UpdatariumITest {
                         }
                     }
                 )
-            assertThat((this.persistEngine as TestPersistEngine).changeSetTested).hasSize(2) // Third time is not tested (forced)
+            assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
+                .hasSize(2) // Third time is not tested (forced)
             assertThat((this.persistEngine as TestPersistEngine).changeSetTested)
                 .containsExactly("Plop_ChangeSet-1", "Plop_ChangeSet-1")
             assertThat((this.persistEngine as TestPersistEngine).changeSetUnLocked)
