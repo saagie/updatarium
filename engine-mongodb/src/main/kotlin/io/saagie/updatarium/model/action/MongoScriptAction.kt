@@ -27,7 +27,7 @@ fun ChangeSetDsl.mongoAction(
     connectionStringEnvVar: String = MONGODB_CONNECTIONSTRING,
     block: MongoScriptActionDsl.() -> Unit
 ) {
-    this.action { MongoScriptActionDsl(connectionStringEnvVar).block() }
+    this.action(name = "mongoAction") { MongoScriptActionDsl(connectionStringEnvVar).block() }
 }
 
 class MongoScriptActionDsl(connectionStringEnvVar: String = MONGODB_CONNECTIONSTRING) {

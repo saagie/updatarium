@@ -25,7 +25,7 @@ fun ChangeSetDsl.kubernetesAction(
     namespace: String? = null,
     block: KubernetesScriptActionDsl.() -> Unit
 ) {
-    this.action {
+    this.action(name = "kubernetesAction") {
         KubernetesScriptActionDsl(namespace).block()
     }
 }

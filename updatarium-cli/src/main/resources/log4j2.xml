@@ -21,15 +21,14 @@
 <Configuration name="LogConfig" status="error">
     <Appenders>
         <Console name="STDOUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%-5p] %c{1}:%-3L - %m%n"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%highlight{%-5p}] %c{1}:%-3L - %m%n" />
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="info">
+        <Root level="TRACE">
             <AppenderRef ref="STDOUT"/>
         </Root>
-        <Logger name="org.mongodb" level="warn">
-            <AppenderRef ref="STDOUT"/>
-        </Logger>
+        <Logger name="org.mongodb" level="WARN"/>
     </Loggers>
 </Configuration>
+

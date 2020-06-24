@@ -53,8 +53,9 @@ data class ChangeSet(
         configuration: UpdatariumConfiguration = UpdatariumConfiguration()
     ): List<ChangeSetError> {
         val executionId = computeId(changeLogId)
+        logger.info {">> Executing #$executionId $this ..." }
         return if (mustRun(executionId, configuration)) {
-            logger.info { "$executionId will be executed" }
+            logger.info { "#$executionId will be executed" }
             val maybeError = with(configuration.persistEngine) {
                 runWithPersistEngine(executionId, lock = !configuration.dryRun) {
                     this.actions.forEach {
@@ -66,11 +67,16 @@ data class ChangeSet(
                     }
                 }
             }
-            maybeError?.let { error ->
-                listOf(ChangeSetError(this, error))
-            } ?: emptyList()
+
+            if (maybeError == null) {
+                logger.info { "<< #$executionId executed without error." }
+                emptyList()
+            } else {
+                logger.info { "<< #$executionId executed with an error: ${maybeError.message}" }
+                listOf(ChangeSetError(this, maybeError))
+            }
         } else {
-            logger.info { "$executionId already executed" }
+            logger.info { "<< #$executionId already executed." }
             emptyList()
         }
     }

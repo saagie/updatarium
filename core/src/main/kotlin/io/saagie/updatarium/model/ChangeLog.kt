@@ -33,6 +33,7 @@ data class ChangeLog(val id: String = "", val changeSets: List<ChangeSet> = empt
         configuration: UpdatariumConfiguration,
         tags: List<String> = emptyList()
     ): ChangeLogReport {
+        logger.info {"> Executing $this ..." }
         configuration.persistEngine.checkConnection()
         InMemoryAppenderManager.setup(persistConfig = configuration.persistEngine.configuration)
 
@@ -42,6 +43,7 @@ data class ChangeLog(val id: String = "", val changeSets: List<ChangeSet> = empt
             }
         }
         InMemoryAppenderManager.tearDown()
+        logger.info {"< Execution $this done." }
         return state.report
     }
 

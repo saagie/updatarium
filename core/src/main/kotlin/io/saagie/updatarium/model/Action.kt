@@ -33,11 +33,14 @@ interface Action {
 
     companion object {
 
-        operator fun invoke(block: () -> Unit): Action =
+        operator fun invoke(name: String = "Action", block: () -> Unit): Action =
             object : Action {
                 override fun execute() {
                     block()
                 }
+
+                override fun toString(): String =
+                    name
             }
     }
 }

@@ -114,7 +114,7 @@ class ChangeSetDsl(val id: String, val author: String) {
 class ActionDsl(val name: String, val block: ActionDsl.() -> Unit) {
     val logger = KotlinLogging.logger(name)
 
-    internal fun build(): Action = Action {
+    internal fun build(): Action = Action(name) {
         block()
     }
 }

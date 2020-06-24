@@ -20,6 +20,7 @@ package io.saagie.updatarium
 import de.swirtz.ktsrunner.objectloader.KtsObjectLoader
 import io.saagie.updatarium.config.UpdatariumConfiguration
 import io.saagie.updatarium.model.ChangeLog
+import io.saagie.updatarium.model.Tag
 import io.saagie.updatarium.model.UpdatariumError
 import java.io.Reader
 import java.nio.file.Files
@@ -37,23 +38,28 @@ class Updatarium(val configuration: UpdatariumConfiguration = UpdatariumConfigur
     private val logger = KotlinLogging.logger {}
     private val ktsLoader = KtsObjectLoader()
 
-    fun executeChangeLog(reader: Reader, tags: List<String> = emptyList()) {
+    private fun List<Tag>.info(): String =
+        this.joinToString(" ") { "@$it" }
+
+    fun executeChangeLog(reader: Reader, tags: List<Tag> = emptyList()) {
         executeScript(reader.readText(), tags)
     }
 
-    fun executeChangeLog(script: String, tags: List<String> = emptyList()) {
+    fun executeChangeLog(script: String, tags: List<Tag> = emptyList()) {
         executeScript(script, tags)
     }
 
-    fun executeChangeLog(reader: Reader, tag: String) {
-        this.executeChangeLog(reader, listOf(tag))
+    fun executeChangeLog(reader: Reader, tag: Tag) {
+        executeChangeLog(reader, listOf(tag))
     }
 
-    fun executeChangeLog(path: Path, tags: List<String> = emptyList()) {
+    fun executeChangeLog(path: Path, tags: List<Tag> = emptyList()) {
+        logger.debug {"Running script: ${path.toAbsolutePath()} ${tags.info()}" }
         executeChangeLog(Files.newBufferedReader(path), tags, path.fileName.toString())
     }
 
     fun executeChangeLog(path: Path, tag: String) {
+        logger.debug {"Running script: ${path.toAbsolutePath()} ${listOf(tag).info()}" }
         executeChangeLog(Files.newBufferedReader(path), listOf(tag), path.fileName.toString())
     }
 
@@ -62,6 +68,7 @@ class Updatarium(val configuration: UpdatariumConfiguration = UpdatariumConfigur
     }
 
     fun executeChangeLogs(path: Path, pattern: String, tag: String) {
+        logger.debug {"Running all scripts in ${path.toAbsolutePath()} matching pattern '$pattern' ${listOf(tag).info()}" }
         executeChangeLogs(path, pattern, listOf(tag))
     }
 
@@ -101,9 +108,7 @@ class Updatarium(val configuration: UpdatariumConfiguration = UpdatariumConfigur
 
     internal fun generateMaxDepth(): Int =
         when {
-            configuration.listFilesRecursively -> {
-                Int.MAX_VALUE
-            }
+            configuration.listFilesRecursively -> Int.MAX_VALUE
             else -> 1
         }
 
@@ -116,13 +121,19 @@ class Updatarium(val configuration: UpdatariumConfiguration = UpdatariumConfigur
     }
 
     private fun executeChangeLog(reader: Reader, tags: List<String>, id: String) {
-        val changeLog = ktsLoader.load<ChangeLog>(reader).let { loaded ->
+        val script = reader.readText()
+        logger.debug {"Running script #$id ${tags.info()}" }
+        logger.trace { script.prependIndent("  ") }
+
+        val changeLog = ktsLoader.load<ChangeLog>(script).let { loaded ->
             if (loaded.id.isEmpty()) loaded.copy(id = id) else loaded
         }
         executeChangeLog(changeLog, tags)
     }
 
     private fun executeScript(script: String, tags: List<String>) {
+        logger.debug {"Running script: ${tags.info()}" }
+        logger.trace { script.prependIndent("  ") }
         val changeLog = ktsLoader.load<ChangeLog>(script)
         executeChangeLog(changeLog, tags)
     }
