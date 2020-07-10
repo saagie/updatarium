@@ -1,3 +1,5 @@
+import org.gradle.api.internal.plugins.DefaultTemplateBasedStartScriptGenerator
+
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -28,6 +30,11 @@ application {
     mainClassName = "io.saagie.updatarium.cli.StandaloneKt"
 }
 
+tasks.withType(CreateStartScripts::class.java){
+    (unixStartScriptGenerator as DefaultTemplateBasedStartScriptGenerator).template = resources.text.fromFile("./template/customUnixStartScript.tpl")
+
+}
+
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("com.github.ajalt:clikt:2.6.0")
@@ -42,3 +49,4 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.13.1")
     implementation("org.apache.logging.log4j:log4j-core:2.13.1")
 }
+
