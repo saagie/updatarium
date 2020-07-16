@@ -34,6 +34,7 @@ class BashEngine(private val logger: KLogger) {
             .directory(File(workingDir))
             .redirectOutput(Redirect.PIPE)
             .redirectError(Redirect.PIPE)
+            .redirectErrorStream(true)
             .start().apply { waitFor(timeout.toMillis(), MILLISECONDS) }
 
         val out = proc.inputStream.bufferedReader().readText()
