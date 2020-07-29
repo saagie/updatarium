@@ -26,15 +26,17 @@ fun ChangeSetDsl.kubernetesAction(
     block: KubernetesScriptActionDsl.() -> Unit
 ) {
     this.action {
-        KubernetesScriptActionDsl(namespace).block()
+        val actionDsl = KubernetesScriptActionDsl(namespace)
+        try {
+            actionDsl.block()
+        } finally {
+            actionDsl.client.close()
+        }
     }
 }
 
 class KubernetesScriptActionDsl(namespace: String? = null) {
     val logger = KotlinLogging.logger("kubernetesAction")
 
-    val client = when {
-        namespace != null -> KubernetesEngine.getClient(namespace)
-        else -> KubernetesEngine.getClient()
-    }
+    val client = KubernetesEngine.getClient(namespace)
 }
