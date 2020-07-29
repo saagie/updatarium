@@ -23,14 +23,12 @@ import org.litote.kmongo.KMongo
 
 class MongoEngine(private val connectionStringEnvVar: String) {
 
-    val mongoClient by lazy { KMongo.createClient(ConnectionString(getConnectionString())) }
-
-    private fun getConnectionString(): String {
-        if (System.getenv().containsKey(connectionStringEnvVar)) {
-            return System.getenv(connectionStringEnvVar)
-        }
-        throw IllegalArgumentException("$connectionStringEnvVar is missing (environment variable)")
+    val mongoClient by lazy {
+        val connectionString = System.getenv(connectionStringEnvVar)
+            ?: throw IllegalArgumentException("$connectionStringEnvVar is missing (environment variable)")
+        KMongo.createClient(ConnectionString(connectionString))
     }
 
-    fun listDatabase(): MongoIterable<String> = mongoClient.listDatabaseNames()
+    fun listDatabase(): MongoIterable<String> =
+        mongoClient.listDatabaseNames()
 }

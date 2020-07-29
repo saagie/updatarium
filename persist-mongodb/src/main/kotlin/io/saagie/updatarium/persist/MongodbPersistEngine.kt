@@ -18,6 +18,7 @@
 package io.saagie.updatarium.persist
 
 import com.mongodb.ConnectionString
+import com.mongodb.MongoClient
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
 import io.saagie.updatarium.model.ChangeSet
@@ -36,8 +37,12 @@ const val COLLECTION = "changeset"
 
 class MongodbPersistEngine(override val configuration: PersistConfig = PersistConfig()) : PersistEngine(configuration) {
 
+    private val client: MongoClient by lazy {
+        KMongo.createClient(ConnectionString(getConnectionString()))
+    }
+
     private val collection by lazy {
-        with(KMongo.createClient(ConnectionString(getConnectionString()))) {
+        with(client) {
             this.getDatabase(System.getenv().getOrDefault(MONGODB_PERSIST_DATABASE, DATABASE))
                 .getCollection<MongoDbChangeSet>(
                     System.getenv().getOrDefault(MONGODB_PERSIST_CHANGESET_COLLECTION, COLLECTION)
@@ -106,5 +111,7 @@ class MongodbPersistEngine(override val configuration: PersistConfig = PersistCo
             )
         )
         logger.info { "$executionId marked as $status" }
+        // Cleanup resources
+        this.client.close()
     }
 }
