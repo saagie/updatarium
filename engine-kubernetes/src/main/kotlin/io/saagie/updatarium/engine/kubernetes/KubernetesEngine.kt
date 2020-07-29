@@ -18,8 +18,12 @@
 package io.saagie.updatarium.engine.kubernetes
 
 import io.fabric8.kubernetes.client.DefaultKubernetesClient
+import io.fabric8.kubernetes.client.NamespacedKubernetesClient
 
 object KubernetesEngine {
-    fun getClient() = DefaultKubernetesClient()
-    fun getClient(namespace: String) = getClient().inNamespace(namespace)
+
+    fun getClient(namespace: String? = null): NamespacedKubernetesClient {
+        val client = DefaultKubernetesClient()
+        return if (namespace != null) client.inNamespace(namespace) else client
+    }
 }
