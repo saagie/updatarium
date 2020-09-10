@@ -25,7 +25,10 @@ import io.saagie.updatarium.model.ExecutionStatus
 import io.saagie.updatarium.model.ExecutionStatus.NOT_EXECUTED
 import io.saagie.updatarium.persist.model.MongoDbChangeSet
 import io.saagie.updatarium.persist.model.toMongoDbDocument
-import org.litote.kmongo.*
+import org.litote.kmongo.KMongo
+import org.litote.kmongo.descending
+import org.litote.kmongo.eq
+import org.litote.kmongo.getCollection
 import java.time.Instant
 
 const val MONGODB_PERSIST_CONNECTIONSTRING = "MONGODB_PERSIST_CONNECTIONSTRING"
@@ -76,13 +79,22 @@ class MongodbPersistEngine(override val configuration: PersistConfig = PersistCo
     private fun logStatus(changeSetId: String, status: String) {
         when (status) {
             ExecutionStatus.OK.name -> {
-                logger.info { "$changeSetId already executed : OK" }
+                logger.info { "$changeSetId already executed: OK" }
             }
             ExecutionStatus.EXECUTE.name -> {
-                logger.info { "$changeSetId already in progress ?" }
+                logger.info { "$changeSetId already in progress?" }
+            }
+            ExecutionStatus.RETRY.name -> {
+                logger.info { "$changeSetId was marked as: RETRY" }
+            }
+            ExecutionStatus.MANUAL_OK.name -> {
+                logger.info { "$changeSetId was marked as: OK (manually)" }
+            }
+            ExecutionStatus.FAIL.name -> {
+                logger.warn { "$changeSetId was already executed in error" }
             }
             else -> {
-                logger.warn { "$changeSetId was already executed in error" }
+                logger.info { "$changeSetId has an the status: $status" }
             }
         }
     }

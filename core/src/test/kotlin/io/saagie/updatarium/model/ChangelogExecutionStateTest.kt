@@ -63,7 +63,7 @@ class ChangelogExecutionStateTest {
         }
 
         @Test
-        fun `should gather all issues throwed without fail fast`() {
+        fun `should gather all issues thrown without fail fast`() {
             val counter = AtomicInteger(0)
 
             val result = (1..count).fold(ChangelogExecutionState()) { acc, _ ->

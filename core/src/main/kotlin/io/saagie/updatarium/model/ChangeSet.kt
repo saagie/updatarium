@@ -18,8 +18,12 @@
 package io.saagie.updatarium.model
 
 import io.saagie.updatarium.config.UpdatariumConfiguration
+import io.saagie.updatarium.model.ExecutionStatus.EXECUTE
 import io.saagie.updatarium.model.ExecutionStatus.FAIL
+import io.saagie.updatarium.model.ExecutionStatus.MANUAL_OK
 import io.saagie.updatarium.model.ExecutionStatus.NOT_EXECUTED
+import io.saagie.updatarium.model.ExecutionStatus.OK
+import io.saagie.updatarium.model.ExecutionStatus.RETRY
 import io.saagie.updatarium.model.UpdatariumError.ChangeSetError
 import mu.KLoggable
 
@@ -79,15 +83,16 @@ data class ChangeSet(
      * Check if the change set must be run, either because it is mark as 'force' through its parameters or
      * because it has not been already executed.
      **/
-    private fun mustRun(executionId: String, configuration: UpdatariumConfiguration): Boolean =
+    internal fun mustRun(executionId: String, configuration: UpdatariumConfiguration): Boolean =
         if (force) {
             logger.warn { "$executionId marked as forced. Will be executed" }
             true
         } else {
             when (configuration.persistEngine.findLatestExecutionStatus(executionId)) {
-                NOT_EXECUTED -> true
+                OK, MANUAL_OK -> false
+                EXECUTE -> false
+                NOT_EXECUTED, RETRY -> true
                 FAIL -> throw UpdatariumError.AlreadyExecutedAndInError(executionId)
-                else -> false
             }
         }
 }
