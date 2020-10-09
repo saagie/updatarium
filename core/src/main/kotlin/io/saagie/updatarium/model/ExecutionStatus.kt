@@ -28,5 +28,9 @@ enum class ExecutionStatus {
     // Execution is done with a correct status
     OK,
     // Execution is done but it has failed
-    FAIL
+    FAIL,
+    // Previous FAILED execution was consider as OK manually
+    MANUAL_OK,
+    // Previous FAILED execution needs to be execute again
+    RETRY
 }
