@@ -43,6 +43,7 @@ dependencies {
     implementation(project(":persist-mongodb"))
     implementation(project(":engine-bash"))
     implementation(project(":engine-mongodb"))
+    implementation(project(":engine-mysql"))
     implementation(project(":engine-kubernetes"))
     implementation(project(":engine-httpclient"))
     // Logs

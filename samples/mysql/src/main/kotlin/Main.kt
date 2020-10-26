@@ -1,3 +1,5 @@
+import io.saagie.updatarium.Updatarium
+
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,21 +17,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-rootProject.name = "updatarium"
-include(":core")
-include(":persist-mongodb")
-include(":engine-bash")
-include(":engine-mongodb")
-include(":engine-mysql")
-include(":engine-kubernetes")
-include(":engine-httpclient")
-include(":samples:basic")
-include(":samples:basic-mongodbpersist")
-include(":samples:basic-multiplechangelog")
-include(":samples:basic-multiplechangelog-withtag")
-include(":samples:http")
-include(":samples:bash")
-include(":samples:mongodb")
-include(":samples:mysql")
-include(":samples:kubernetes")
-include(":updatarium-cli")
+class Main
+
+fun main() {
+    Updatarium().executeChangeLog(Main::class.java.getResource("changelog.kts").readText())
+}
