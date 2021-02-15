@@ -17,9 +17,11 @@
  */
 package io.saagie.updatarium.model.action
 
+import com.mongodb.client.MongoCollection
 import io.saagie.updatarium.engine.mongo.MongoEngine
 import io.saagie.updatarium.model.ChangeSetDsl
 import mu.KotlinLogging
+import org.bson.Document
 
 const val MONGODB_CONNECTIONSTRING = "MONGODB_CONNECTIONSTRING"
 
@@ -27,7 +29,14 @@ fun ChangeSetDsl.mongoAction(
     connectionStringEnvVar: String = MONGODB_CONNECTIONSTRING,
     block: MongoScriptActionDsl.() -> Unit
 ) {
-    this.action { MongoScriptActionDsl(connectionStringEnvVar).block() }
+    this.action {
+        val actionDsl = MongoScriptActionDsl(connectionStringEnvVar)
+        try {
+            actionDsl.block()
+        } finally {
+            actionDsl.mongoClient.close();
+        }
+    }
 }
 
 class MongoScriptActionDsl(connectionStringEnvVar: String = MONGODB_CONNECTIONSTRING) {
@@ -35,11 +44,11 @@ class MongoScriptActionDsl(connectionStringEnvVar: String = MONGODB_CONNECTIONST
     val mongoEngine = MongoEngine(connectionStringEnvVar)
     val mongoClient = mongoEngine.mongoClient
 
-    fun onCollection(databaseName: String, collectionName: String) =
+    fun onCollection(databaseName: String, collectionName: String): MongoCollection<Document> =
         mongoClient.getDatabase(databaseName).getCollection(collectionName)
 
     fun onCollections(databaseNameRegex: Regex, collectionName: String) =
-        mongoClient.listDatabaseNames().filter { it.matches(databaseNameRegex) }.map {
-            mongoClient.getDatabase(it).getCollection(collectionName)
-        }
+        mongoClient.listDatabaseNames()
+            .filter { it.matches(databaseNameRegex) }
+            .map { mongoClient.getDatabase(it).getCollection(collectionName) }
 }

@@ -52,6 +52,9 @@ abstract class PersistEngine(open val configuration: PersistConfig) {
 
     /**
      * This function is called after the changeSet execution, so you can now update the changeSet status (in the parameter) and store the logs.
+     *
+     * Your persist engine may use resources that should be close after the process,
+     * in that case, you need to cleanup theses resources in this method
      */
     protected abstract fun unlock(executionId: String, changeSet: ChangeSet, status: ExecutionStatus, logs: List<String>)
 
