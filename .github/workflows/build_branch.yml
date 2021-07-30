@@ -3,7 +3,7 @@ name: Build All
 on:
   push:
     branches:
-      - '*'
+      - '**'
       - '!master'
 
 jobs:
