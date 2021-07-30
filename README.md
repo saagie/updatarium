@@ -2,9 +2,8 @@
 # Updatarium
 
 [![Releases](https://img.shields.io/github/v/release/saagie/updatarium?color=blue)][release]
-[![Bintray](https://img.shields.io/bintray/v/saagie/maven/updatarium)][bintray]
-
 [![Issues](https://img.shields.io/github/issues-raw/saagie/updatarium?color=blue)][issues]
+
 [![License](https://img.shields.io/github/license/saagie/updatarium?color=lightgray)][license]
 [![Contributors](https://img.shields.io/github/contributors/saagie/updatarium?color=lightgray)][contributors]  
 
@@ -14,7 +13,8 @@
 [license]: https://github.com/saagie/updatarium/blob/master/LICENSE
 [contributors]: https://github.com/saagie/updatarium/graphs/contributors
 [issues]: https://github.com/saagie/updatarium/issues
-[bintray]: https://bintray.com/saagie/maven/updatarium/_latestVersion
+
+[comment]: <> ([bintray]: https://bintray.com/saagie/maven/updatarium/_latestVersion)
 [coveralls]: https://coveralls.io/github/saagie/updatarium
 [build_master]: https://github.com/saagie/updatarium/actions?query=workflow%3A%22Build+Master+and+Release%22
 ### Goal

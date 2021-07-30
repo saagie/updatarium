@@ -19,12 +19,10 @@ plugins {
     kotlin("jvm")
 }
 config {
-    bintray { enabled = true }
     publishing { enabled = true }
 }
 
 val fuelVersion = "2.3.0"
-val kraphVersion = "0.6.0"
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":core"))
@@ -32,5 +30,4 @@ dependencies {
     implementation("com.github.kittinunf.fuel:fuel-json:$fuelVersion")
     implementation("com.github.kittinunf.fuel:fuel-jackson:$fuelVersion")
     implementation("com.github.kittinunf.fuel:fuel-gson:$fuelVersion")
-    implementation("me.lazmaid.kraph:kraph:$kraphVersion")
 }

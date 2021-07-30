@@ -22,7 +22,6 @@ plugins {
     application
 }
 config {
-    bintray { enabled = false }
     publishing { enabled = false }
 }
 
