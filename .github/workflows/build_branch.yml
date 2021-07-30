@@ -38,10 +38,10 @@ jobs:
       - name: DockerFile creation
         run: |
           docker build -f updatarium-cli/Dockerfile -t saagie/updatarium:latest updatarium-cli/build/distributions
-          docker tag saagie/updatarium:latest saagie/updatarium-snapshot:${{ steps.extract_branch.outputs.branch }}
+          docker tag saagie/updatarium:latest saagie/updatarium-snapshot:${{ steps.extract_branch.outputs.branch }}-${{ github.run_number }}
       - name: Docker check image
         run: docker run --rm -v ${PWD}:/updatarium-src saagie/updatarium:latest /updatarium-src/samples/basic-multiplechangelog-withtag/src/main/resources/changelogs
       - name: Docker run tests with and without tags
         run: ./.github/script/testDocker.sh
       - name: Docker push
-        run: docker push saagie/updatarium-snapshot:${{ steps.extract_branch.outputs.branch }}
+        run: docker push saagie/updatarium-snapshot:${{ steps.extract_branch.outputs.branch }}-${{ github.run_number }}

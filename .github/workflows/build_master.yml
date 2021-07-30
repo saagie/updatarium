@@ -47,8 +47,8 @@ jobs:
       run: |
         docker push saagie/updatarium:latest
         docker push saagie/updatarium:${{ steps.extract_version.outputs.v }}
-    - name: Publish on bintray
-      run: ./gradlew bintrayUpload -PbintrayUsername=${{ secrets.BINTRAY_USERNAME }} -PbintrayApiKey=${{ secrets.BINTRAY_APIKEY }}
+#    - name: Publish on bintray
+#      run: ./gradlew bintrayUpload -PbintrayUsername=${{ secrets.BINTRAY_USERNAME }} -PbintrayApiKey=${{ secrets.BINTRAY_APIKEY }}
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1

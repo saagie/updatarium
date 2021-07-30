@@ -18,17 +18,14 @@
 import java.util.Properties
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val bintrayUsername: String by project
-val bintrayApiKey: String by project
-
 plugins {
     kotlin("jvm") version "1.3.70"
     id("net.thauvin.erik.gradle.semver").version("1.0.4")
-    id("org.kordamp.gradle.kotlin-project") version "0.32.0"
-    id("org.kordamp.gradle.bintray") version "0.32.0"
-    id("org.kordamp.gradle.coveralls") version "0.32.0"
-    id("org.kordamp.gradle.jacoco") version "0.32.0"
-    id("org.kordamp.gradle.detekt") version "0.32.0"
+    id("org.kordamp.gradle.kotlin-project") version "0.46.0"
+    id("org.kordamp.gradle.bintray") version "0.46.0"
+    id("org.kordamp.gradle.coveralls") version "0.46.0"
+    id("org.kordamp.gradle.jacoco") version "0.46.0"
+    id("org.kordamp.gradle.detekt") version "0.46.0"
     id("com.adarshr.test-logger") version "2.0.0"
 }
 
@@ -38,6 +35,12 @@ val props = Properties().apply {
 config {
 
     release = false
+
+    docs {
+        kotlindoc {
+            enabled = false
+        }
+    }
 
     info {
         name = "Updatarium"
@@ -57,6 +60,7 @@ config {
         }
 
         licensing {
+            enabled = false
             licenses {
                 license {
                     id = "Apache-2.0"
@@ -112,16 +116,6 @@ config {
             }
         }
 
-        bintray {
-            credentials {
-                username = bintrayUsername
-                password = bintrayApiKey
-            }
-            userOrg = "saagie"
-            name = "updatarium"
-            githubRepo = "saagie/updatarium"
-            publish = true
-        }
     }
 }
 
@@ -129,11 +123,11 @@ allprojects {
     repositories {
         mavenLocal()
         mavenCentral()
-        jcenter()
-        maven(url = "https://dl.bintray.com/s1m0nw1/KtsRunner")
+        // For KtsRunner :
+        maven("https://jitpack.io")
     }
     group = "io.saagie.updatarium"
-    version = props.get("version.semver")!!
+    version = props["version.semver"]!!
 
     tasks.withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "1.8"
@@ -149,9 +143,17 @@ val sampleAutoImportDependencies = mapOf(
     "org.apache.logging.log4j:log4j-core" to "2.13.1"
 )
 
+configurations.all {
+    resolutionStrategy.force("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")
+}
+
 subprojects {
     apply(plugin = "java")
     apply(plugin = "org.kordamp.gradle.kotlin-project")
+
+    configurations.all {
+        resolutionStrategy.force("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")
+    }
 
     dependencies {
         autoImportDependencies.forEach {
