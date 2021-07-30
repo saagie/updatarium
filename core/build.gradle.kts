@@ -32,7 +32,6 @@ dependencies {
     implementation(kotlin("scripting-compiler-embeddable"))
     implementation(kotlin("script-util"))
     implementation("net.java.dev.jna:jna:5.5.0")
-    api("de.swirtz:ktsRunner:0.0.7") { exclude(group = "ch.qos.logback", module = "logback-classic") }
 
     // log4j2 appender plugin
     api("org.apache.logging.log4j:log4j-core:2.13.0")
