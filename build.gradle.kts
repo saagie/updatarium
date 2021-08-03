@@ -22,7 +22,6 @@ plugins {
     kotlin("jvm") version "1.3.70"
     id("net.thauvin.erik.gradle.semver").version("1.0.4")
     id("org.kordamp.gradle.kotlin-project") version "0.46.0"
-    id("org.kordamp.gradle.bintray") version "0.46.0"
     id("org.kordamp.gradle.coveralls") version "0.46.0"
     id("org.kordamp.gradle.jacoco") version "0.46.0"
     id("org.kordamp.gradle.detekt") version "0.46.0"
@@ -146,6 +145,10 @@ val sampleAutoImportDependencies = mapOf(
 configurations.all {
     resolutionStrategy.force("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")
 }
+
+// https://docs.gradle.org/current/userguide/publishing_customization.html
+
+
 
 subprojects {
     apply(plugin = "java")

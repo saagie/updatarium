@@ -17,14 +17,14 @@ package io.saagie.updatarium
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import de.swirtz.ktsrunner.objectloader.KtsObjectLoader
 import io.saagie.updatarium.config.UpdatariumConfiguration
+import io.saagie.updatarium.ktsloader.KtsObjectLoader
 import io.saagie.updatarium.model.ChangeLog
 import io.saagie.updatarium.model.UpdatariumError
+import mu.KotlinLogging
 import java.io.Reader
 import java.nio.file.Files
 import java.nio.file.Path
-import mu.KotlinLogging
 
 /**
  * Main class of Updatarium.
