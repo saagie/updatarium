@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2020 Pierre Leresteux.
+ * Copyright 2019-2022 Creative Data.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,12 @@ plugins {
 }
 
 config {
-    bintray { enabled = true }
     publishing { enabled = true }
 }
 
-val mysql_connector = "8.0.22"
+val mysql_connector = "8.0.25"
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":core"))
-    implementation("mysql:mysql-connector-java:$mysql_connector")
+    api("mysql:mysql-connector-java:$mysql_connector")
 }

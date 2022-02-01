@@ -2,7 +2,7 @@
 # Updatarium
 
 [![Releases](https://img.shields.io/github/v/release/saagie/updatarium?color=blue)][release]
-[![Bintray](https://img.shields.io/bintray/v/saagie/maven/updatarium)][bintray]
+[![Jitpack](https://img.shields.io/jitpack/v/github/saagie/updatarium)][jitpack]
 
 [![Issues](https://img.shields.io/github/issues-raw/saagie/updatarium?color=blue)][issues]
 [![License](https://img.shields.io/github/license/saagie/updatarium?color=lightgray)][license]
@@ -14,7 +14,7 @@
 [license]: https://github.com/saagie/updatarium/blob/master/LICENSE
 [contributors]: https://github.com/saagie/updatarium/graphs/contributors
 [issues]: https://github.com/saagie/updatarium/issues
-[bintray]: https://bintray.com/saagie/maven/updatarium/_latestVersion
+[jitpack]: https://jitpack.io/#saagie/updatarium
 [coveralls]: https://coveralls.io/github/saagie/updatarium
 [build_master]: https://github.com/saagie/updatarium/actions?query=workflow%3A%22Build+Master+and+Release%22
 ### Goal
@@ -39,8 +39,8 @@ Add JCenter maven repository
                 <enabled>false</enabled>
             </snapshots>
             <id>central</id>
-            <name>bintray-plugins</name>
-            <url>https://jcenter.bintray.com</url>
+            <name>jitpack-plugins</name>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 ```

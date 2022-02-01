@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2020 Pierre Leresteux.
+ * Copyright 2019-2022 Creative Data.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,9 +44,9 @@ class Standalone : CliktCommand(printHelpOnEmptyArgs = true) {
 
     // Execution options
     val changelog by argument(help = "Changelog path (file or directory)", name = "changelog").path(
-        exists = true,
-        readable = true,
-        fileOkay = true
+        mustExist = true,
+        mustBeReadable = true,
+        canBeFile = true
     )
     val tags by option("--tags", "-t", help = "Tags to execute (OR)", envvar = "UPDATARIUM_TAGS").multiple()
     val changelogsPattern by option(

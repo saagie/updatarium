@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2020 Pierre Leresteux.
+ * Copyright 2019-2022 Creative Data.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,12 @@ plugins {
 }
 
 config {
-    bintray { enabled = true }
     publishing { enabled = true }
 }
 
-val kmongoVersion = "3.12.2"
+val kmongoVersion = "4.4.0"
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":core"))
-    implementation("org.litote.kmongo:kmongo:$kmongoVersion")
+    api("org.litote.kmongo:kmongo:$kmongoVersion")
 }

@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2020 Pierre Leresteux.
+ * Copyright 2019-2022 Creative Data.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 package io.saagie.updatarium.persist
 
 import com.mongodb.ConnectionString
+import com.mongodb.MongoClientSettings
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
 import io.saagie.updatarium.model.ChangeSet
@@ -25,6 +26,7 @@ import io.saagie.updatarium.model.ExecutionStatus
 import io.saagie.updatarium.model.ExecutionStatus.NOT_EXECUTED
 import io.saagie.updatarium.persist.model.MongoDbChangeSet
 import io.saagie.updatarium.persist.model.toMongoDbDocument
+import org.bson.UuidRepresentation
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.descending
 import org.litote.kmongo.eq
@@ -40,7 +42,12 @@ const val COLLECTION = "changeset"
 class MongodbPersistEngine(override val configuration: PersistConfig = PersistConfig()) : PersistEngine(configuration) {
 
     private val collection by lazy {
-        with(KMongo.createClient(ConnectionString(getConnectionString()))) {
+        with(
+            KMongo.createClient(
+                MongoClientSettings.builder().applyConnectionString(ConnectionString(getConnectionString()))
+                    .uuidRepresentation(UuidRepresentation.JAVA_LEGACY).build()
+            )
+        ) {
             this.getDatabase(System.getenv().getOrDefault(MONGODB_PERSIST_DATABASE, DATABASE))
                 .getCollection<MongoDbChangeSet>(
                     System.getenv().getOrDefault(MONGODB_PERSIST_CHANGESET_COLLECTION, COLLECTION)
