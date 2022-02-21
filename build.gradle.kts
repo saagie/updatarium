@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2020 Pierre Leresteux.
+ * Copyright 2019-2022 Creative Data.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,39 @@
  * limitations under the License.
  */
 import java.util.Properties
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-val bintrayUsername: String by project
-val bintrayApiKey: String by project
 
 plugins {
-    kotlin("jvm") version "1.3.70"
+    kotlin("jvm") version "1.6.10"
     id("net.thauvin.erik.gradle.semver").version("1.0.4")
-    id("org.kordamp.gradle.kotlin-project") version "0.32.0"
-    id("org.kordamp.gradle.bintray") version "0.32.0"
-    id("org.kordamp.gradle.coveralls") version "0.32.0"
-    id("org.kordamp.gradle.jacoco") version "0.32.0"
-    id("org.kordamp.gradle.detekt") version "0.32.0"
+    id("org.kordamp.gradle.kotlin-project") version "0.47.0" apply false
+    id("org.kordamp.gradle.project") version "0.47.0"
+    id("org.kordamp.gradle.coveralls") version "0.47.0"
+    id("org.kordamp.gradle.jacoco") version "0.47.0"
+//    id("org.kordamp.gradle.detekt") version "0.47.0" enable when detekt support kotlin 1.6
     id("com.adarshr.test-logger") version "2.0.0"
+}
+
+buildscript {
+    //override dokka version from kordamp
+    dependencies {
+        classpath("org.jetbrains.dokka:kotlin-as-java-plugin:1.6.10")
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.6.10")
+    }
 }
 
 val props = Properties().apply {
     load(file("version.properties").inputStream())
 }
+
 config {
 
     release = false
+
+//    quality {
+//        detekt {
+//            toolVersion = "1.19.0"
+//        }
+//    }
 
     info {
         name = "Updatarium"
@@ -59,8 +70,15 @@ config {
         licensing {
             licenses {
                 license {
-                    id = "Apache-2.0"
+                    id = org.kordamp.gradle.plugin.base.model.LicenseId.APACHE_2_0.spdx()
                 }
+            }
+        }
+
+        people{
+            person{
+                id = "Creative Data"
+                name = "Creative Data"
             }
         }
 
@@ -72,56 +90,6 @@ config {
                 enabled = true
             }
         }
-
-        people {
-            person {
-                id = "pierre"
-                name = "Pierre Leresteux"
-                email = "pierre@saagie.com"
-                roles = listOf("author", "developer")
-            }
-            person {
-                id = "richard"
-                name = "Richard Capraro"
-                email = "richard.capraro@saagie.com"
-                roles = listOf("developer")
-            }
-            person {
-                id = "guillaume"
-                name = "Guillaume Naimi"
-                email = "guillaume.naimi@saagie.com"
-                roles = listOf("developer")
-            }
-            person {
-                id = "igor"
-                name = "Igor Laborie"
-                email = "igor.laborie@saagie.com"
-                roles = listOf("developer")
-            }
-            person {
-                id = "antoine"
-                name = "Antoine Carton"
-                email = "antoine.carton@saagie.com"
-                roles = listOf("developer")
-            }
-            person {
-                id = "y-henry"
-                name = "Yohann Henry"
-                email = "yohann.henry@saagie.com"
-                roles = listOf("developer")
-            }
-        }
-
-        bintray {
-            credentials {
-                username = bintrayUsername
-                password = bintrayApiKey
-            }
-            userOrg = "saagie"
-            name = "updatarium"
-            githubRepo = "saagie/updatarium"
-            publish = true
-        }
     }
 }
 
@@ -129,15 +97,18 @@ allprojects {
     repositories {
         mavenLocal()
         mavenCentral()
-        jcenter()
-        maven(url = "https://dl.bintray.com/s1m0nw1/KtsRunner")
+        maven(url = "https://jitpack.io")
     }
     group = "io.saagie.updatarium"
-    version = props.get("version.semver")!!
+    version = props["version.semver"]!!
+    apply(plugin = "kotlin")
 
-    tasks.withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
+    kotlin {
+        jvmToolchain {
+            (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(17))
+        }
     }
+
 }
 val autoImportDependencies = mapOf(
     "io.github.microutils:kotlin-logging" to "1.7.9",
@@ -150,20 +121,16 @@ val sampleAutoImportDependencies = mapOf(
 )
 
 subprojects {
-    apply(plugin = "java")
     apply(plugin = "org.kordamp.gradle.kotlin-project")
 
     dependencies {
         autoImportDependencies.forEach {
-            implementation("${it.key}:${it.value}")
+            api("${it.key}:${it.value}")
         }
         if (this@subprojects.parent?.name == "samples") {
             sampleAutoImportDependencies.forEach {
                 implementation("${it.key}:${it.value}")
             }
         }
-    }
-    tasks.withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
     }
 }

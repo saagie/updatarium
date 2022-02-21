@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2020 Pierre Leresteux.
+ * Copyright 2019-2022 Creative Data.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,19 @@
 package io.saagie.updatarium.engine.mongo
 
 import com.mongodb.ConnectionString
+import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoIterable
+import org.bson.UuidRepresentation
 import org.litote.kmongo.KMongo
 
 class MongoEngine(private val connectionStringEnvVar: String) {
 
-    val mongoClient by lazy { KMongo.createClient(ConnectionString(getConnectionString())) }
+    val mongoClient by lazy {
+        KMongo.createClient(
+            MongoClientSettings.builder().applyConnectionString(ConnectionString(getConnectionString()))
+                .uuidRepresentation(UuidRepresentation.JAVA_LEGACY).build()
+        )
+    }
 
     private fun getConnectionString(): String {
         if (System.getenv().containsKey(connectionStringEnvVar)) {

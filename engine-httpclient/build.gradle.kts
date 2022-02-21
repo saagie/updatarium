@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2020 Pierre Leresteux.
+ * Copyright 2019-2022 Creative Data.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,18 +19,16 @@ plugins {
     kotlin("jvm")
 }
 config {
-    bintray { enabled = true }
     publishing { enabled = true }
 }
 
-val fuelVersion = "2.3.0"
-val kraphVersion = "0.6.0"
+val fuelVersion = "2.3.1"
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":core"))
-    implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
-    implementation("com.github.kittinunf.fuel:fuel-json:$fuelVersion")
-    implementation("com.github.kittinunf.fuel:fuel-jackson:$fuelVersion")
-    implementation("com.github.kittinunf.fuel:fuel-gson:$fuelVersion")
-    implementation("me.lazmaid.kraph:kraph:$kraphVersion")
+    api("com.github.kittinunf.fuel:fuel:$fuelVersion")
+    api("com.github.kittinunf.fuel:fuel-json:$fuelVersion")
+    api("com.github.kittinunf.fuel:fuel-jackson:$fuelVersion")
+    api("com.github.kittinunf.fuel:fuel-gson:$fuelVersion")
+    api("org.json:json:20211205")
 }

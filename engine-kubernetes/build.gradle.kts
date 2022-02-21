@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2020 Pierre Leresteux.
+ * Copyright 2019-2022 Creative Data.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,12 @@ plugins {
 }
 
 config {
-    bintray { enabled = true }
     publishing { enabled = true }
 }
 
-val fabric8K8SClientVersion = "4.9.0"
+val fabric8K8SClientVersion = "5.12.0"
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":core"))
-    implementation("io.fabric8:kubernetes-client:$fabric8K8SClientVersion")
+    api("io.fabric8:kubernetes-client:$fabric8K8SClientVersion")
 }

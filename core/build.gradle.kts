@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2020 Pierre Leresteux.
+ * Copyright 2019-2022 Creative Data.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ plugins {
 }
 apply(plugin = "com.adarshr.test-logger")
 config {
-    bintray { enabled = true }
     publishing { enabled = true }
 }
 
@@ -31,18 +30,18 @@ dependencies {
     // ktsRunner
     implementation(kotlin("scripting-compiler-embeddable"))
     implementation(kotlin("script-util"))
-    implementation("net.java.dev.jna:jna:5.5.0")
-    api("de.swirtz:ktsRunner:0.0.7") { exclude(group = "ch.qos.logback", module = "logback-classic") }
+    implementation("net.java.dev.jna:jna:5.9.0")
+    api("com.github.s1monw1:KtsRunner:v0.0.8") { exclude(group = "ch.qos.logback", module = "logback-classic") }
 
     // log4j2 appender plugin
-    api("org.apache.logging.log4j:log4j-core:2.13.0")
+    api("org.apache.logging.log4j:log4j-core:2.17.0")
 
     // Tests
-    testImplementation("org.junit.jupiter:junit-jupiter:5.6.0")
-    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.21")
-    testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:2.13.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.25")
+    testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:2.17.0")
     testImplementation(kotlin("reflect"))
-    testImplementation("io.mockk:mockk:1.10.0")
+    testImplementation("io.mockk:mockk:1.12.2")
 }
 
 tasks.test {

@@ -1,4 +1,4 @@
-FROM openjdk:11-jre-slim
+FROM openjdk:17-slim
 
 ADD *.tar /
 RUN ln -s /updatarium-cli*/ /updatarium-cli
