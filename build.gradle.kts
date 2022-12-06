@@ -20,21 +20,11 @@ import java.util.Properties
 plugins {
     kotlin("jvm") version "1.7.21"
     id("net.thauvin.erik.gradle.semver").version("1.0.4")
-//    id("org.kordamp.gradle.kotlin-project") version "0.47.0" apply false
     id("org.kordamp.gradle.project") version "0.48.0"
     id("org.kordamp.gradle.coveralls") version "0.48.0"
     id("org.kordamp.gradle.jacoco") version "0.48.0"
-//    id("org.kordamp.gradle.detekt") version "0.47.0" enable when detekt support kotlin 1.6
     id("com.adarshr.test-logger") version "3.2.0"
 }
-
-//buildscript {
-//    //override dokka version from kordamp
-//    dependencies {
-//        classpath("org.jetbrains.dokka:kotlin-as-java-plugin:1.6.10")
-//        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.6.10")
-//    }
-//}
 
 val props = Properties().apply {
     load(file("version.properties").inputStream())
@@ -43,12 +33,6 @@ val props = Properties().apply {
 config {
 
     release = false
-
-//    quality {
-//        detekt {
-//            toolVersion = "1.19.0"
-//        }
-//    }
 
     info {
         name = "Updatarium"
@@ -121,8 +105,6 @@ val sampleAutoImportDependencies = mapOf(
 )
 
 subprojects {
-//    apply(plugin = "org.kordamp.gradle.kotlin-project")
-
     dependencies {
         autoImportDependencies.forEach {
             api("${it.key}:${it.value}")
