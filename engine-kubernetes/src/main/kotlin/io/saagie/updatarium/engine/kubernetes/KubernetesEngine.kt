@@ -17,13 +17,15 @@
  */
 package io.saagie.updatarium.engine.kubernetes
 
-import io.fabric8.kubernetes.client.DefaultKubernetesClient
+import io.fabric8.kubernetes.client.ConfigBuilder
+import io.fabric8.kubernetes.client.KubernetesClientBuilder
 import io.fabric8.kubernetes.client.NamespacedKubernetesClient
 
 object KubernetesEngine {
-
-    fun getClient(namespace: String? = null): NamespacedKubernetesClient {
-        val client = DefaultKubernetesClient()
-        return if (namespace != null) client.inNamespace(namespace) else client
-    }
+    fun getClient(namespace: String? = null): NamespacedKubernetesClient =
+        if (namespace == null) {
+            KubernetesClientBuilder().build()
+        } else {
+            KubernetesClientBuilder().withConfig(ConfigBuilder().withNamespace(namespace).build()).build()
+        }.adapt(NamespacedKubernetesClient::class.java)
 }

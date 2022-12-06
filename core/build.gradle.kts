@@ -30,18 +30,18 @@ dependencies {
     // ktsRunner
     implementation(kotlin("scripting-compiler-embeddable"))
     implementation(kotlin("script-util"))
-    implementation("net.java.dev.jna:jna:5.9.0")
+    implementation("net.java.dev.jna:jna:5.12.1")
     api("com.github.s1monw1:KtsRunner:v0.0.8") { exclude(group = "ch.qos.logback", module = "logback-classic") }
 
     // log4j2 appender plugin
-    api("org.apache.logging.log4j:log4j-core:2.17.0")
+    api("org.apache.logging.log4j:log4j-core:2.19.0")
 
     // Tests
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.25")
-    testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:2.17.0")
+    testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.19.0")
     testImplementation(kotlin("reflect"))
-    testImplementation("io.mockk:mockk:1.12.2")
+    testImplementation("io.mockk:mockk:1.13.3")
 }
 
 tasks.test {

@@ -18,23 +18,23 @@
 import java.util.Properties
 
 plugins {
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.7.21"
     id("net.thauvin.erik.gradle.semver").version("1.0.4")
-    id("org.kordamp.gradle.kotlin-project") version "0.47.0" apply false
-    id("org.kordamp.gradle.project") version "0.47.0"
-    id("org.kordamp.gradle.coveralls") version "0.47.0"
-    id("org.kordamp.gradle.jacoco") version "0.47.0"
+//    id("org.kordamp.gradle.kotlin-project") version "0.47.0" apply false
+    id("org.kordamp.gradle.project") version "0.48.0"
+    id("org.kordamp.gradle.coveralls") version "0.48.0"
+    id("org.kordamp.gradle.jacoco") version "0.48.0"
 //    id("org.kordamp.gradle.detekt") version "0.47.0" enable when detekt support kotlin 1.6
-    id("com.adarshr.test-logger") version "2.0.0"
+    id("com.adarshr.test-logger") version "3.2.0"
 }
 
-buildscript {
-    //override dokka version from kordamp
-    dependencies {
-        classpath("org.jetbrains.dokka:kotlin-as-java-plugin:1.6.10")
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.6.10")
-    }
-}
+//buildscript {
+//    //override dokka version from kordamp
+//    dependencies {
+//        classpath("org.jetbrains.dokka:kotlin-as-java-plugin:1.6.10")
+//        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.6.10")
+//    }
+//}
 
 val props = Properties().apply {
     load(file("version.properties").inputStream())
@@ -111,17 +111,17 @@ allprojects {
 
 }
 val autoImportDependencies = mapOf(
-    "io.github.microutils:kotlin-logging" to "1.7.9",
-    "org.slf4j:slf4j-api" to "1.7.30"
+    "io.github.microutils:kotlin-logging" to "3.0.4",
+    "org.slf4j:slf4j-api" to "2.0.5"
 )
 
 val sampleAutoImportDependencies = mapOf(
-    "org.apache.logging.log4j:log4j-slf4j-impl" to "2.13.1",
-    "org.apache.logging.log4j:log4j-core" to "2.13.1"
+    "org.apache.logging.log4j:log4j-slf4j2-impl" to "2.19.0",
+    "org.apache.logging.log4j:log4j-core" to "2.19.0"
 )
 
 subprojects {
-    apply(plugin = "org.kordamp.gradle.kotlin-project")
+//    apply(plugin = "org.kordamp.gradle.kotlin-project")
 
     dependencies {
         autoImportDependencies.forEach {

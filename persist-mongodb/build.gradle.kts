@@ -23,7 +23,7 @@ config {
     publishing { enabled = true }
 }
 
-val kmongoVersion = "4.4.0"
+val kmongoVersion = "4.8.0"
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":core"))

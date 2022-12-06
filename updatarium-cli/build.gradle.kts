@@ -53,18 +53,17 @@ tasks.withType(CreateStartScripts::class.java){
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("com.github.ajalt.clikt:clikt:3.4.0")
+    implementation("com.github.ajalt.clikt:clikt:3.5.0")
     // Updatarium deps
     implementation(project(":core"))
     implementation(project(":persist-mongodb"))
     implementation(project(":engine-bash"))
     implementation(project(":engine-mongodb"))
-    implementation(project(":engine-mysql"))
     implementation(project(":engine-kubernetes"))
     implementation(project(":engine-httpclient"))
     // Logs
-    implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.17.0")
-    implementation("org.apache.logging.log4j:log4j-core:2.17.0")
+    implementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.19.0")
+    implementation("org.apache.logging.log4j:log4j-core:2.19.0")
 }
 repositories {
     mavenCentral()
