@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2022 Creative Data.
+ * Copyright 2019-2023 Creative Data.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +18,12 @@
 import java.util.Properties
 
 plugins {
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.7.21"
     id("net.thauvin.erik.gradle.semver").version("1.0.4")
-    id("org.kordamp.gradle.kotlin-project") version "0.47.0" apply false
-    id("org.kordamp.gradle.project") version "0.47.0"
-    id("org.kordamp.gradle.coveralls") version "0.47.0"
-    id("org.kordamp.gradle.jacoco") version "0.47.0"
-//    id("org.kordamp.gradle.detekt") version "0.47.0" enable when detekt support kotlin 1.6
-    id("com.adarshr.test-logger") version "2.0.0"
-}
-
-buildscript {
-    //override dokka version from kordamp
-    dependencies {
-        classpath("org.jetbrains.dokka:kotlin-as-java-plugin:1.6.10")
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.6.10")
-    }
+    id("org.kordamp.gradle.project") version "0.48.0"
+    id("org.kordamp.gradle.coveralls") version "0.48.0"
+    id("org.kordamp.gradle.jacoco") version "0.48.0"
+    id("com.adarshr.test-logger") version "3.2.0"
 }
 
 val props = Properties().apply {
@@ -43,12 +33,6 @@ val props = Properties().apply {
 config {
 
     release = false
-
-//    quality {
-//        detekt {
-//            toolVersion = "1.19.0"
-//        }
-//    }
 
     info {
         name = "Updatarium"
@@ -111,18 +95,16 @@ allprojects {
 
 }
 val autoImportDependencies = mapOf(
-    "io.github.microutils:kotlin-logging" to "1.7.9",
-    "org.slf4j:slf4j-api" to "1.7.30"
+    "io.github.microutils:kotlin-logging" to "3.0.4",
+    "org.slf4j:slf4j-api" to "2.0.5"
 )
 
 val sampleAutoImportDependencies = mapOf(
-    "org.apache.logging.log4j:log4j-slf4j-impl" to "2.13.1",
-    "org.apache.logging.log4j:log4j-core" to "2.13.1"
+    "org.apache.logging.log4j:log4j-slf4j2-impl" to "2.19.0",
+    "org.apache.logging.log4j:log4j-core" to "2.19.0"
 )
 
 subprojects {
-    apply(plugin = "org.kordamp.gradle.kotlin-project")
-
     dependencies {
         autoImportDependencies.forEach {
             api("${it.key}:${it.value}")

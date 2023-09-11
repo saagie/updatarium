@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2022 Creative Data.
+ * Copyright 2019-2023 Creative Data.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ config {
     publishing { enabled = true }
 }
 
-val fabric8K8SClientVersion = "5.12.0"
+val fabric8K8SClientVersion = "6.2.0"
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":core"))
