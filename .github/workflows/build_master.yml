@@ -73,7 +73,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Slack Notification
-      uses: rtCamp/action-slack-notify@v2.0.0
+      uses: rtCamp/action-slack-notify@v2.2.0
       env:
         SLACK_CHANNEL: tmp-oss-updatarium
         SLACK_COLOR: '#254285'
